@@ -2,7 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/IInspectable.ProjectAdder.Extension/obj
-/IInspectable.ProjectAdder.Extension/.vs
-/IInspectable.ProjectAdder.Extension/bin
+/IInspectable.ProjectExplorer.Extension/obj
+/IInspectable.ProjectExplorer.Extension/.vs
+/IInspectable.ProjectExplorer.Extension/bin
 /.vs

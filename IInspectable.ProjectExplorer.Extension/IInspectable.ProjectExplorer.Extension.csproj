@@ -13,8 +13,8 @@
     <ProjectGuid>{3FF6BA3D-17A0-46BE-9058-095EBD295424}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IInspectable.ProjectAdder.Extension</RootNamespace>
-    <AssemblyName>IInspectable.ProjectAdder.Extension</AssemblyName>
+    <RootNamespace>IInspectable.ProjectExplorer.Extension</RootNamespace>
+    <AssemblyName>IInspectable.ProjectExplorer.Extension</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
