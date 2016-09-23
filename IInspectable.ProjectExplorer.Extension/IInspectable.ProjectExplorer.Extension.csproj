@@ -56,7 +56,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
     </Compile>
-    <Compile Include="ProjectExplorerTestCommand.cs" />
+    <Compile Include="ProjectExplorerSettingsCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectExplorerWindow.cs" />
     <Compile Include="ProjectExplorerWindowCommand.cs" />

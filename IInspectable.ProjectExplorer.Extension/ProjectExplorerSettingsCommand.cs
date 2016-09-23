@@ -10,14 +10,15 @@ using Microsoft.VisualStudio.Shell;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class ProjectExplorerTestCommand {
+    sealed class ProjectExplorerSettingsCommand {
 
-        public const int CommandId = PackageIds.ProjectExplorerTestCommandId;
+        public const int CommandId = PackageIds.ProjectExplorerSettingsCommandId;
         public static readonly Guid CommandSet = PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
         readonly ProjectExplorerWindow _projectExplorerWindow;
+        readonly MenuCommand _command;
 
-        ProjectExplorerTestCommand(ProjectExplorerWindow projectExplorerWindow) {
+        ProjectExplorerSettingsCommand(ProjectExplorerWindow projectExplorerWindow) {
             if (projectExplorerWindow == null) {
                 throw new ArgumentNullException(nameof(projectExplorerWindow));
             }
@@ -27,19 +28,19 @@ namespace IInspectable.ProjectExplorer.Extension {
             OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null) {
                 var menuCommandId = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(Execute, menuCommandId);
-                commandService.AddCommand(menuItem);
+                _command = new MenuCommand(Execute, menuCommandId);
+                commandService.AddCommand(_command);
             }
         }
 
-        public static ProjectExplorerTestCommand Instance { get; private set; }
+        public static ProjectExplorerSettingsCommand Instance { get; private set; }
 
         IServiceProvider ServiceProvider {
             get { return _projectExplorerWindow; }
         }
 
         public static void Initialize(ProjectExplorerWindow projectExplorerWindow) {
-            Instance = new ProjectExplorerTestCommand(projectExplorerWindow);
+            Instance = new ProjectExplorerSettingsCommand(projectExplorerWindow);
         }
 
         void Execute(object sender, EventArgs e) {
