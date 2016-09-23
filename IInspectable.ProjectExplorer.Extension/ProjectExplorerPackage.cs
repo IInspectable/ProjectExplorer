@@ -13,13 +13,11 @@ namespace IInspectable.ProjectExplorer.Extension {
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(ProjectExplorerWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
     [ProvideToolWindowVisibility(typeof(ProjectExplorerWindow), /*UICONTEXT_SolutionExists*/ "f1536ef8-92ec-443c-9ed7-fdadf150da82")]
-    [Guid(PackageGuidString)]
+    [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
     public sealed class ProjectExplorerPackage : Package {
 
-        public const string PackageGuidString = "f2f16ece-71b7-4b31-a2f1-c91aca261509";
-
         protected override void Initialize() {
-            ProjectExplorerWindowCommand.Initialize(this);
+            ProjectExplorerWindowCommand.Initialize(this);            
             base.Initialize();
         }
     }

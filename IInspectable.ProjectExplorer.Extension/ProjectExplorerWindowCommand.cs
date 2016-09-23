@@ -12,12 +12,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 0x0100;
+        public const int CommandId = PackageIds.ProjectExplorerWindowCommandId;
 
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("4c113c46-d7a3-45e2-926f-6504d7d796d1");
+        public static readonly Guid CommandSet = PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
         /// <summary>
         /// VS Package that provides this command, not null.

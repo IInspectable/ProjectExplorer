@@ -1,5 +1,6 @@
 ﻿#region Using Directives
 
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 
 using Microsoft.VisualStudio.Shell;
@@ -19,6 +20,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             // the object returned by the Content property.
             // ReSharper disable once VirtualMemberCallInConstructor
             Content = new ProjectExplorerControl();
+            ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
+
+            ProjectExplorerTestCommand.Initialize(this);
         }
     }
 }
