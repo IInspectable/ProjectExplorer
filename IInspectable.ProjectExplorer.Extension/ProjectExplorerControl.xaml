@@ -3,15 +3,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             Background="{DynamicResource VsBrush.Window}"
-             Foreground="{DynamicResource VsBrush.WindowText}"
+             xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+             Background="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowBackgroundKey}}"
+             Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowTextKey}}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="ProjectItemTemplate" >
+            <Border BorderBrush="Blue" BorderThickness="0,0,0,1" 
+                    platformUi:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}}">
+                <Grid Margin="0,2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <imaging:CrispImage Moniker ="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" />
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Path}" ToolTip="{Binding Path}"
+                               Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowButtonInactiveKey}}"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="10" HorizontalAlignment="Center">Project Explorer SWindow</TextBlock>
-            <Button Content="Click me!" Click="OnButtonClick" Width="120" Height="80" Name="button1"/>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Button Content="Click me!" Click="OnButtonClick"/>
+        <ListBox Grid.Row="1" ItemsSource="{Binding}" ItemTemplate="{StaticResource ProjectItemTemplate}"/>
+        <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>
     </Grid>
+
 </UserControl>
