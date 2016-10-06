@@ -38,11 +38,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 projectFiles.Add(projectFile);
             }
 
-            DataContext = projectFiles;
-
-            MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", ToString()),
-                "ProjectExplorerWindow");
+            DataContext = projectFiles;          
         }
     }
 }

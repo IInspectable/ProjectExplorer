@@ -15,7 +15,7 @@
 
     <UserControl.Resources>
         <DataTemplate x:Key="ProjectItemTemplate" >
-            <Border BorderBrush="Blue" BorderThickness="0,0,0,1" 
+            <Border BorderThickness="0" 
                     platformUi:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}}">
                 <Grid Margin="0,2">
                     <Grid.RowDefinitions>
@@ -23,13 +23,30 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="3" />
+                        <ColumnDefinition Width="24" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <imaging:CrispImage Moniker ="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
-                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" />
-                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Path}" ToolTip="{Binding Path}"
-                               Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowButtonInactiveKey}}"/>
+
+                    <Rectangle Fill="#388A34" Grid.RowSpan="2"/>
+
+                    <imaging:CrispImage Grid.Column="1" Grid.Row="0"
+                                        Margin="3,2" 
+                                        Width="16" 
+                                        Height="16" 
+                                        Moniker ="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
+
+                    <TextBlock Grid.Column="2" Grid.Row="0" Margin="0,3,3,0" Text="{Binding Name}" ToolTip="{Binding Name}"/>
+
+
+                    <imaging:CrispImage Grid.Column="1" Grid.Row="1"
+                                        Margin="3,2" 
+                                        Width="16" 
+                                        Height="16" 
+                                        Moniker ="{x:Static catalog:KnownMonikers.FolderOpened}"/>
+
+                    <TextBlock Grid.Column="2" Grid.Row="1" Margin="0,3,3,0" Text="{Binding Path}" ToolTip="{Binding Path}"/>
+
                 </Grid>
             </Border>
         </DataTemplate>
