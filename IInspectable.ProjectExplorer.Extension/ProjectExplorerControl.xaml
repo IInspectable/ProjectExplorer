@@ -7,6 +7,7 @@
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:platformUtils="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
              Background="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowBackgroundKey}}"
              Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowTextKey}}"
              mc:Ignorable="d"
@@ -14,9 +15,27 @@
              Name="MyToolWindow">
 
     <UserControl.Resources>
+        <platformUtils:BrushToColorConverter x:Key="BrushToColorConverter"/>
+
+        <Style x:Key="StatusIndicator" TargetType="Rectangle">
+            <Setter Property="Fill" Value="Transparent"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Unavailable">
+                    <Setter Property="Fill" Value="Transparent"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Unloaded">
+                    <Setter Property="Fill" Value="#1BA1E2"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Loaded">
+                    <Setter Property="Fill" Value="#339933"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <DataTemplate x:Key="ProjectItemTemplate" >
-            <Border BorderThickness="0" 
-                    platformUi:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}}">
+            <Border BorderThickness="0"
+                    platformUi:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}"
+                    >
                 <Grid Margin="0,2">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -28,7 +47,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Rectangle Fill="#388A34" Grid.RowSpan="2"/>
+                    <Rectangle Grid.RowSpan="3" Style="{StaticResource StatusIndicator}"/>
 
                     <imaging:CrispImage Grid.Column="1" Grid.Row="0"
                                         Margin="3,2" 
@@ -45,7 +64,7 @@
                                         Height="16" 
                                         Moniker ="{x:Static catalog:KnownMonikers.FolderOpened}"/>
 
-                    <TextBlock Grid.Column="2" Grid.Row="1" Margin="0,3,3,0" Text="{Binding Path}" ToolTip="{Binding Path}"/>
+                    <TextBlock Grid.Column="2" Grid.Row="1" Margin="0,3,3,0" Text="{Binding Directory}" ToolTip="{Binding Directory}"/>
 
                 </Grid>
             </Border>
