@@ -16,18 +16,24 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <SolidColorBrush x:Key="Item.MouseOver.Background" Color="#1F26A0DA"/>
-    <SolidColorBrush x:Key="Item.MouseOver.Border" Color="#a826A0Da"/>
-    <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="#3DDADADA"/>
-    <SolidColorBrush x:Key="Item.SelectedInactive.Border" Color="#FFDADADA"/>
-    <SolidColorBrush x:Key="Item.SelectedActive.Background" Color="Green"/>
-    <SolidColorBrush x:Key="Item.SelectedActive.Border" Color="#FF26A0DA"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Background" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarHoverColorKey}}"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Border"     Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarHoverColorKey}}"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Foreground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextHoverColorKey}}"/>
+
+    <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemInactiveColorKey}}"/>
+    <SolidColorBrush x:Key="Item.SelectedInactive.Border"     Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemInactiveColorKey}}"/>
+    <SolidColorBrush x:Key="Item.SelectedInactive.Foreground" Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemInactiveTextColorKey}}"/>
+    
+    <SolidColorBrush x:Key="Item.SelectedActive.Background" Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveColorKey}}"/>
+    <SolidColorBrush x:Key="Item.SelectedActive.Border"     Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveColorKey}}"/>
+    <SolidColorBrush x:Key="Item.SelectedActive.Foreground" Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveTextColorKey}}"/>
+    
     <Style TargetType="{x:Type local:VsListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Padding" Value="4,1"/>
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalContentAlignment"   Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <Setter Property="Background"  Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -38,28 +44,42 @@
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.MouseOver.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.MouseOver.Border}"/>
-                        </MultiTrigger>
+                        
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="Selector.IsSelectionActive" Value="False"/>
                                 <Condition Property="IsSelected" Value="True"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Background}"/>
+                            <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Background}"/>
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Border}"/>
+                            <Setter Property="TextElement.Foreground"      Value="{StaticResource Item.SelectedInactive.Foreground}"/>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="Selector.IsSelectionActive" Value="True"/>
                                 <Condition Property="IsSelected" Value="True"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
+                            <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Border}"/>
+                            <Setter Property="TextElement.Foreground"      Value="{StaticResource Item.SelectedActive.Foreground}"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsSelected"  Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Item.MouseOver.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.MouseOver.Border}"/>
+                            <Setter Property="TextElement.Foreground"      Value="{StaticResource Item.MouseOver.Foreground}"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsSelected"  Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Border}"/>
+                            <Setter Property="TextElement.Foreground"      Value="{StaticResource Item.SelectedActive.Foreground}"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
