@@ -51,12 +51,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ProjectExplorerController.cs" />
     <Compile Include="ProjectExplorerPackage1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
     </Compile>
     <Compile Include="ProjectExplorerSettingsCommand.cs" />
+    <Compile Include="ProjectExplorerViewModel.cs" />
+    <Compile Include="ProjectFile.cs" />
+    <Compile Include="ProjectStatus.cs" />
+    <Compile Include="ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectExplorerWindow.cs" />
     <Compile Include="ProjectExplorerWindowCommand.cs" />

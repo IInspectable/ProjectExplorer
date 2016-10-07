@@ -75,7 +75,7 @@
         <Button Content="Click me!" Click="OnButtonClick"/>
         <ui:VsListBox Grid.Row      ="1" 
                       SelectionMode ="Extended"
-                      ItemsSource   ="{Binding}" 
+                      ItemsSource   ="{Binding Projects}" 
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"/>
         <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>
     </Grid>

@@ -20,5 +20,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             ProjectExplorerWindowCommand.Initialize(this);            
             base.Initialize();
         }
+        
+        public static object GetGlobalService<TService>() where TService : class {
+            return GetGlobalService(typeof(TService));
+        }
+
+        public static TInterface GetGlobalService<TService, TInterface>() where TInterface : class {
+            return GetGlobalService(typeof(TService)) as TInterface;
+        }
     }
 }
