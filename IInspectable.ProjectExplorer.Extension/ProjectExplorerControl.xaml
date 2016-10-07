@@ -19,17 +19,16 @@
 
     <UserControl.Resources>
 
-        <Style x:Key="StatusIndicator" TargetType="Rectangle">
-            <Setter Property="Fill" Value="Transparent"/>
+        <Style x:Key="StatusImage" TargetType="imaging:CrispImage">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Status}" Value="Unavailable">
-                    <Setter Property="Fill" Value="Transparent"/>
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxUnchecked}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="Unloaded">
-                    <Setter Property="Fill" Value="#1BA1E2"/>
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxDisabled}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="Loaded">
-                    <Setter Property="Fill" Value="#339933"/>
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxChecked}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -43,34 +42,24 @@
                     </StackPanel>
                 </Border.ToolTip>
                 <Grid Margin="0,2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+      
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3" />
-                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-
-                    <Rectangle Grid.RowSpan="3" Style="{StaticResource StatusIndicator}"/>
+                    
+                    <imaging:CrispImage Grid.Column="0" Grid.Row="0"
+                                        Style="{StaticResource StatusImage}"                                       
+                                        Width="16" 
+                                        Height="16"/>
 
                     <imaging:CrispImage Grid.Column="1" Grid.Row="0"
-                                        Margin="3,2" 
                                         Width="16" 
                                         Height="16" 
                                         Moniker ="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
 
-                    <TextBlock Grid.Column="2" Grid.Row="0" Margin="0,3,3,0" Text="{Binding Name}"/>
-
-
-                    <imaging:CrispImage Grid.Column="1" Grid.Row="1"
-                                        Margin="3,2" 
-                                        Width="16" 
-                                        Height="16" 
-                                        Moniker ="{x:Static catalog:KnownMonikers.FolderOpened}"/>
-
-                    <TextBlock Grid.Column="2" Grid.Row="1" Margin="0,3,3,0" Text="{Binding Directory}"/>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Margin="3,1" VerticalAlignment="Center" Text="{Binding Name}"/>
 
                 </Grid>
             </Border>

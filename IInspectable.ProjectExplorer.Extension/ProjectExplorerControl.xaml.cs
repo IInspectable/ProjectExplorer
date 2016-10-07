@@ -75,7 +75,9 @@ namespace IInspectable.ProjectExplorer.Extension {
                 projectFiles.Add(new ProjectViewModel(projectFile));
             }
 
-            DataContext = projectFiles.OrderByDescending(pvm=> pvm.Status).ToList();          
+            DataContext = projectFiles.OrderByDescending(pvm=> pvm.Status)
+                                      .ThenBy(pvm=>pvm.Name)
+                                      .ToList();          
         }
     }
 }
