@@ -8,8 +8,11 @@
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:platformUtils="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
+             xmlns:ui="clr-namespace:IInspectable.ProjectExplorer.Extension.UI"
+             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              Background="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowBackgroundKey}}"
              Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowTextKey}}"
+             platformUi:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
@@ -34,7 +37,7 @@
 
         <DataTemplate x:Key="ProjectItemTemplate" >
             <Border BorderThickness="0"
-                    platformUi:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}"
+                    
                     >
                 <Grid Margin="0,2">
                     <Grid.RowDefinitions>
@@ -78,7 +81,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Button Content="Click me!" Click="OnButtonClick"/>
-        <ListBox Grid.Row="1" ItemsSource="{Binding}" ItemTemplate="{StaticResource ProjectItemTemplate}"/>
+        <ui:VsListBox Grid.Row="1" ItemsSource="{Binding}" ItemTemplate="{StaticResource ProjectItemTemplate}"/>
         <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>
     </Grid>
 
