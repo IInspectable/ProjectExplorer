@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Threading;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -14,6 +16,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public ProjectExplorerViewModel(ProjectService projectService) {
             _projectService = projectService;
+            _projects       = new ObservableCollection<ProjectViewModel>();
 
             _projectService.AfterLoadProject += OnAfterLoadProject;
             _projectService.BeforeUnloadProject += OnBeforeUnloadProject;
@@ -22,9 +25,20 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
-            var projectVm = FindProjectViewModel(e.RealHierarchie);
 
-            projectVm?.Unbind();
+            var guid=_projectService.GetProjectGuid(e.RealHierarchie);
+
+            // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
+            // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
+            // wird es auch keine Hierarchie mehr geben...
+            Application.Current.Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() => {
+                    var hier=_projectService.GetHierarchyByProjectGuid(guid);
+                    var projectVm = FindProjectViewModel(guid);
+                    projectVm?.Bind(hier);
+
+                }));
         }
 
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
@@ -36,7 +50,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
-            projectVm?.Bind(e.StubHierarchie);
+           projectVm?.Bind(e.StubHierarchie);
         }
 
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
@@ -47,7 +61,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(IVsHierarchy pHierarchy) {
-            var projectGuid = _projectService.GetGuidOfProject(pHierarchy);
+            var projectGuid = _projectService.GetProjectGuid(pHierarchy);
             return FindProjectViewModel(projectGuid);
         }
 
@@ -69,8 +83,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var orderedProjects=projects.OrderByDescending(pvm => pvm.Status)
                                         .ThenBy(pvm => pvm.Name);
-
+            
+            var oldProjects = Projects;
             Projects = new ObservableCollection<ProjectViewModel>(orderedProjects);
+
+            foreach (var projectVm in oldProjects) {
+                projectVm.SetParent(null);
+            }
         }
 
         [NotNull]

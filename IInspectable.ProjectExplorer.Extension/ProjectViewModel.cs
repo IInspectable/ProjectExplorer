@@ -7,8 +7,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     public class ProjectViewModel: ViewModelBase {
 
+        [NotNull]
         readonly ProjectFile _projectFile;
+        [CanBeNull]
         IVsHierarchy _pHierarchy;
+        [CanBeNull]
         ProjectExplorerViewModel _parent;
 
         public ProjectViewModel(ProjectFile projectFile) {
@@ -44,20 +47,58 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
+        // TODO Confirmation/Fehlerbehandlung
+        public void Open() {
+            _parent?.ProjectService.OpenProject(_projectFile.Path);
+        }
+
+        // TODO Confirmation/Fehlerbehandlung
+        public void Close() {
+            if (_pHierarchy == null) {
+                return;
+            }
+            _parent?.ProjectService.CloseProject(_pHierarchy);
+        }
+
+        // TODO Confirmation/Fehlerbehandlung
+        public void Load() {
+            if(_pHierarchy == null) {
+                return;
+            }
+            _parent?.ProjectService.LoadProject(_pHierarchy);
+        }
+
+        // TODO Confirmation/Fehlerbehandlung
+        public void Unload() {
+            if (_pHierarchy == null) {
+                return;
+            }
+            _parent?.ProjectService.UnloadProject(_pHierarchy);
+        }
+
+        // TODO Confirmation/Fehlerbehandlung
+        public void DefaultAction() {
+            switch (Status) {
+                case ProjectStatus.Unavailable:
+                    Open();
+                    break;
+                case ProjectStatus.Unloaded:
+                    Load();
+                    break;
+                case ProjectStatus.Loaded:
+                    Unload();
+                    break;
+            }
+        }
+
         public void Bind(IVsHierarchy pHierarchy) {
             _pHierarchy = pHierarchy;
             NotifyAllPropertiesChanged();
 
         }
 
-        public void Unbind() {
-            _pHierarchy = null;
-            NotifyAllPropertiesChanged();
-        }
-
         public void SetParent(ProjectExplorerViewModel parent) {
             _parent = parent;
-            NotifyAllPropertiesChanged();
         }
     }
 }

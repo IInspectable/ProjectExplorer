@@ -21,5 +21,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnButtonClick(object sender, RoutedEventArgs e) {
             _viewModel.Reload();       
         }
+
+        private void VsListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            var item=((ListBox) sender).SelectedItem as ProjectViewModel;
+            if(item == null) {
+                return;
+            }
+
+            item.DefaultAction();
+        }
     }
 }

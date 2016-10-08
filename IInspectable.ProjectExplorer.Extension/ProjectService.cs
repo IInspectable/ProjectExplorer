@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -72,6 +73,22 @@ namespace IInspectable.ProjectExplorer.Extension {
             return projectFileViewModels;
         }
 
+        public void OpenProject(string path) {
+
+            Guid empty = Guid.Empty;
+            Guid projId=Guid.Empty;
+            IntPtr ppProj;
+            // TODO: Fehlerbehandlung
+            _solution1.CreateProject(
+                rguidProjectType: ref empty, 
+                lpszMoniker     : path, 
+                lpszLocation    : null,
+                lpszName        : null, 
+                grfCreateFlags  : (uint)__VSCREATEPROJFLAGS.CPF_OPENFILE, 
+                iidProject      : ref projId, 
+                ppProject       : out ppProj);
+        }
+
         public void UnloadProject(IVsHierarchy pHierarchy) {
             Guid projectGuid;
             ErrorHandler.ThrowOnFailure(_solution1.GetGuidOfProject(pHierarchy, out projectGuid));
@@ -96,7 +113,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solution2.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, pHierarchy, 0);
         }
 
-        public Guid GetGuidOfProject(IVsHierarchy pHierarchy) {
+        public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
             int res;
             Guid projGuid;
             if (ErrorHandler.Failed(res = _solution1.GetGuidOfProject(pHierarchy, out projGuid))) {
@@ -104,6 +121,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             return projGuid;
+        }
+
+        public IVsHierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
+
+            IVsHierarchy result;
+            _solution1.GetProjectOfGuid(projectGuid, out result);
+            //var projectsByGuids = GetProjectHierarchyById();
+            //
+            //projectsByGuids.TryGetValue(projectGuid, out result);
+            return result;
         }
 
         public string GetUniqueNameOfProject(IVsHierarchy pHierarchy) {
@@ -131,7 +158,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             uint fetched;
             while ((hierEnum.Next((uint)hier.Length, hier, out fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
-                Guid projGuid = GetGuidOfProject(hier[0]);
+                Guid projGuid = GetProjectGuid(hier[0]);
 
                 result[projGuid] = hier[0];
             }

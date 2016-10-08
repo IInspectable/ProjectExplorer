@@ -77,7 +77,8 @@
                       SelectionMode ="Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   ="{Binding Projects}" 
-                      ItemTemplate  ="{StaticResource ProjectItemTemplate}"/>
+                      ItemTemplate  ="{StaticResource ProjectItemTemplate}"
+                      MouseDoubleClick="VsListBox_MouseDoubleClick"/>
         <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>
     </Grid>
 
