@@ -27,7 +27,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             // ReSharper disable once VirtualMemberCallInConstructor
             Content = new ProjectExplorerControl(_viewModel);
             ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
-            ProjectExplorerSettingsCommand.Initialize(this);
+            ProjectExplorerRefreshCommand.Initialize(this, _viewModel);
         }
 
         public override bool SearchEnabled {

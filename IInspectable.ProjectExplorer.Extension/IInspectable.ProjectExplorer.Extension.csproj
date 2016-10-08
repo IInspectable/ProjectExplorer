@@ -59,7 +59,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
     </Compile>
-    <Compile Include="ProjectExplorerSettingsCommand.cs" />
+    <Compile Include="ProjectExplorerRefreshCommand.cs" />
     <Compile Include="ProjectExplorerViewModel.cs" />
     <Compile Include="ProjectFile.cs" />
     <Compile Include="ProjectStatus.cs" />

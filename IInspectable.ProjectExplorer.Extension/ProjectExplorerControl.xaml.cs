@@ -18,8 +18,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             InitializeComponent();
         }
 
-        void OnButtonClick(object sender, RoutedEventArgs e) {
-            _viewModel.Reload();       
+        void OnSettingsClick(object sender, RoutedEventArgs e) {
+            // TODO OnSettingsClick
+            MessageBox.Show("Coming soon");
         }
 
         private void VsListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {

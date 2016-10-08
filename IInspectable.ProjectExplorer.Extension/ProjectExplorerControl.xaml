@@ -74,12 +74,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ui:VsButton Click="OnButtonClick">
+        <ui:VsButton Click="OnSettingsClick">
             <ui:VsButton.Glyph>
                 <imaging:CrispImage HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Margin  ="3"
-                                    Moniker ="{x:Static catalog:KnownMonikers.DocumentsFolder}"   
+                                    Margin  = "2"
+                                    Moniker = "{x:Static catalog:KnownMonikers.DocumentsFolder}"   
                                     Width   = "24" 
                                     Height  = "24"/>
             </ui:VsButton.Glyph>

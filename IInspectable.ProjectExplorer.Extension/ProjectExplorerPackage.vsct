@@ -94,14 +94,6 @@
         </Strings>
       </Button>
 
-      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerSettingsCommandId" priority="0x0110" type="Button">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarRefreshGroup" />
-        <Icon guid="ImageCatalogGuid" id="Settings"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Settings</ButtonText>
-        </Strings>
-      </Button>
       <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerRefreshCommandId" priority="0x0111" type="Button">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarRefreshGroup" />
         <Icon guid="ImageCatalogGuid" id="Refresh"/>
@@ -128,7 +120,6 @@
       <IDSymbol name="ProjectExplorerToolbar" value="0x1010" />
       
       <IDSymbol name="ProjectExplorerWindowCommandId"         value="0x0100" />      
-      <IDSymbol name="ProjectExplorerSettingsCommandId"       value="0x0101" />
       <IDSymbol name="ProjectExplorerRefreshCommandId"        value="0x0102" />      
       <IDSymbol name="ProjectExplorerAddProjectCommandId"     value="0x0103" />
       <IDSymbol name="ProjectExplorerRemoveProjectCommandId"  value="0x0104" />
