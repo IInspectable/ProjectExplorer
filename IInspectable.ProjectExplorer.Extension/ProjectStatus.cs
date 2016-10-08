@@ -1,7 +1,7 @@
 ﻿namespace IInspectable.ProjectExplorer.Extension {
 
     public enum ProjectStatus {
-        Unavailable,
+        Closed,
         Unloaded,
         Loaded,
     }

@@ -4,8 +4,6 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -13,21 +11,26 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectService: IVsSolutionEvents, IDisposable {
+    public class ProjectService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
         readonly IVsSolution  _solution1;
         readonly IVsSolution2 _solution2;
         readonly IVsSolution4 _solution4;
 
+        readonly OptionService _optionService;
+
         uint _solutionEvents1Cookie;
+        uint _solutionEvents4Cookie;
 
         public ProjectService() {
 
             _solution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
             _solution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
             _solution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
+            _optionService = ProjectExplorerPackage.GetGlobalService<OptionService, OptionService>();
 
             _solution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
+            _solution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
         }
 
         public void Dispose() {
@@ -35,12 +38,20 @@ namespace IInspectable.ProjectExplorer.Extension {
                 _solution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
                 _solutionEvents1Cookie = 0;
             }
+
+            if (_solutionEvents4Cookie != 0) {
+                _solution1.UnadviseSolutionEvents(_solutionEvents4Cookie);
+                _solutionEvents4Cookie = 0;
+            }
+        }
+
+        public string ProjectsRoot {
+            get { return _optionService.ProjectsRoot; }
         }
 
         public List<ProjectFile> LoadProjectFiles() {
 
-            // TODO Verzeichnis aus Solution / File auslesen
-            var path = @"C:\ws\Roslyn";
+            var path = ProjectsRoot;
 
             var projectFiles = new List<ProjectFile>();
 
@@ -116,8 +127,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
             int res;
             Guid projGuid;
+
             if (ErrorHandler.Failed(res = _solution1.GetGuidOfProject(pHierarchy, out projGuid))) {
-                Debug.Fail($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
             }
 
             return projGuid;
@@ -125,11 +137,12 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public IVsHierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
 
+            int res;
             IVsHierarchy result;
-            _solution1.GetProjectOfGuid(projectGuid, out result);
-            //var projectsByGuids = GetProjectHierarchyById();
-            //
-            //projectsByGuids.TryGetValue(projectGuid, out result);
+            if(ErrorHandler.Failed(res = _solution1.GetProjectOfGuid(projectGuid, out result))) {
+                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+            }
+
             return result;
         }
 
@@ -137,7 +150,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             int res;
             string uniqueName;
             if (ErrorHandler.Failed(res = _solution1.GetUniqueNameOfProject(pHierarchy, out uniqueName))) {
-                Debug.Fail($"IVsolution::GetUniqueNameOfProject retuend 0x{res:X}.");
+                Debug.WriteLine($"IVsolution::GetUniqueNameOfProject retuend 0x{res:X}.");
             }
 
             return uniqueName;
@@ -201,9 +214,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             BeforeUnloadProject?.Invoke(this, new ProjectEventArgs(pRealHierarchy, pStubHierarchy));
             return VSConstants.S_OK;
         }
-
         
         int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution) {
+
+           
             return VSConstants.S_OK;
         }
 
@@ -221,27 +235,25 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-       
+        #region IVsSolutionEvents4
 
+        int IVsSolutionEvents4.OnAfterRenameProject(IVsHierarchy pHierarchy) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsSolutionEvents4.OnQueryChangeProjectParent(IVsHierarchy pHierarchy, IVsHierarchy pNewParentHier, ref int pfCancel) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsSolutionEvents4.OnAfterChangeProjectParent(IVsHierarchy pHierarchy) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsSolutionEvents4.OnAfterAsynchOpenProject(IVsHierarchy pHierarchy, int fAdded) {
+            return VSConstants.S_OK;
+        }
+
+        #endregion
     }
 
-    public class ProjectEventArgs : EventArgs {
-
-        readonly IVsHierarchy _realHierarchie;
-        readonly IVsHierarchy _stubHierarchie;
-
-        public ProjectEventArgs(IVsHierarchy realHierarchie, IVsHierarchy stubHierarchie=null) {
-            _realHierarchie = realHierarchie;
-            _stubHierarchie = stubHierarchie;
-        }
-
-        public IVsHierarchy RealHierarchie {
-            get { return _realHierarchie; }
-        }
-
-        [CanBeNull]
-        public IVsHierarchy StubHierarchie {
-            get { return _stubHierarchie; }
-        }
-    }
 }

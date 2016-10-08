@@ -9,6 +9,10 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
 
     public class VsListBox : ListBox {
 
+        static VsListBox() {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(VsListBox), new FrameworkPropertyMetadata(typeof(VsListBox)));
+        }
+
         protected override DependencyObject GetContainerForItemOverride() {
             return new VsListBoxItem();
         }

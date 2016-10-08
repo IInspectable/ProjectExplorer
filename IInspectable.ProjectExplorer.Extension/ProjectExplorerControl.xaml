@@ -21,14 +21,14 @@
 
         <Style x:Key="StatusImage" TargetType="imaging:CrispImage">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Status}" Value="Unavailable">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxUnchecked}"/>
+                <DataTrigger Binding="{Binding Status}" Value="Closed">
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.NewDocumentCollection}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="Unloaded">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxDisabled}"/>
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.DocumentCollection}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="Loaded">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CheckBoxChecked}"/>
+                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -41,25 +41,25 @@
                         <TextBlock Text="{Binding Directory}"/>
                     </StackPanel>
                 </Border.ToolTip>
-                <Grid Margin="0,2">
+                <Grid Margin="0,0">
       
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20" />
-                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="25" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
+
+                    <imaging:CrispImage Grid.Column = "0" 
+                                        Grid.Row    = "0"
+                                        HorizontalAlignment="Right"
+                                        Style       = "{StaticResource StatusImage}"                                       
+                                        Width       = "16" 
+                                        Height      = "16"/>
                     
-                    <imaging:CrispImage Grid.Column="0" Grid.Row="0"
-                                        Style="{StaticResource StatusImage}"                                       
-                                        Width="16" 
-                                        Height="16"/>
-
-                    <imaging:CrispImage Grid.Column="1" Grid.Row="0"
-                                        Width="16" 
-                                        Height="16" 
-                                        Moniker ="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
-
-                    <TextBlock Grid.Column="2" Grid.Row="0" Margin="3,1" VerticalAlignment="Center" Text="{Binding Name}"/>
+                    <TextBlock Grid.Column       = "1" 
+                               Grid.Row          = "0" 
+                               Margin            = "5,1" 
+                               VerticalAlignment = "Center" 
+                               Text              = "{Binding Name}"/>
 
                 </Grid>
             </Border>
@@ -69,17 +69,40 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Content="Click me!" Click="OnButtonClick"/>
-        <ui:VsListBox Grid.Row      ="1" 
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <imaging:CrispImage Grid.Column = "0" 
+                                        Grid.RowSpan    = "2"
+                                        HorizontalAlignment="Center"
+                                        Moniker="{x:Static catalog:KnownMonikers.DocumentsFolder}"                                       
+                                        Width       = "32" 
+                                        Height      = "32"/>
+
+            <TextBlock Grid.Row="0" Grid.Column = "1" Padding="3" VerticalAlignment="Center"
+                       Text="{Binding ProjectsRoot}" TextWrapping="Wrap"/>
+        </Grid>
+       
+        <Rectangle Grid.Row ="1"  
+                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
+
+        <ui:VsListBox Grid.Row      ="2" 
                       SelectionMode ="Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   ="{Binding Projects}" 
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"
                       MouseDoubleClick="VsListBox_MouseDoubleClick"/>
-        <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>
+        
+        <Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>
+        <!--<TextBlock Grid.Row="2" Text="{Binding Projects.Count, StringFormat={}{0} Projects}"/>-->
     </Grid>
 
 </UserControl>

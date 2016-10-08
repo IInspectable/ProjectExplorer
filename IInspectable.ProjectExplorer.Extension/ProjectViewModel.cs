@@ -39,7 +39,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             get {
 
                 if(_pHierarchy == null || _parent==null) {
-                    return ProjectStatus.Unavailable;
+                    return ProjectStatus.Closed;
                 }
 
                 return _parent.ProjectService.IsProjectUnloaded(_pHierarchy) ? 
@@ -79,7 +79,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         // TODO Confirmation/Fehlerbehandlung
         public void DefaultAction() {
             switch (Status) {
-                case ProjectStatus.Unavailable:
+                case ProjectStatus.Closed:
                     Open();
                     break;
                 case ProjectStatus.Unloaded:

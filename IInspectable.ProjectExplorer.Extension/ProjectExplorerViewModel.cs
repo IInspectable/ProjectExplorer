@@ -100,9 +100,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ObservableCollection<ProjectViewModel> Projects {
             get { return _projects; }
             private set {
-                _projects = value;
-                NotifyPropertyChanged();
+                _projects = value;               
+                NotifyAllPropertiesChanged();
             }
+        }
+
+        public string ProjectsRoot {
+            get { return _projectService.ProjectsRoot; }
         }
     }
 
