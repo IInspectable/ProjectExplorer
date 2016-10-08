@@ -75,6 +75,7 @@
         <Button Content="Click me!" Click="OnButtonClick"/>
         <ui:VsListBox Grid.Row      ="1" 
                       SelectionMode ="Extended"
+                      VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   ="{Binding Projects}" 
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"/>
         <TextBlock Grid.Row="2" Text="{Binding Count, StringFormat={}{0} Projects}"/>

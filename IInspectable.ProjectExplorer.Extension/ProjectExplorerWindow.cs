@@ -12,13 +12,13 @@ namespace IInspectable.ProjectExplorer.Extension {
     [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
     public class ProjectExplorerWindow : ToolWindowPane {
 
-        readonly ProjectExplorerController _controller;
+        readonly ProjectService _service;
         readonly ProjectExplorerViewModel _viewModel;
 
         public ProjectExplorerWindow() : base(null) {
 
-            _controller = new ProjectExplorerController();
-            _viewModel = new ProjectExplorerViewModel(_controller);
+            _service = new ProjectService();
+            _viewModel = new ProjectExplorerViewModel(_service);
             Caption = "Project Explorer";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
