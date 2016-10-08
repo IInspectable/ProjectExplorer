@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns         = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x       = "http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:imaging = "clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
                     xmlns:utils   = "clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
                     xmlns:vsui    = "clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
                     xmlns:local   = "clr-namespace:IInspectable.ProjectExplorer.Extension.UI">
@@ -16,8 +15,8 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <SolidColorBrush x:Key="Item.MouseOver.Background" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarHoverColorKey}}"/>
-    <SolidColorBrush x:Key="Item.MouseOver.Border"     Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarHoverColorKey}}"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Background" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Border"     Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
     <SolidColorBrush x:Key="Item.MouseOver.Foreground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextHoverColorKey}}"/>
 
     <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemInactiveColorKey}}"/>
@@ -30,12 +29,12 @@
     
     <Style TargetType="{x:Type local:VsListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
         <Setter Property="VerticalContentAlignment"   Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
         <Setter Property="Background"  Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Template">
             <Setter.Value>

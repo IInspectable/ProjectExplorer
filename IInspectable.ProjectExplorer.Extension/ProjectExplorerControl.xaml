@@ -74,23 +74,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <imaging:CrispImage Grid.Column = "0" 
-                                        Grid.RowSpan    = "2"
-                                        HorizontalAlignment="Center"
-                                        Moniker="{x:Static catalog:KnownMonikers.DocumentsFolder}"                                       
-                                        Width       = "32" 
-                                        Height      = "32"/>
-
-            <TextBlock Grid.Row="0" Grid.Column = "1" Padding="3" VerticalAlignment="Center"
+        <ui:VsButton Click="OnButtonClick">
+            <ui:VsButton.Glyph>
+                <imaging:CrispImage HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Margin  ="3"
+                                    Moniker ="{x:Static catalog:KnownMonikers.DocumentsFolder}"   
+                                    Width   = "24" 
+                                    Height  = "24"/>
+            </ui:VsButton.Glyph>
+            <TextBlock Padding="3" 
+                       VerticalAlignment="Center"
                        Text="{Binding ProjectsRoot}" TextWrapping="Wrap"/>
-        </Grid>
-       
+        </ui:VsButton>
+        
         <Rectangle Grid.Row ="1"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
@@ -101,7 +98,7 @@
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"
                       MouseDoubleClick="VsListBox_MouseDoubleClick"/>
         
-        <Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>
+        <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->
         <!--<TextBlock Grid.Row="2" Text="{Binding Projects.Count, StringFormat={}{0} Projects}"/>-->
     </Grid>
 

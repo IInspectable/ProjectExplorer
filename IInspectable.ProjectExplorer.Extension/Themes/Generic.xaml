@@ -4,5 +4,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSListBoxItem.xaml"/>
         <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSListBox.xaml"/>
+        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
