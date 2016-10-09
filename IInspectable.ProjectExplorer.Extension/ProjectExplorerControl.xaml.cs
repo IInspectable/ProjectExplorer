@@ -24,14 +24,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             MessageBox.Show("Coming soon");
         }
 
-        void OnProjectListMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+        void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
 
             // TODO Selection Handling in ViewModel verlagern
             var item=((ListBox) sender).SelectedItem as ProjectViewModel;
 
             item?.DefaultAction();
-
-            //item?.OpenFolderInFileExplorer();           
         }
 
         void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {

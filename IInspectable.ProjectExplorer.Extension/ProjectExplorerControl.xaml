@@ -92,13 +92,14 @@
         <Rectangle Grid.Row ="1"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
-        <ui:VsListBox Grid.Row      ="2" 
-                      SelectionMode ="Extended"
+        <ui:VsListBox Grid.Row      = "2" 
+                      SelectionMode = "Single"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
-                      ItemsSource   ="{Binding Projects}" 
-                      ItemTemplate  ="{StaticResource ProjectItemTemplate}"
-                      ContextMenuOpening="OnProjectItemContextMenuOpening"
-                      MouseDoubleClick="OnProjectListMouseDoubleClick"/>
+                      ItemsSource   = "{Binding Projects}" 
+                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"
+                      SelectedItem  = "{Binding SelectedProject}"
+                      ContextMenuOpening = "OnProjectItemContextMenuOpening"
+                      MouseDoubleClick   = "OnProjectListMouseDoubleClick"/>
         
         <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->
         <!--<TextBlock Grid.Row="2" Text="{Binding Projects.Count, StringFormat={}{0} Projects}"/>-->

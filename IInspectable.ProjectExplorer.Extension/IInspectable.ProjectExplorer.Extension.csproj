@@ -52,6 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\OpenInFileExplorerCommand.cs" />
     <Compile Include="Hierarchy.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="ProjectEventArgs.cs" />

@@ -64,6 +64,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public abstract void Execute(object parameter);
+        public virtual void UpdateState() { }
 
         void OnCommandChanged(object sender, EventArgs e) {
             CanExecuteChanged?.Invoke(this, e);

@@ -29,25 +29,50 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService    = solutionService;
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
-
-            _projects       = new ObservableCollection<ProjectViewModel>();
+            _projects           = new ObservableCollection<ProjectViewModel>();
 
             _solutionService.AfterLoadProject    += OnAfterLoadProject;
             _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
-            // TODO Command Modell
             _commands = new List<Command> {
-                { RefreshCommand = new RefreshCommand(this)}
+                { RefreshCommand = new RefreshCommand(this)},
+                { OpenInFileExplorerCommand = new OpenInFileExplorerCommand(this)}
             };
 
+            RegisterCommands();
+
+            PropertyChanged += (o, e) => UpdateCommandStates();
+        }
+
+        void RegisterCommands() {
             foreach(var command in _commands) {
                 command.Register(_menuCommandService);
             }
         }
 
+        void UpdateCommandStates() {
+            foreach (var command in _commands) {
+                command.UpdateState();
+            }
+        }
+
+        ProjectViewModel _selectedProject;
+
+        public ProjectViewModel SelectedProject {
+            get { return _selectedProject; }
+            set {
+                if(_selectedProject == value) {
+                    return;
+                }
+                _selectedProject = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public RefreshCommand RefreshCommand { get; }
+        public OpenInFileExplorerCommand OpenInFileExplorerCommand { get; }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
@@ -113,7 +138,9 @@ namespace IInspectable.ProjectExplorer.Extension {
                                         .ThenBy(pvm => pvm.Name);
             
             var oldProjects = Projects;
+
             Projects = new ObservableCollection<ProjectViewModel>(orderedProjects);
+            SelectedProject = null;
 
             foreach (var projectVm in oldProjects) {
                 projectVm.Dispose();
@@ -138,6 +165,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         
+
 
         public void ShowSettingsButtonContextMenu(int x, int y) {
             
