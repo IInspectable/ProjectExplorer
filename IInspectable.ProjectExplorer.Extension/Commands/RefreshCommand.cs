@@ -1,48 +1,28 @@
 ﻿#region Using Directives
 
 using System;
-using System.ComponentModel.Design;
-
-using Microsoft.VisualStudio.Shell;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class RefreshCommand {
+    sealed class RefreshCommand: Command {
 
-        public const int CommandId = PackageIds.RefreshCommandId;
-        public static readonly Guid CommandSet = PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
         readonly ProjectExplorerViewModel _viewModel;
-        readonly MenuCommand _command;
 
-        RefreshCommand(IServiceProvider serviceProvider, ProjectExplorerViewModel viewModel) {
+        public RefreshCommand(ProjectExplorerViewModel viewModel)
+            : base(PackageIds.RefreshCommandId) {
 
-            if (serviceProvider == null) {
-                throw new ArgumentNullException(nameof(serviceProvider));
-            }
             if (viewModel == null) {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
             _viewModel = viewModel;
 
-            OleMenuCommandService commandService = serviceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null) {
-                var menuCommandId = new CommandID(CommandSet, CommandId);
-                _command = new MenuCommand(Execute, menuCommandId);
-                commandService.AddCommand(_command);
-            }
         }
 
-        public static RefreshCommand Instance { get; private set; }
-
-        public static void Initialize(IServiceProvider serviceProvider, ProjectExplorerViewModel viewModel) {
-            Instance = new RefreshCommand(serviceProvider, viewModel);
-        }
-
-        void Execute(object sender, EventArgs e) {
+        public override void Execute(object parameter) {
             _viewModel.Reload();
         }
     }

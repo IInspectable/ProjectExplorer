@@ -21,7 +21,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var menuCommandService= (OleMenuCommandService)GetService(typeof(IMenuCommandService));
 
-            _viewModel = new ProjectExplorerViewModel(this, solutionService, optionService, menuCommandService);
+            _viewModel = new ProjectExplorerViewModel(solutionService, optionService, menuCommandService);
             
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on

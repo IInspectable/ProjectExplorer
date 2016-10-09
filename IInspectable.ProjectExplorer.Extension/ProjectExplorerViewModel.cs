@@ -1,12 +1,12 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
-using System.Windows.Input;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 
@@ -22,7 +22,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         ObservableCollection<ProjectViewModel> _projects;
 
-        internal ProjectExplorerViewModel(IServiceProvider serviceProvider, SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
+        readonly List<Command> _commands;
+
+        internal ProjectExplorerViewModel(SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
 
             _solutionService    = solutionService;
             _optionService      = optionService;
@@ -36,8 +38,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
             // TODO Command Modell
-            RefreshCommand.Initialize(serviceProvider, this);
+            _commands = new List<Command> {
+                { RefreshCommand = new RefreshCommand(this)}
+            };
+
+            foreach(var command in _commands) {
+                command.Register(_menuCommandService);
+            }
         }
+
+        public RefreshCommand RefreshCommand { get; }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
@@ -127,12 +137,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _optionService.ProjectsRoot; }
         }
 
+        
+
         public void ShowSettingsButtonContextMenu(int x, int y) {
             
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, 
                                           PackageIds.SettingsButtonContextMenu);
-
-            var p = Mouse.GetPosition(null);
 
             _menuCommandService.ShowContextMenu(commandId, x, y);
         }
@@ -141,8 +151,6 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid,
                                           PackageIds.ProjectItemContextMenu);
-
-            var p = Mouse.GetPosition(null);
 
             _menuCommandService.ShowContextMenu(commandId, x, y);
         }
