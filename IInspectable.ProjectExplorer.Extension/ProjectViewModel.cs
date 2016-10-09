@@ -1,7 +1,7 @@
 #region Using Directives
 
 using System;
-using System.IO;
+using System.Diagnostics;
 using JetBrains.Annotations;
 
 #endregion
@@ -33,7 +33,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public string Directory {
-            get { return Path.GetDirectoryName(_projectFile.Path); }
+            get { return System.IO.Path.GetDirectoryName(_projectFile.Path); }
+        }
+
+        public string Path {
+            get { return _projectFile.Path; }
         }
 
         public Guid ProjectGuid {
@@ -84,6 +88,18 @@ namespace IInspectable.ProjectExplorer.Extension {
                     Unload();
                     break;
             }
+        }
+
+        public void OpenFolderInFileExplorer() {
+
+            // TODO Error Handling
+            string args = $"/e, /select, \"{Path}\"";
+
+            ProcessStartInfo info = new ProcessStartInfo {
+                FileName = "explorer",
+                Arguments = args
+            };
+            Process.Start(info);
         }
 
         public void Bind([CanBeNull] Hierarchy hierarchy) {

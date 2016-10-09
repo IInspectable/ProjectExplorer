@@ -24,6 +24,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             var item=((ListBox) sender).SelectedItem as ProjectViewModel;
 
             item?.DefaultAction();
+
+            //item?.OpenFolderInFileExplorer();           
         }
     }
 }
