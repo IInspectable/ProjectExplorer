@@ -14,21 +14,24 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerViewModel: ViewModelBase {
 
-        readonly ProjectService _projectService;
+        readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
 
         ObservableCollection<ProjectViewModel> _projects;
 
-        internal ProjectExplorerViewModel(ProjectService projectService, OptionService optionService) {
+        internal ProjectExplorerViewModel(IServiceProvider serviceProvider, SolutionService solutionService, OptionService optionService) {
 
-            _projectService = projectService;
+            _solutionService = solutionService;
             _optionService   = optionService;
             _projects       = new ObservableCollection<ProjectViewModel>();
 
-            _projectService.AfterLoadProject    += OnAfterLoadProject;
-            _projectService.BeforeUnloadProject += OnBeforeUnloadProject;
-            _projectService.AfterOpenProject    += OnAfterOpenProject;
-            _projectService.BeforeRemoveProject += OnBeforeRemoveProject;
+            _solutionService.AfterLoadProject    += OnAfterLoadProject;
+            _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
+            _solutionService.AfterOpenProject    += OnAfterOpenProject;
+            _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
+
+            // TODO Command Modell
+            ProjectExplorerRefreshCommand.Initialize(serviceProvider, this);
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
@@ -41,7 +44,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Application.Current.Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
                 new Action(() => {
-                    var hier=_projectService.GetHierarchyByProjectGuid(guid);
+                    var hier=_solutionService.GetHierarchyByProjectGuid(guid);
                     var projectVm = FindProjectViewModel(guid);
                     projectVm?.Bind(hier);
 
@@ -83,9 +86,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void Reload() {
 
-            var projectFiles = _projectService.LoadProjectFiles(ProjectsRoot);
+            var projectFiles = _solutionService.LoadProjectFiles(ProjectsRoot);
 
-            var projects = _projectService.BindToHierarchy(projectFiles);
+            var projects = _solutionService.BindToHierarchy(projectFiles);
 
             foreach(var projectVm in projects) {
                 projectVm.SetParent(this);
@@ -103,8 +106,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [NotNull]
-        internal ProjectService ProjectService {
-            get { return _projectService; }
+        internal SolutionService SolutionService {
+            get { return _solutionService; }
         }
 
         public ObservableCollection<ProjectViewModel> Projects {

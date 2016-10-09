@@ -57,7 +57,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         // TODO Confirmation/Fehlerbehandlung
         public void Open() {
-            _parent?.ProjectService.OpenProject(_projectFile.Path);
+            _parent?.SolutionService.OpenProject(_projectFile.Path);
         }
 
         // TODO Confirmation/Fehlerbehandlung

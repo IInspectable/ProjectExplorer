@@ -10,6 +10,7 @@ namespace IInspectable.ProjectExplorer.Extension {
     partial class ProjectExplorerControl : UserControl {
 
         public ProjectExplorerControl(ProjectExplorerViewModel viewModel) {
+
             DataContext = viewModel;
 
             InitializeComponent();

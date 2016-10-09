@@ -34,6 +34,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void Initialize() {
+
+            var solution = new SolutionService();
+            ((IServiceContainer)this).AddService(solution.GetType(), solution, promote: true);
+
             ProjectExplorerWindowCommand.Initialize(this);            
             base.Initialize();
         }

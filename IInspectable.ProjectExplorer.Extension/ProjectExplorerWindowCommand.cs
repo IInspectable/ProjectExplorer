@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using Directives
+
+using System;
 using System.ComponentModel.Design;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -79,7 +83,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
             ToolWindowPane window = _package.FindToolWindow(typeof(ProjectExplorerWindow), 0, true);
-            if ((null == window) || (null == window.Frame)) {
+            if (window?.Frame == null) {
                 throw new NotSupportedException("Cannot create tool window");
             }
 

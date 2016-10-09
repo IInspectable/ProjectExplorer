@@ -11,47 +11,47 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
+    class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
-        readonly IVsSolution  _solution1;
-        readonly IVsSolution2 _solution2;
-        readonly IVsSolution4 _solution4;
+        readonly IVsSolution  _vsSolution1;
+        readonly IVsSolution2 _vsSolution2;
+        readonly IVsSolution4 _vsSolution4;
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
 
-        public ProjectService() {
+        public SolutionService() {
 
-            _solution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
-            _solution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
-            _solution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
+            _vsSolution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
+            _vsSolution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
+            _vsSolution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
             
-            _solution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
-            _solution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
+            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
+            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
         }
 
         public void Dispose() {
             if(_solutionEvents1Cookie != 0) {
-                _solution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
+                _vsSolution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
                 _solutionEvents1Cookie = 0;
             }
 
             if (_solutionEvents4Cookie != 0) {
-                _solution1.UnadviseSolutionEvents(_solutionEvents4Cookie);
+                _vsSolution1.UnadviseSolutionEvents(_solutionEvents4Cookie);
                 _solutionEvents4Cookie = 0;
             }
         }
 
-        public IVsSolution Solution1 {
-            get { return _solution1; }
+        public IVsSolution VsSolution1 {
+            get { return _vsSolution1; }
         }
 
-        public IVsSolution2 Solution2 {
-            get { return _solution2; }
+        public IVsSolution2 VsSolution2 {
+            get { return _vsSolution2; }
         }
 
-        public IVsSolution4 Solution4 {
-            get { return _solution4; }
+        public IVsSolution4 VsSolution4 {
+            get { return _vsSolution4; }
         }
 
         public List<ProjectFile> LoadProjectFiles(string path) {
@@ -93,7 +93,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Guid projId=Guid.Empty;
             IntPtr ppProj;
             // TODO: Fehlerbehandlung
-            _solution1.CreateProject(
+            _vsSolution1.CreateProject(
                 rguidProjectType: ref empty, 
                 lpszMoniker     : path, 
                 lpszLocation    : null,
@@ -107,7 +107,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             int res;
             Guid projGuid;
 
-            if (ErrorHandler.Failed(res = _solution1.GetGuidOfProject(pHierarchy, out projGuid))) {
+            if (ErrorHandler.Failed(res = _vsSolution1.GetGuidOfProject(pHierarchy, out projGuid))) {
                 Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
             }
 
@@ -118,7 +118,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             int res;
             IVsHierarchy result;
-            if(ErrorHandler.Failed(res = _solution1.GetProjectOfGuid(projectGuid, out result))) {
+            if(ErrorHandler.Failed(res = _vsSolution1.GetProjectOfGuid(projectGuid, out result))) {
                 Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
                 return null;
             }
@@ -133,7 +133,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Guid ignored = Guid.Empty;
             IEnumHierarchies hierEnum;
             var flags = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
-            if (ErrorHandler.Failed(_solution1.GetProjectEnum((uint)flags, ref ignored, out hierEnum))) {
+            if (ErrorHandler.Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out hierEnum))) {
                 return result;
             }
 
@@ -237,5 +237,4 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
     }
-
 }

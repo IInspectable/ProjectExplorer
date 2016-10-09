@@ -54,7 +54,7 @@
     <Compile Include="Hierarchy.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="ProjectEventArgs.cs" />
-    <Compile Include="ProjectService.cs" />
+    <Compile Include="SolutionService.cs" />
     <Compile Include="ProjectExplorerPackage1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
