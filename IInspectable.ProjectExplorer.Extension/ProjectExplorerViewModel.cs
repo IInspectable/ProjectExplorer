@@ -137,5 +137,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             _menuCommandService.ShowContextMenu(commandId, x, y);
         }
 
+        public void ShowProjectItemContextMenu(int x, int y) {
+
+            var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid,
+                                          PackageIds.ProjectItemContextMenu);
+
+            var p = Mouse.GetPosition(null);
+
+            _menuCommandService.ShowContextMenu(commandId, x, y);
+        }
+
     }
 }

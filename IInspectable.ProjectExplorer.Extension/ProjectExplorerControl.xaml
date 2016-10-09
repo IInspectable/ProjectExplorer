@@ -97,6 +97,7 @@
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   ="{Binding Projects}" 
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"
+                      ContextMenuOpening="OnProjectItemContextMenuOpening"
                       MouseDoubleClick="OnProjectListMouseDoubleClick"/>
         
         <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->

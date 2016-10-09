@@ -49,6 +49,13 @@
         </Strings>
       </Menu>
 
+      <Menu guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemContextMenu" type="Context">
+        <Strings>
+          <ButtonText>Project Actions</ButtonText>
+          <CommandName>ProjectItemContextMenu</CommandName>
+        </Strings>
+      </Menu>
+      
     </Menus>
 
     <Groups>
@@ -65,9 +72,17 @@
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbar" />
       </Group>
 
-      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenuGroup" priority="0">
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonCtxMnuGroup" priority="0">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenu" />
       </Group>
+
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemCtxMnuUnloadGroup" priority="2">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemContextMenu" />
+      </Group>
+      
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemCtxMnuDefaultGroup" priority="3">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemContextMenu" />
+      </Group>      
 
     </Groups>
     
@@ -122,18 +137,52 @@
     
     <!--Settings context menu-->
      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsCommandId" priority="1" type="Button">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenuGroup" />
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonCtxMnuGroup" />
         <Icon guid="ImageCatalogGuid" id="Open" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Open</ButtonText>
         </Strings>
     </Button>
+
+      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="UnloadProjectCommandId" priority="0" type="Button">
+        <!--<Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemCtxMnuDefaultGroup" />-->
+        <Strings>
+          <ButtonText>Unload Project</ButtonText>
+        </Strings>
+      </Button>
+      
+      <!--OpenFolderInFileExplorer-->
+      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="OpenInFileExplorerCommandId" priority="30" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemCtxMnuDefaultGroup" />
+        <Icon guid="ImageCatalogGuid" id="Open" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Open Folder in File Explorer</ButtonText>
+        </Strings>
+      </Button>
+
+      
+
+
+    </Buttons>
+
+
     
-  </Buttons>
 
   </Commands>
+  
+  <CommandPlacements>
+    <CommandPlacement guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarActionGroup" priority="0">
+      <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemContextMenu"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="ProjectExplorerWindowPackageCmdSetGuid" id="UnloadProjectCommandId" priority="0">
+      <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectItemCtxMnuUnloadGroup"/>
+    </CommandPlacement>
+  </CommandPlacements>
 
+  
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="ProjectExplorerWindowPackageGuid" value="{f2f16ece-71b7-4b31-a2f1-c91aca261509}" >
@@ -144,8 +193,9 @@
     <GuidSymbol name="ProjectExplorerWindowPackageCmdSetGuid" value="{4c113c46-d7a3-45e2-926f-6504d7d796d1}">
       
       <!-- Toolbars and menus -->
-      <IDSymbol name="ProjectExplorerToolbar"     value="0x1010" />
-      <IDSymbol name="SettingsButtonContextMenu"  value="0x1011"/>
+      <IDSymbol name="ProjectExplorerToolbar"    value="0x1010" />
+      <IDSymbol name="SettingsButtonContextMenu" value="0x1011"/>
+      <IDSymbol name="ProjectItemContextMenu"    value="0x1012"/>
       
       <!-- CommandIds -->
       <IDSymbol name="ShowProjectExplorerCommandId" value="0x0101" />      
@@ -155,13 +205,17 @@
       <IDSymbol name="LoadProjectCommandId"         value="0x0105" />
       <IDSymbol name="UnloadProjectCommandId"       value="0x0106" />
       <IDSymbol name="SettingsCommandId"            value="0x0107"/>
+      <IDSymbol name="OpenInFileExplorerCommandId"  value="0x0108"/>
       
       <!--Groups-->
       <IDSymbol name="ToolbarGroup"        value="0x1050" />
       <IDSymbol name="ToolbarActionGroup"  value="0x1051" />
       <IDSymbol name="ToolbarRefreshGroup" value="0x1052" />
       
-      <IDSymbol name="SettingsButtonContextMenuGroup" value="0x1053"/>
+      <IDSymbol name="SettingsButtonCtxMnuGroup" value="0x1053"/>
+      
+      <IDSymbol name="ProjectItemCtxMnuDefaultGroup" value="0x1054"/>
+      <IDSymbol name="ProjectItemCtxMnuUnloadGroup"  value="0x1055"/>
 
       
     </GuidSymbol>
