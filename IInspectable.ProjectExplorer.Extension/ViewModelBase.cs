@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ViewModelBase: INotifyPropertyChanged {
+    abstract class ViewModelBase: INotifyPropertyChanged {
 
         public event PropertyChangedEventHandler PropertyChanged;
 

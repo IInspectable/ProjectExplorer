@@ -11,13 +11,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
+    class ProjectService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
         readonly IVsSolution  _solution1;
         readonly IVsSolution2 _solution2;
         readonly IVsSolution4 _solution4;
-
-        readonly OptionService _optionService;
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
@@ -27,8 +25,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
             _solution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
             _solution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
-            _optionService = ProjectExplorerPackage.GetGlobalService<OptionService, OptionService>();
-
+            
             _solution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
             _solution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
         }
@@ -45,13 +42,19 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public string ProjectsRoot {
-            get { return _optionService.ProjectsRoot; }
+        public IVsSolution Solution1 {
+            get { return _solution1; }
         }
 
-        public List<ProjectFile> LoadProjectFiles() {
+        public IVsSolution2 Solution2 {
+            get { return _solution2; }
+        }
 
-            var path = ProjectsRoot;
+        public IVsSolution4 Solution4 {
+            get { return _solution4; }
+        }
+
+        public List<ProjectFile> LoadProjectFiles(string path) {
 
             var projectFiles = new List<ProjectFile>();
 
@@ -73,7 +76,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 var vm = new ProjectViewModel(projectFile);
 
-                IVsHierarchy pHierarchy;
+                Hierarchy pHierarchy;
                 if(projectHierarchyById.TryGetValue(projectFile.ProjectGuid, out pHierarchy)) {
                     vm.Bind(pHierarchy);
                 }
@@ -99,31 +102,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 iidProject      : ref projId, 
                 ppProject       : out ppProj);
         }
-
-        public void UnloadProject(IVsHierarchy pHierarchy) {
-            Guid projectGuid;
-            ErrorHandler.ThrowOnFailure(_solution1.GetGuidOfProject(pHierarchy, out projectGuid));
-            ErrorHandler.ThrowOnFailure(_solution4.UnloadProject(ref projectGuid, (uint)_VSProjectUnloadStatus.UNLOADSTATUS_UnloadedByUser));
-        }
-
-        public void LoadProject(IVsHierarchy pHierarchy) {
-            Guid projectGuid;
-            ErrorHandler.ThrowOnFailure(_solution1.GetGuidOfProject(pHierarchy, out projectGuid));
-            ErrorHandler.ThrowOnFailure(_solution4.ReloadProject(ref projectGuid));
-        }
-
-        public bool IsProjectUnloaded(IVsHierarchy pHierarchy) {
-            //_VSProjectUnloadStatus status;
-            object status;
-            var hr=pHierarchy.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID5.VSHPROPID_ProjectUnloadStatus, out status);
-
-            return ErrorHandler.Succeeded(hr);
-        }
-
-        public void CloseProject(IVsHierarchy pHierarchy) {
-            _solution2.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, pHierarchy, 0);
-        }
-
+        
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
             int res;
             Guid projGuid;
@@ -135,30 +114,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             return projGuid;
         }
 
-        public IVsHierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
+        public Hierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
 
             int res;
             IVsHierarchy result;
             if(ErrorHandler.Failed(res = _solution1.GetProjectOfGuid(projectGuid, out result))) {
                 Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+                return null;
             }
 
-            return result;
+            return new Hierarchy(this, result);
         }
 
-        public string GetUniqueNameOfProject(IVsHierarchy pHierarchy) {
-            int res;
-            string uniqueName;
-            if (ErrorHandler.Failed(res = _solution1.GetUniqueNameOfProject(pHierarchy, out uniqueName))) {
-                Debug.WriteLine($"IVsolution::GetUniqueNameOfProject retuend 0x{res:X}.");
-            }
+        Dictionary<Guid, Hierarchy> GetProjectHierarchyById() {
 
-            return uniqueName;
-        }
-
-        Dictionary<Guid, IVsHierarchy> GetProjectHierarchyById() {
-
-            var result = new Dictionary<Guid, IVsHierarchy>();
+            var result = new Dictionary<Guid, Hierarchy>();
 
             Guid ignored = Guid.Empty;
             IEnumHierarchies hierEnum;
@@ -171,9 +141,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             uint fetched;
             while ((hierEnum.Next((uint)hier.Length, hier, out fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
-                Guid projGuid = GetProjectGuid(hier[0]);
+                var hierarchy = new Hierarchy(this, hier[0]);
 
-                result[projGuid] = hier[0];
+                result[hierarchy.GetProjectGuid()] =hierarchy;
             }
 
             return result;
@@ -183,7 +153,10 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public event EventHandler<ProjectEventArgs> AfterOpenProject;
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded) {
-            AfterOpenProject?.Invoke(this, new ProjectEventArgs(pHierarchy));
+
+            var realHierarchy = new Hierarchy(this, pHierarchy);
+            AfterOpenProject?.Invoke(this, new ProjectEventArgs(realHierarchy));
+
             return VSConstants.S_OK;
         }
 
@@ -193,15 +166,22 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public event EventHandler<ProjectEventArgs> BeforeRemoveProject;
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) {
-            if(fRemoved == 1) {                
-                BeforeRemoveProject?.Invoke(this, new ProjectEventArgs(pHierarchy));
+
+            if(fRemoved == 1) {
+                var realHierarchy = new Hierarchy(this, pHierarchy);
+                BeforeRemoveProject?.Invoke(this, new ProjectEventArgs(realHierarchy));
             }
+
             return VSConstants.S_OK;
         }
 
         public event EventHandler<ProjectEventArgs> AfterLoadProject;
         int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) {
-            AfterLoadProject?.Invoke(this, new ProjectEventArgs(pRealHierarchy, pStubHierarchy));
+
+            var realHierarchy = new Hierarchy(this, pStubHierarchy);
+            var stubHierarchy = new Hierarchy(this, pRealHierarchy);
+            AfterLoadProject?.Invoke(this, new ProjectEventArgs(realHierarchy, stubHierarchy));
+
             return VSConstants.S_OK;
         }
 
@@ -211,7 +191,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public event EventHandler<ProjectEventArgs> BeforeUnloadProject;
         int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) {
-            BeforeUnloadProject?.Invoke(this, new ProjectEventArgs(pRealHierarchy, pStubHierarchy));
+            var realHierarchy = new Hierarchy(this, pStubHierarchy);
+            var stubHierarchy = new Hierarchy(this, pRealHierarchy);
+            BeforeUnloadProject?.Invoke(this, new ProjectEventArgs(realHierarchy, stubHierarchy));
             return VSConstants.S_OK;
         }
         

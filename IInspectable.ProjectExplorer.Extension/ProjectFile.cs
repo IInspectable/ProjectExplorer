@@ -1,15 +1,19 @@
-﻿using System;
+﻿#region Using Directives
+
+using System;
 using System.Xml;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
     public class ProjectFile {
 
         ProjectFile(string name, string path, string assemblyName, Guid projectGuid) {
-            Name        = name;
-            Path        = path;
+            Name         = name;
+            Path         = path;
             AssemblyName = assemblyName;
-            ProjectGuid = projectGuid;
+            ProjectGuid  = projectGuid;
         }
 
         public Guid ProjectGuid { get; }

@@ -7,13 +7,10 @@ using System.Windows.Controls;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public partial class ProjectExplorerControl : UserControl {
-
-        readonly ProjectExplorerViewModel _viewModel;
+    partial class ProjectExplorerControl : UserControl {
 
         public ProjectExplorerControl(ProjectExplorerViewModel viewModel) {
-            _viewModel  = viewModel;
-            DataContext = _viewModel;
+            DataContext = viewModel;
 
             InitializeComponent();
         }
@@ -23,13 +20,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             MessageBox.Show("Coming soon");
         }
 
-        private void VsListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+        void OnProjectListMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
             var item=((ListBox) sender).SelectedItem as ProjectViewModel;
-            if(item == null) {
-                return;
-            }
 
-            item.DefaultAction();
+            item?.DefaultAction();
         }
     }
 }

@@ -1,32 +1,39 @@
+#region Using Directives
+
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
+
 using JetBrains.Annotations;
-using Microsoft.VisualStudio.Shell.Interop;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectExplorerViewModel: ViewModelBase {
+    class ProjectExplorerViewModel: ViewModelBase {
 
         readonly ProjectService _projectService;
+        readonly OptionService  _optionService;
 
         ObservableCollection<ProjectViewModel> _projects;
 
-        public ProjectExplorerViewModel(ProjectService projectService) {
+        internal ProjectExplorerViewModel(ProjectService projectService, OptionService optionService) {
+
             _projectService = projectService;
+            _optionService   = optionService;
             _projects       = new ObservableCollection<ProjectViewModel>();
 
-            _projectService.AfterLoadProject += OnAfterLoadProject;
+            _projectService.AfterLoadProject    += OnAfterLoadProject;
             _projectService.BeforeUnloadProject += OnBeforeUnloadProject;
-            _projectService.AfterOpenProject += OnAfterOpenProject;
+            _projectService.AfterOpenProject    += OnAfterOpenProject;
             _projectService.BeforeRemoveProject += OnBeforeRemoveProject;
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
-            var guid=_projectService.GetProjectGuid(e.RealHierarchie);
+            var guid= e.RealHierarchie.GetProjectGuid();
 
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
@@ -42,26 +49,29 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
+
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
             projectVm?.Bind(e.RealHierarchie);
         }
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
+
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
-           projectVm?.Bind(e.StubHierarchie);
+            projectVm?.Bind(e.StubHierarchie);
         }
 
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
+
             var projectVm= FindProjectViewModel(e.RealHierarchie);
 
             projectVm?.Bind(e.RealHierarchie);
         }
 
         [CanBeNull]
-        ProjectViewModel FindProjectViewModel(IVsHierarchy pHierarchy) {
-            var projectGuid = _projectService.GetProjectGuid(pHierarchy);
+        ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
+            var projectGuid = hierarchy.GetProjectGuid();
             return FindProjectViewModel(projectGuid);
         }
 
@@ -73,7 +83,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void Reload() {
 
-            var projectFiles = _projectService.LoadProjectFiles();
+            var projectFiles = _projectService.LoadProjectFiles(ProjectsRoot);
 
             var projects = _projectService.BindToHierarchy(projectFiles);
 
@@ -88,12 +98,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             Projects = new ObservableCollection<ProjectViewModel>(orderedProjects);
 
             foreach (var projectVm in oldProjects) {
-                projectVm.SetParent(null);
+                projectVm.Dispose();
             }
         }
 
         [NotNull]
-        public ProjectService ProjectService {
+        internal ProjectService ProjectService {
             get { return _projectService; }
         }
 
@@ -106,8 +116,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public string ProjectsRoot {
-            get { return _projectService.ProjectsRoot; }
-        }
+            get { return _optionService.ProjectsRoot; }
+        }      
     }
-
 }

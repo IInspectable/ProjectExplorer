@@ -12,13 +12,18 @@ namespace IInspectable.ProjectExplorer.Extension {
     [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
     public class ProjectExplorerWindow : ToolWindowPane {
 
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         readonly ProjectService _service;
         readonly ProjectExplorerViewModel _viewModel;
+        readonly OptionService _optionService;
+        // ReSharper restore PrivateFieldCanBeConvertedToLocalVariable
 
         public ProjectExplorerWindow() : base(null) {
 
             _service = new ProjectService();
-            _viewModel = new ProjectExplorerViewModel(_service);
+            _optionService = ProjectExplorerPackage.GetGlobalService<OptionService, OptionService>();
+            _viewModel = new ProjectExplorerViewModel(_service, _optionService);
+
             Caption = "Project Explorer";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,

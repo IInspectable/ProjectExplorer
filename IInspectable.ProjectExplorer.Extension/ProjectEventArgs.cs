@@ -1,19 +1,23 @@
 using System;
 using JetBrains.Annotations;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectEventArgs : EventArgs {
+    class ProjectEventArgs : EventArgs {
 
-        public ProjectEventArgs(IVsHierarchy realHierarchie, IVsHierarchy stubHierarchie=null) {
+        public ProjectEventArgs(Hierarchy realHierarchie, Hierarchy stubHierarchie=null) {
+
+            if (realHierarchie == null) {
+                throw new ArgumentNullException(nameof(realHierarchie));
+            }
+
             RealHierarchie = realHierarchie;
             StubHierarchie = stubHierarchie;
         }
 
-        public IVsHierarchy RealHierarchie { get; }
+        public Hierarchy RealHierarchie { get; }
 
         [CanBeNull]
-        public IVsHierarchy StubHierarchie { get; }
+        public Hierarchy StubHierarchie { get; }
     }
 }

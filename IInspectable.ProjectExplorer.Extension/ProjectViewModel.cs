@@ -1,16 +1,21 @@
+#region Using Directives
+
 using System;
 using System.IO;
 using JetBrains.Annotations;
-using Microsoft.VisualStudio.Shell.Interop;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectViewModel: ViewModelBase {
+    class ProjectViewModel: ViewModelBase {
 
         [NotNull]
         readonly ProjectFile _projectFile;
+
         [CanBeNull]
-        IVsHierarchy _pHierarchy;
+        Hierarchy _hierarchy;
+
         [CanBeNull]
         ProjectExplorerViewModel _parent;
 
@@ -38,12 +43,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ProjectStatus Status {
             get {
 
-                if(_pHierarchy == null || _parent==null) {
+                if(_hierarchy == null || _parent==null) {
                     return ProjectStatus.Closed;
                 }
 
-                return _parent.ProjectService.IsProjectUnloaded(_pHierarchy) ? 
-                       ProjectStatus.Unloaded: ProjectStatus.Loaded;                
+                return _hierarchy.IsProjectUnloaded() ? ProjectStatus.Unloaded: ProjectStatus.Loaded;                
             }
         }
 
@@ -53,27 +57,18 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         // TODO Confirmation/Fehlerbehandlung
-        public void Close() {
-            if (_pHierarchy == null) {
-                return;
-            }
-            _parent?.ProjectService.CloseProject(_pHierarchy);
+        public void Close() {      
+            _hierarchy?.CloseProject();
         }
 
         // TODO Confirmation/Fehlerbehandlung
         public void Load() {
-            if(_pHierarchy == null) {
-                return;
-            }
-            _parent?.ProjectService.LoadProject(_pHierarchy);
+            _hierarchy?.LoadProject();            
         }
 
         // TODO Confirmation/Fehlerbehandlung
         public void Unload() {
-            if (_pHierarchy == null) {
-                return;
-            }
-            _parent?.ProjectService.UnloadProject(_pHierarchy);
+            _hierarchy?.UnloadProject();           
         }
 
         // TODO Confirmation/Fehlerbehandlung
@@ -91,14 +86,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public void Bind(IVsHierarchy pHierarchy) {
-            _pHierarchy = pHierarchy;
+        public void Bind([CanBeNull] Hierarchy hierarchy) {
+            _hierarchy = hierarchy;
             NotifyAllPropertiesChanged();
-
         }
 
-        public void SetParent(ProjectExplorerViewModel parent) {
+        public void SetParent([NotNull] ProjectExplorerViewModel parent) {
+            if(parent == null) {
+                throw new ArgumentNullException(nameof(parent));
+            }
             _parent = parent;
+        }
+
+        public void Dispose() {
+            _parent    = null;
+            _hierarchy = null;
         }
     }
 }

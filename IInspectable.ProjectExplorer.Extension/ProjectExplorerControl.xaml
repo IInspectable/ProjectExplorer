@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="IInspectable.ProjectExplorer.Extension.ProjectExplorerControl"
+             x:ClassModifier="internal"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -96,7 +97,7 @@
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   ="{Binding Projects}" 
                       ItemTemplate  ="{StaticResource ProjectItemTemplate}"
-                      MouseDoubleClick="VsListBox_MouseDoubleClick"/>
+                      MouseDoubleClick="OnProjectListMouseDoubleClick"/>
         
         <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->
         <!--<TextBlock Grid.Row="2" Text="{Binding Projects.Count, StringFormat={}{0} Projects}"/>-->
