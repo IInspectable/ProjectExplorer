@@ -9,15 +9,15 @@ using Microsoft.VisualStudio.Shell;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class ProjectExplorerRefreshCommand {
+    sealed class RefreshCommand {
 
-        public const int CommandId = PackageIds.ProjectExplorerRefreshCommandId;
+        public const int CommandId = PackageIds.RefreshCommandId;
         public static readonly Guid CommandSet = PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
         readonly ProjectExplorerViewModel _viewModel;
         readonly MenuCommand _command;
 
-        ProjectExplorerRefreshCommand(IServiceProvider serviceProvider, ProjectExplorerViewModel viewModel) {
+        RefreshCommand(IServiceProvider serviceProvider, ProjectExplorerViewModel viewModel) {
 
             if (serviceProvider == null) {
                 throw new ArgumentNullException(nameof(serviceProvider));
@@ -36,10 +36,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public static ProjectExplorerRefreshCommand Instance { get; private set; }
+        public static RefreshCommand Instance { get; private set; }
 
         public static void Initialize(IServiceProvider serviceProvider, ProjectExplorerViewModel viewModel) {
-            Instance = new ProjectExplorerRefreshCommand(serviceProvider, viewModel);
+            Instance = new RefreshCommand(serviceProvider, viewModel);
         }
 
         void Execute(object sender, EventArgs e) {

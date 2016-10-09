@@ -23,15 +23,17 @@ namespace IInspectable.ProjectExplorer.Extension
     internal sealed partial class PackageIds
     {
         public const int ProjectExplorerToolbar = 0x1010;
-        public const int ProjectExplorerWindowCommandId = 0x0100;
-        public const int ProjectExplorerRefreshCommandId = 0x0102;
-        public const int ProjectExplorerAddProjectCommandId = 0x0103;
-        public const int ProjectExplorerRemoveProjectCommandId = 0x0104;
-        public const int ProjectExplorerLoadProjectCommandId = 0x0105;
-        public const int ProjectExplorerUnloadProjectCommandId = 0x0106;
-        public const int ProjectExplorerBuildSelectionCommandId = 0x0107;
-        public const int ProjectExplorerToolbarGroup = 0x1050;
-        public const int ProjectExplorerToolbarActionGroup = 0x1051;
-        public const int ProjectExplorerToolbarRefreshGroup = 0x1052;
+        public const int SettingsButtonContextMenu = 0x1011;
+        public const int ShowProjectExplorerCommandId = 0x0101;
+        public const int RefreshCommandId = 0x0102;
+        public const int AddProjectCommandId = 0x0103;
+        public const int RemoveProjectCommandId = 0x0104;
+        public const int LoadProjectCommandId = 0x0105;
+        public const int UnloadProjectCommandId = 0x0106;
+        public const int SettingsCommandId = 0x0107;
+        public const int ToolbarGroup = 0x1050;
+        public const int ToolbarActionGroup = 0x1051;
+        public const int ToolbarRefreshGroup = 0x1052;
+        public const int SettingsButtonContextMenuGroup = 0x1053;
     }
 }

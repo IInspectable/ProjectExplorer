@@ -12,11 +12,11 @@ namespace IInspectable.ProjectExplorer.Extension {
     /// <summary>
     /// Command handler
     /// </summary>
-    sealed class ProjectExplorerWindowCommand {
+    sealed class ShowProjectExplorerCommand {
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = PackageIds.ProjectExplorerWindowCommandId;
+        public const int CommandId = PackageIds.ShowProjectExplorerCommandId;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -29,11 +29,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly Package _package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectExplorerWindowCommand"/> class.
+        /// Initializes a new instance of the <see cref="ShowProjectExplorerCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        ProjectExplorerWindowCommand(Package package) {
+        ShowProjectExplorerCommand(Package package) {
             if (package == null) {
                 throw new ArgumentNullException(nameof(package));
             }
@@ -51,7 +51,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static ProjectExplorerWindowCommand Instance {
+        public static ShowProjectExplorerCommand Instance {
             get;
             private set;
         }
@@ -70,7 +70,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package) {
-            Instance = new ProjectExplorerWindowCommand(package);
+            Instance = new ShowProjectExplorerCommand(package);
         }
 
         /// <summary>

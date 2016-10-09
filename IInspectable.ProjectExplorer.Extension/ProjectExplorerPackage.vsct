@@ -41,19 +41,36 @@
           <CommandName>Project Explorer Toolbar</CommandName>
         </Strings>
       </Menu>
+
+      <Menu guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenu" type="Context">
+        <Strings>
+          <ButtonText>Settings</ButtonText>
+          <CommandName>Settings</CommandName>
+        </Strings>
+      </Menu>
+
     </Menus>
 
     <Groups>
-      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarGroup" priority="0x0000">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbar" />
-      </Group>      
-      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarActionGroup" priority="0x0000">
+      
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarGroup" priority="0">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbar" />
       </Group>
-      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarRefreshGroup" priority="0x0001">
+      
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarActionGroup" priority="1">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbar" />
       </Group>
+      
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarRefreshGroup" priority="2">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbar" />
+      </Group>
+
+      <Group guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenuGroup" priority="0">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenu" />
+      </Group>
+
     </Groups>
+    
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -65,46 +82,55 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" 
-              id="ProjectExplorerWindowCommandId" 
-              priority="0x0100" 
-              type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWSEXPLORERS"/>
-        <Icon guid="ImageCatalogGuid" id="CSProjectNode"/>
+      <Button guid     = "ProjectExplorerWindowPackageCmdSetGuid"
+              id       = "ShowProjectExplorerCommandId"
+              priority = "0x0100"
+              type     = "Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWSEXPLORERS" />
+        <Icon guid="ImageCatalogGuid" id="CSProjectNode" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Project Explorer</ButtonText>
         </Strings>
       </Button>
 
-      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerAddProjectCommandId" priority="0x0100" type="Button">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarActionGroup" />
-        <Icon guid="ImageCatalogGuid" id="AddItem"/>
+      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="AddProjectCommandId" priority="1" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarActionGroup" />
+        <Icon guid="ImageCatalogGuid" id="AddItem" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Add Project</ButtonText>
         </Strings>
       </Button>
-      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerRemoveProjectCommandId" priority="0x0102" type="Button">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarActionGroup" />
-        <Icon guid="ImageCatalogGuid" id="Cancel"/>
+      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="RemoveProjectCommandId" priority="2" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarActionGroup" />
+        <Icon guid="ImageCatalogGuid" id="Cancel" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Remove Project</ButtonText>
         </Strings>
       </Button>
 
-      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerRefreshCommandId" priority="0x0111" type="Button">
-        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ProjectExplorerToolbarRefreshGroup" />
-        <Icon guid="ImageCatalogGuid" id="Refresh"/>
+    <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="RefreshCommandId" priority="3" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarRefreshGroup" />
+        <Icon guid="ImageCatalogGuid" id="Refresh" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Refresh</ButtonText>
         </Strings>
-      </Button>
-     
-
-    </Buttons>
+    </Button>
+    
+    <!--Settings context menu-->
+     <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsCommandId" priority="1" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonContextMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="Open" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Open</ButtonText>
+        </Strings>
+    </Button>
+    
+  </Buttons>
 
   </Commands>
 
@@ -117,20 +143,26 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="ProjectExplorerWindowPackageCmdSetGuid" value="{4c113c46-d7a3-45e2-926f-6504d7d796d1}">
       
-      <IDSymbol name="ProjectExplorerToolbar" value="0x1010" />
+      <!-- Toolbars and menus -->
+      <IDSymbol name="ProjectExplorerToolbar"     value="0x1010" />
+      <IDSymbol name="SettingsButtonContextMenu"  value="0x1011"/>
       
-      <IDSymbol name="ProjectExplorerWindowCommandId"         value="0x0100" />      
-      <IDSymbol name="ProjectExplorerRefreshCommandId"        value="0x0102" />      
-      <IDSymbol name="ProjectExplorerAddProjectCommandId"     value="0x0103" />
-      <IDSymbol name="ProjectExplorerRemoveProjectCommandId"  value="0x0104" />
-      <IDSymbol name="ProjectExplorerLoadProjectCommandId"    value="0x0105" />
-      <IDSymbol name="ProjectExplorerUnloadProjectCommandId"  value="0x0106" />
-      <IDSymbol name="ProjectExplorerBuildSelectionCommandId" value="0x0107" />
+      <!-- CommandIds -->
+      <IDSymbol name="ShowProjectExplorerCommandId" value="0x0101" />      
+      <IDSymbol name="RefreshCommandId"             value="0x0102" />      
+      <IDSymbol name="AddProjectCommandId"          value="0x0103" />
+      <IDSymbol name="RemoveProjectCommandId"       value="0x0104" />
+      <IDSymbol name="LoadProjectCommandId"         value="0x0105" />
+      <IDSymbol name="UnloadProjectCommandId"       value="0x0106" />
+      <IDSymbol name="SettingsCommandId"            value="0x0107"/>
       
+      <!--Groups-->
+      <IDSymbol name="ToolbarGroup"        value="0x1050" />
+      <IDSymbol name="ToolbarActionGroup"  value="0x1051" />
+      <IDSymbol name="ToolbarRefreshGroup" value="0x1052" />
       
-      <IDSymbol name="ProjectExplorerToolbarGroup"        value="0x1050" />
-      <IDSymbol name="ProjectExplorerToolbarActionGroup"  value="0x1051" />
-      <IDSymbol name="ProjectExplorerToolbarRefreshGroup" value="0x1052" />
+      <IDSymbol name="SettingsButtonContextMenuGroup" value="0x1053"/>
+
       
     </GuidSymbol>
     

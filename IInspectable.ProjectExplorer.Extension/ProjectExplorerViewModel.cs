@@ -5,8 +5,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
-
+using System.ComponentModel.Design;
+using System.Windows.Input;
 using JetBrains.Annotations;
+using Microsoft.VisualStudio.Shell;
 
 #endregion
 
@@ -16,13 +18,16 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
+        readonly OleMenuCommandService _menuCommandService;
 
         ObservableCollection<ProjectViewModel> _projects;
 
-        internal ProjectExplorerViewModel(IServiceProvider serviceProvider, SolutionService solutionService, OptionService optionService) {
+        internal ProjectExplorerViewModel(IServiceProvider serviceProvider, SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
 
-            _solutionService = solutionService;
-            _optionService   = optionService;
+            _solutionService    = solutionService;
+            _optionService      = optionService;
+            _menuCommandService = menuCommandService;
+
             _projects       = new ObservableCollection<ProjectViewModel>();
 
             _solutionService.AfterLoadProject    += OnAfterLoadProject;
@@ -31,7 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
             // TODO Command Modell
-            ProjectExplorerRefreshCommand.Initialize(serviceProvider, this);
+            RefreshCommand.Initialize(serviceProvider, this);
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
@@ -120,6 +125,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
-        }      
+        }
+
+        public void ShowSettingsButtonContextMenu(int x, int y) {
+            
+            var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, 
+                                          PackageIds.SettingsButtonContextMenu);
+
+            var p = Mouse.GetPosition(null);
+
+            _menuCommandService.ShowContextMenu(commandId, x, y);
+        }
+
     }
 }

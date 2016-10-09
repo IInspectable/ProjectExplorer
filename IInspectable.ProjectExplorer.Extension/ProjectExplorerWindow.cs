@@ -15,19 +15,23 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ProjectExplorerViewModel _viewModel;
 
         public ProjectExplorerWindow() : base(null) {
-
+            // ReSharper disable VirtualMemberCallInConstructor
             var solutionService = ProjectExplorerPackage.GetGlobalService<SolutionService, SolutionService>();
             var optionService   = ProjectExplorerPackage.GetGlobalService<OptionService, OptionService>();
 
-            _viewModel = new ProjectExplorerViewModel(this, solutionService, optionService);
+            var menuCommandService= (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+
+            _viewModel = new ProjectExplorerViewModel(this, solutionService, optionService, menuCommandService);
             
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            // ReSharper disable once VirtualMemberCallInConstructor
+            
             Content = new ProjectExplorerControl(_viewModel);
             ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
             Caption = "Project Explorer";
+
+            // ReSharper restore VirtualMemberCallInConstructor
         }
 
         public override bool SearchEnabled {
