@@ -52,7 +52,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\LoadProjectCommand.cs" />
     <Compile Include="Commands\OpenInFileExplorerCommand.cs" />
+    <Compile Include="Commands\AddProjectCommand.cs" />
+    <Compile Include="Commands\RemoveProjectCommand.cs" />
+    <Compile Include="Commands\SettingsCommand.cs" />
+    <Compile Include="Commands\UnloadProjectCommand.cs" />
     <Compile Include="Hierarchy.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="ProjectEventArgs.cs" />

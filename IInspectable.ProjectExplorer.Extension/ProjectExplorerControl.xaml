@@ -75,7 +75,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ui:VsButton Click="OnSettingsClick" ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
+        <ui:VsButton Command="{Binding SettingsCommand}"  ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
             <ui:VsButton.Glyph>
                 <imaging:CrispImage HorizontalAlignment = "Center"
                                     VerticalAlignment   = "Center"

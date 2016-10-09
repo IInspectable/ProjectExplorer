@@ -19,12 +19,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         ProjectExplorerViewModel ViewModel { get { return DataContext as ProjectExplorerViewModel; } }
 
-        void OnSettingsClick(object sender, RoutedEventArgs e) {
-            // TODO OnSettingsClick
-            MessageBox.Show("Coming soon");
-        }
-
-        void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
+       void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
 
             // TODO Selection Handling in ViewModel verlagern
             var item=((ListBox) sender).SelectedItem as ProjectViewModel;
@@ -57,6 +52,5 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             e.Handled = true;
         }
-
     }
 }

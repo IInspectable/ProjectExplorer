@@ -37,10 +37,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
             _commands = new List<Command> {
-                { RefreshCommand = new RefreshCommand(this)},
-                { OpenInFileExplorerCommand = new OpenInFileExplorerCommand(this)}
+                { RefreshCommand            = new RefreshCommand(this)},
+                { OpenInFileExplorerCommand = new OpenInFileExplorerCommand(this)},
+                { AddProjectCommand         = new AddProjectCommand(this)},
+                { RemoveProjectCommand      = new RemoveProjectCommand(this)},
+                { UnloadProjectCommand      = new UnloadProjectCommand(this)},
+                { LoadProjectCommand        = new LoadProjectCommand(this)},
+                { SettingsCommand           = new SettingsCommand(this)},
             };
-
+            
             RegisterCommands();
 
             PropertyChanged += (o, e) => UpdateCommandStates();
@@ -73,6 +78,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public RefreshCommand RefreshCommand { get; }
         public OpenInFileExplorerCommand OpenInFileExplorerCommand { get; }
+        public AddProjectCommand AddProjectCommand { get; }
+        public RemoveProjectCommand RemoveProjectCommand { get; }
+        public UnloadProjectCommand UnloadProjectCommand { get; }
+        public LoadProjectCommand LoadProjectCommand { get; }
+        public SettingsCommand SettingsCommand { get; }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
@@ -163,10 +173,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
         }
-
         
-
-
         public void ShowSettingsButtonContextMenu(int x, int y) {
             
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, 

@@ -56,12 +56,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         // TODO Confirmation/Fehlerbehandlung
-        public void Open() {
+        public void Add() {
             _parent?.SolutionService.OpenProject(_projectFile.Path);
         }
 
         // TODO Confirmation/Fehlerbehandlung
-        public void Close() {      
+        public void Remove() {      
             _hierarchy?.CloseProject();
         }
 
@@ -79,7 +79,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void DefaultAction() {
             switch (Status) {
                 case ProjectStatus.Closed:
-                    Open();
+                    Add();
                     break;
                 case ProjectStatus.Unloaded:
                     Load();
