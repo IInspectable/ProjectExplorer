@@ -1,30 +1,30 @@
+#region Using Directives
+
 using System;
 using System.IO;
-using Microsoft.VisualStudio.Shell.Interop;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class OptionService {
-
-        
-        readonly Lazy< IVsSolution>_solution1;
+    sealed class OptionService {
 
         string _projectsRoot;
 
-        public OptionService() {
-            _solution1 = new Lazy<IVsSolution>(ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>);
-        }
+        public OptionService(SolutionService solutionService) {
+            SolutionService = solutionService;
 
-        public string OptionKey { get { return "ProjectExplorerExtension"; } }
-
-        public IVsSolution Solution {
-            get { return _solution1.Value; }
+            SolutionService.AfterCloseSolution += OnAfterCloseSolution;
         }
+        
+        public const string OptionKey = "ProjectExplorerExtension";
+
+        public SolutionService SolutionService { get; }
 
         public string ProjectsRoot {
             get {
                 if(String.IsNullOrWhiteSpace(_projectsRoot)) {
-                    return GetSolutionDirectory();
+                    return SolutionService.GetSolutionDirectory();
                 }
                 // TODO Convert relative path to absolute path
                 return _projectsRoot; 
@@ -48,22 +48,18 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void SaveOptions(Stream stream) {
+
+            if(String.IsNullOrEmpty(_projectsRoot)) {
+                return;
+            }
+
             using(var sw = new StreamWriter(stream)) {
                 sw.Write(_projectsRoot);                
             }
         }
 
-        string GetSolutionDirectory() {
-            string solutionDirectory;
-            string solutionFile;
-            string userOptsFile;
-            Solution.GetSolutionInfo(
-                pbstrSolutionDirectory: out solutionDirectory,
-                pbstrSolutionFile: out solutionFile,
-                pbstrUserOptsFile: out userOptsFile);
-
-            return solutionDirectory;
-        }        
+        void OnAfterCloseSolution(object sender, EventArgs e) {
+            _projectsRoot = null;
+        }
     }
-
 }

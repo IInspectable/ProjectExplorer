@@ -22,39 +22,30 @@ namespace IInspectable.ProjectExplorer.Extension {
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
     sealed class ProjectExplorerPackage : Package {
 
-        readonly OptionService _optionService;
-        readonly ProjectExplorerCommand _projectExplorerCommand;
-        readonly ProjectExplorerSearchCommand _projectExplorerSearchCommand;
-
         public ProjectExplorerPackage() {
-
-            _optionService = new OptionService();
-            _projectExplorerCommand = new ProjectExplorerCommand(this);
-            _projectExplorerSearchCommand = new ProjectExplorerSearchCommand(this);
-
-            AddOptionKey(_optionService.OptionKey);            
+            AddOptionKey(OptionService.OptionKey);            
         }
 
         public static ProjectExplorerPackage Instance {
             get { return GetGlobalService<ProjectExplorerPackage, ProjectExplorerPackage>(); }
         }
-
-        internal ProjectExplorerCommand ProjectExplorerCommand {
-            get { return _projectExplorerCommand; }
-        }
-
+        
         protected override void Initialize() {
 
-            var solution = new SolutionService();
+            var solutionService = new SolutionService();
+            var optionService   = new OptionService(solutionService);
 
-            ((IServiceContainer)this).AddService(GetType(), this, promote: true);
-            ((IServiceContainer)this).AddService(_optionService.GetType(), _optionService, promote: true);
-            ((IServiceContainer)this).AddService(solution.GetType(), solution, promote: true);
-
+            ((IServiceContainer)this).AddService(GetType()                , this           , promote: true);
+            ((IServiceContainer)this).AddService(solutionService.GetType(), solutionService, promote: true);
+            ((IServiceContainer)this).AddService(optionService.GetType()  , optionService  , promote: true);
+             
             var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            
-            _projectExplorerCommand.Register(commandService);
-            _projectExplorerSearchCommand.Register(commandService);
+
+            var projectExplorerCommand       = new ProjectExplorerCommand(this);
+            var projectExplorerSearchCommand = new ProjectExplorerSearchCommand(this);
+
+            projectExplorerCommand.Register(commandService);
+            projectExplorerSearchCommand.Register(commandService);
 
             base.Initialize();
         }
@@ -86,16 +77,18 @@ namespace IInspectable.ProjectExplorer.Extension {
             return GetGlobalService(typeof(TService)) as TInterface;
         }
 
+        OptionService OptionService { get { return GetGlobalService<OptionService, OptionService>(); } }
+
         protected override void OnLoadOptions(string key, Stream stream) {
-            if(_optionService.OptionKey == key) {
-                _optionService.LoadOptions(stream);
+            if(OptionService.OptionKey == key) {
+                OptionService.LoadOptions(stream);
             }
             base.OnLoadOptions(key, stream);
         }
 
         protected override void OnSaveOptions(string key, Stream stream) {
-            if (_optionService.OptionKey == key) {
-                _optionService.SaveOptions(stream);
+            if (OptionService.OptionKey == key) {
+                OptionService.SaveOptions(stream);
             }
             base.OnSaveOptions(key, stream);
         }
