@@ -43,7 +43,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             if(!CanExecute(null)) {
                 return;
             }
-
+            // TODO IVsUIShell::EnableModeless
             Executing = true;
             try {
                 var dlg = new CommonOpenFileDialog {
