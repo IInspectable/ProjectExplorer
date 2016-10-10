@@ -172,11 +172,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             ProjectsView.Filter = null;
         }
 
-         // asynchron 
-         public void Reload() {
+        // TODO asynchron 
+        public void Reload() {
 
-            // TODO Kann in separatem Thread laufen.
-         
+            // TODO LoadProjectFiles soll in separatem Task laufen.
             var projectFiles = _solutionService.LoadProjectFiles(ProjectsRoot);
 
             var projects = _solutionService.BindToHierarchy(projectFiles);

@@ -102,7 +102,7 @@
                       MouseDoubleClick   = "OnProjectListMouseDoubleClick"/>
         
         <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->
-        <!--<TextBlock Grid.Row="2" Text="{Binding Projects.Count, StringFormat={}{0} Projects}"/>-->
+        <TextBlock Grid.Row="3" Margin="2" Text="{Binding ProjectsView.Count, StringFormat={}{0} Projects found}"/>
     </Grid>
 
 </UserControl>

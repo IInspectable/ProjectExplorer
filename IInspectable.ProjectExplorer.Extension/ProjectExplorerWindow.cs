@@ -1,11 +1,12 @@
 ﻿#region Using Directives
 
 using System.ComponentModel.Design;
-
 using System.Runtime.InteropServices;
 
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Internal.VisualStudio.PlatformUI;
 
 #endregion
 
@@ -30,11 +31,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             Content = new ProjectExplorerControl(ViewModel);
             ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
             Caption = "Project Explorer";
-
-
             // ReSharper restore VirtualMemberCallInConstructor
         }
-
         
         internal ProjectExplorerViewModel ViewModel { get; }
 
@@ -43,7 +41,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            ViewModel.SearchOptions.ProvideSearchSettings(pSearchSettings);
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
+            // TODO SHortcut Key anzeigen
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
         }
 
         public override void ClearSearch() {
@@ -54,35 +57,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return ViewModel.SearchOptions.SearchOptionsEnum; }
         }
 
-
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
             if (pSearchQuery == null || pSearchCallback == null)
                 return null;
 
             return new ProjectSearchTask(ViewModel, dwCookie, pSearchQuery, pSearchCallback);
         }    
-    }
-
-    class ProjectSearchTask: VsSearchTask {
-
-        readonly ProjectExplorerViewModel _viewModel;
-
-        public ProjectSearchTask(ProjectExplorerViewModel viewModel, uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) 
-                :base(dwCookie, pSearchQuery, pSearchCallback) {
-
-            _viewModel     = viewModel;
-        }
-
-        protected override void OnStartSearch() {
-            ThreadHelper.Generic.Invoke(() => {
-                 _viewModel.ApplySearch(SearchQuery.SearchString);                
-            });
-
-            base.OnStartSearch();
-        }
-
-        protected override void OnStopSearch() {
-            SearchResults = 0;
-        }
     }
 }

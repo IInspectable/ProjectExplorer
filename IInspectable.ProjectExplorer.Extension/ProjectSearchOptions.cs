@@ -49,11 +49,5 @@ namespace IInspectable.ProjectExplorer.Extension {
         public IVsEnumWindowSearchOptions SearchOptionsEnum {
             get { return _optionsEnum ?? (_optionsEnum = new WindowSearchOptionEnumerator(_searchOptions)); }
         }
-
-        public void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
-        }
     }
 }
