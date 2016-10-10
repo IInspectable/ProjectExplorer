@@ -41,7 +41,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             SearchHost.IsVisible = ViewModel.IsSolutionLoaded;
         }
 
+        public bool CanActivateSearch {
+            get { return SearchHost.IsVisible && SearchHost.IsEnabled; }
+        }
+
         public void ActivateSearch() {
+            if(!CanActivateSearch) {
+                return;
+            }
             SearchHost?.Activate();
         }
 

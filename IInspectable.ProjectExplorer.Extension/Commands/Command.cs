@@ -13,16 +13,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     abstract class Command: ICommand, INotifyPropertyChanged {
 
-        readonly MenuCommand _command;
+        readonly OleMenuCommand _command;
 
         protected Command(int commandId, Guid? menuGroupOrDefault=null) {
 
             var menuGroup = menuGroupOrDefault ?? PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
             var menuCommandId = new CommandID(menuGroup, commandId);
-            _command = new MenuCommand(OnExecute, menuCommandId);
+            _command = new OleMenuCommand(OnExecute, menuCommandId);
 
-            _command.CommandChanged += OnCommandChanged;
+            _command.BeforeQueryStatus +=(o,e)=> UpdateState();
+            _command.CommandChanged    += OnCommandChanged;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

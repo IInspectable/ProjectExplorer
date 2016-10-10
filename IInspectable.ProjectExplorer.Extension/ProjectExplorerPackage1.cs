@@ -25,7 +25,8 @@ namespace IInspectable.ProjectExplorer.Extension
         public const int ProjectExplorerToolbar = 0x1010;
         public const int SettingsButtonContextMenu = 0x1011;
         public const int ProjectItemContextMenu = 0x1012;
-        public const int ShowProjectExplorerCommandId = 0x0101;
+        public const int ProjectExplorerCommandId = 0x0100;
+        public const int ProjectExplorerSearchCommandId = 0x0101;
         public const int RefreshCommandId = 0x0102;
         public const int AddProjectCommandId = 0x0103;
         public const int RemoveProjectCommandId = 0x0104;

@@ -180,7 +180,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             NotifyThisPropertyChanged(nameof(StatusText));
         }
-
+        
         public void ClearSearch() {
             ProjectsView.Filter = null;
 

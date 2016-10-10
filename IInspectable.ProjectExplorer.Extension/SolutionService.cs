@@ -60,7 +60,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             var task= Task.Run(() => {
                 var projectFiles = new List<ProjectFile>();
 
-                foreach (var file in Directory.GetFiles(path, "*.csproj", SearchOption.AllDirectories)) {
+                foreach (var file in Directory.EnumerateFiles(path, "*.csproj", SearchOption.AllDirectories)) {
                     var projectFile = ProjectFile.FromFile(file);
 
                     projectFiles.Add(projectFile);
