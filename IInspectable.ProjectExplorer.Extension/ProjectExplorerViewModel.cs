@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
@@ -286,6 +287,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
+        }
+
+        public async Task<bool> SetProjectsRoot(string path) {
+
+            if(!IsSolutionLoaded || IsLoading) {
+                return false;
+            }
+
+            _optionService.ProjectsRoot = path;
+            await ReloadProjects();
+            return true;
         }
 
         public void ShowSettingsButtonContextMenu(int x, int y) {
