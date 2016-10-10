@@ -45,7 +45,12 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void CloseProject() {
             // TODO Error Logging
-            VsSolution1.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, _vsHierarchy, 0);
+            int res;
+            if (ErrorHandler.Failed(res = VsSolution1.CloseSolutionElement((uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK| (uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, _vsHierarchy, 0))) {
+                // TODO Error Logging
+                Debug.WriteLine($"IVsolution::CloseProject retuend 0x{res:X}.");
+                ErrorHandler.ThrowOnFailure(res);
+            }
         }
 
         public Guid GetProjectGuid() {
@@ -54,7 +59,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             if (ErrorHandler.Failed(res = VsSolution1.GetGuidOfProject(_vsHierarchy, out projGuid))) {
                 // TODO Error Logging
-                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+                Debug.WriteLine($"IVsolution::GetProjectGuid retuend 0x{res:X}.");
             }
 
             return projGuid;

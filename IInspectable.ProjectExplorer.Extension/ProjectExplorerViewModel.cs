@@ -31,7 +31,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService    = solutionService;
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
-            
+
+            _solutionService.AfterOpenSolution += OnAfterOpenSolution;
+            _solutionService.AfterCloseSolution += OnAfterCloseSolution;
             _solutionService.AfterLoadProject    += OnAfterLoadProject;
             _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
@@ -49,21 +51,23 @@ namespace IInspectable.ProjectExplorer.Extension {
             
             RegisterCommands();
 
-            PropertyChanged += (o, e) => UpdateCommandStates();
+            PropertyChanged += (o, e) => UpdateCommands();
 
             SearchOptions = new ProjectSearchOptions();
             _projects     = new ObservableCollection<ProjectViewModel>();
             _projectsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
-        }
 
+            UpdateCommands();
+        }
+        
         void RegisterCommands() {
             foreach(var command in _commands) {
                 command.Register(_menuCommandService);
             }
         }
 
-        void UpdateCommandStates() {
+        public void UpdateCommands() {
             foreach (var command in _commands) {
                 command.UpdateState();
             }
@@ -91,6 +95,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         public LoadProjectCommand LoadProjectCommand { get; }
         public SettingsCommand SettingsCommand { get; }
 
+        async void OnAfterOpenSolution(object sender, EventArgs e) {
+            await ReloadProjects();
+        }
+
+        void OnAfterCloseSolution(object sender, EventArgs e) {
+            ClearProjects();
+        }
+        
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
             var guid= e.RealHierarchie.GetProjectGuid();
@@ -103,8 +115,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 new Action(() => {
                     var hier=_solutionService.GetHierarchyByProjectGuid(guid);
                     var projectVm = FindProjectViewModel(guid);
-                    projectVm?.Bind(hier);
-
+                    projectVm?.Bind(hier);                    
                 }));
         }
 
@@ -117,7 +128,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
 
-            var projectVm = FindProjectViewModel(e.RealHierarchie);
+            var projectVm = FindProjectViewModel(e.StubHierarchie);
 
             projectVm?.Bind(e.StubHierarchie);
         }
@@ -155,7 +166,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 regex = new Regex($".*{searchString}.*", RegexOptions.IgnoreCase);
             }
            
-            ProjectsView.Filter = (item) => {
+            ProjectsView.Filter = item => {
 
                 var projectVm = (ProjectViewModel) item;
 
@@ -167,33 +178,89 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return regex == null || regex.IsMatch(projectVm.Name);
             };
 
+            NotifyThisPropertyChanged(nameof(StatusText));
         }
+
         public void ClearSearch() {
             ProjectsView.Filter = null;
+
+            NotifyThisPropertyChanged(nameof(StatusText));
         }
 
-        // TODO asynchron 
-        public void Reload() {
+        public bool IsSolutionLoaded {
+            get { return _solutionService.IsSolutionLoaded(); }
+        }
 
-            // TODO LoadProjectFiles soll in separatem Task laufen.
-            var projectFiles = _solutionService.LoadProjectFiles(ProjectsRoot);
-
-            var projects = _solutionService.BindToHierarchy(projectFiles);
-
-            foreach(var projectVm in projects) {
-                projectVm.SetParent(this);
-            }
-
-            var oldProjects = Projects.ToList();
-
+        public void ClearProjects(bool clearSearch=true) {
             Projects.Clear();
-            foreach(var project in projects) {
-                Projects.Add(project);
+            if (clearSearch) {                
+                ClearSearch();
             }
             SelectedProject = null;
+            NotifyAllPropertiesChanged();
+        }
 
-            foreach (var projectVm in oldProjects) {
-                projectVm.Dispose();
+        private bool _isLoading;
+        public bool IsLoading {
+            get { return _isLoading; }
+            set {
+                if (value == _isLoading) {
+                    return;
+                }
+                _isLoading = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string StatusText {
+            get {
+
+                if (IsLoading) {
+                    return "Loading projects...";
+                }
+
+                if (ProjectsView.Count == 1) {
+                    return $"1 Project found";
+                }
+
+                return $"{ProjectsView.Count} Projects found";
+            }
+         
+        }
+
+        public async System.Threading.Tasks.Task ReloadProjects() {
+
+            if (!IsSolutionLoaded || IsLoading) {
+                return;
+            }
+
+            IsLoading = true;
+            try {
+
+                ClearProjects(clearSearch:false);
+
+                var projectFiles = await _solutionService.LoadProjectFilesAsync(ProjectsRoot);
+
+                var projects = _solutionService.BindToHierarchy(projectFiles);
+
+                foreach (var projectVm in projects) {
+                    projectVm.SetParent(this);
+                }
+
+                var oldProjects = Projects.ToList();
+
+                Projects.Clear();
+                foreach (var project in projects) {
+                    Projects.Add(project);
+                }
+                SelectedProject = null;
+
+                foreach (var projectVm in oldProjects) {
+                    projectVm.Dispose();
+                }
+
+            } finally {
+                IsLoading = false;
             }
 
             NotifyAllPropertiesChanged();

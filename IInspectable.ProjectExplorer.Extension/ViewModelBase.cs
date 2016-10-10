@@ -11,6 +11,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        protected void NotifyThisPropertyChanged(string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         protected void NotifyAllPropertiesChanged() {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }

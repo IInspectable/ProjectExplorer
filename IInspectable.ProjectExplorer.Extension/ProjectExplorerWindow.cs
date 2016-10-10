@@ -23,17 +23,41 @@ namespace IInspectable.ProjectExplorer.Extension {
             var menuCommandService= (OleMenuCommandService)GetService(typeof(IMenuCommandService));
 
             ViewModel = new ProjectExplorerViewModel(solutionService, optionService, menuCommandService);
-            
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            
+
             Content = new ProjectExplorerControl(ViewModel);
             ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
             Caption = "Project Explorer";
+
             // ReSharper restore VirtualMemberCallInConstructor
         }
-        
+
+        public override void OnToolWindowCreated() {
+            base.OnToolWindowCreated();
+            SearchHost.IsVisible = ViewModel.IsSolutionLoaded;
+        }
+
+        public void ActivateSearch() {
+            SearchHost?.Activate();
+        }
+
+        void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (string.IsNullOrEmpty(e.PropertyName) || 
+                e.PropertyName == nameof(ProjectExplorerViewModel.IsSolutionLoaded)) {
+
+                SearchHost.IsVisible = ViewModel.IsSolutionLoaded;
+            }
+            if(string.IsNullOrEmpty(e.PropertyName) ||
+               e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
+
+                SearchHost.IsEnabled = !ViewModel.IsLoading;
+            }
+        }
+
         internal ProjectExplorerViewModel ViewModel { get; }
 
         public override bool SearchEnabled {
@@ -50,7 +74,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void ClearSearch() {
-            ViewModel.ClearSearch();
+            ViewModel.ClearSearch();            
         }
 
         public override IVsEnumWindowSearchOptions SearchOptionsEnum {
@@ -58,6 +82,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
+
             if (pSearchQuery == null || pSearchCallback == null)
                 return null;
 

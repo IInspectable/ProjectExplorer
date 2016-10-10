@@ -19,11 +19,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             _viewModel = viewModel;
-
         }
 
-        public override void Execute(object parameter) {
-            _viewModel.Reload();
+        public override void UpdateState() {
+            Enabled = _viewModel.IsSolutionLoaded && !_viewModel.IsLoading;
+        }
+
+        public override async void Execute(object parameter) {
+            await _viewModel.ReloadProjects();
         }
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -54,17 +56,20 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _vsSolution4; }
         }
 
-        public List<ProjectFile> LoadProjectFiles(string path) {
+        public Task<List<ProjectFile>> LoadProjectFilesAsync(string path) {
+            var task= Task.Run(() => {
+                var projectFiles = new List<ProjectFile>();
 
-            var projectFiles = new List<ProjectFile>();
+                foreach (var file in Directory.GetFiles(path, "*.csproj", SearchOption.AllDirectories)) {
+                    var projectFile = ProjectFile.FromFile(file);
 
-            foreach(var file in Directory.EnumerateFiles(path, "*.csproj", SearchOption.AllDirectories)) {
-                var projectFile = ProjectFile.FromFile(file);
+                    projectFiles.Add(projectFile);
+                }
 
-                projectFiles.Add(projectFile);
-            }
+                return projectFiles;
+            });
 
-            return projectFiles;
+            return task;
         }
 
         public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
@@ -92,26 +97,47 @@ namespace IInspectable.ProjectExplorer.Extension {
             Guid empty = Guid.Empty;
             Guid projId=Guid.Empty;
             IntPtr ppProj;
+            int res;
             // TODO: Fehlerbehandlung
-            _vsSolution1.CreateProject(
+            if(ErrorHandler.Failed(res = _vsSolution1.CreateProject(
                 rguidProjectType: ref empty, 
                 lpszMoniker     : path, 
                 lpszLocation    : null,
                 lpszName        : null, 
                 grfCreateFlags  : (uint)__VSCREATEPROJFLAGS.CPF_OPENFILE, 
                 iidProject      : ref projId, 
-                ppProject       : out ppProj);
+                ppProject       : out ppProj))) {
+                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+            }
+
         }
-        
+
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
             int res;
             Guid projGuid;
-
+            
+            
             if (ErrorHandler.Failed(res = _vsSolution1.GetGuidOfProject(pHierarchy, out projGuid))) {
                 Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
             }
 
             return projGuid;
+        }
+
+        public bool IsSolutionLoaded() {
+            return GetSolutionDirectory() != null;
+        }
+
+        [CanBeNull]
+        public string GetSolutionDirectory() {
+
+            string solutionDirectory;
+            string solutionFile;
+            string userOptsFile;
+
+            _vsSolution1.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptsFile);
+
+            return solutionDirectory;
         }
 
         public Hierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
@@ -196,10 +222,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             BeforeUnloadProject?.Invoke(this, new ProjectEventArgs(realHierarchy, stubHierarchy));
             return VSConstants.S_OK;
         }
-        
-        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution) {
 
-           
+
+        public event EventHandler AfterOpenSolution;
+        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution) {
+            AfterOpenSolution?.Invoke(this, EventArgs.Empty);
             return VSConstants.S_OK;
         }
 
@@ -211,7 +238,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             return VSConstants.S_OK;
         }
 
+        public event EventHandler AfterCloseSolution;
         int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved) {
+            AfterCloseSolution?.Invoke(this, EventArgs.Empty);
             return VSConstants.S_OK;
         }
 

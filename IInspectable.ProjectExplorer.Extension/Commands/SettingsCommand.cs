@@ -18,8 +18,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            // TODO True wenn Solution geladen
-            Enabled = true;
+            Enabled = _viewModel.IsSolutionLoaded;
         }
 
         public override void Execute(object parameter) {

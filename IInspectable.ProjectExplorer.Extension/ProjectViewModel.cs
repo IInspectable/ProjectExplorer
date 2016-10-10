@@ -105,6 +105,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void Bind([CanBeNull] Hierarchy hierarchy) {
             _hierarchy = hierarchy;
             NotifyAllPropertiesChanged();
+            _parent?.UpdateCommands();
         }
 
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {

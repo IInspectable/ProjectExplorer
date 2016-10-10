@@ -65,9 +65,11 @@
                 </Grid>
             </Border>
         </DataTemplate>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Visibility="{Binding IsSolutionLoaded, Converter={StaticResource  BooleanToVisibilityConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
@@ -101,8 +103,7 @@
                       ContextMenuOpening = "OnProjectItemContextMenuOpening"
                       MouseDoubleClick   = "OnProjectListMouseDoubleClick"/>
         
-        <!--<Button Grid.Row="3" Content="Click me!" Click="OnButtonClick"/>-->
-        <TextBlock Grid.Row="3" Margin="2" Text="{Binding ProjectsView.Count, StringFormat={}{0} Projects found}"/>
+        <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
 </UserControl>

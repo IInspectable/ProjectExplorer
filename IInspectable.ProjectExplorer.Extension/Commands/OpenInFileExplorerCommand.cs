@@ -17,7 +17,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            Enabled = _viewModel?.SelectedProject != null;
+            Enabled = _viewModel.IsSolutionLoaded && _viewModel?.SelectedProject != null;
         }
 
         public override void Execute(object parameter) {
