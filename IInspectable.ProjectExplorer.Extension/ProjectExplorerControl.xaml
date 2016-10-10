@@ -95,7 +95,7 @@
         <ui:VsListBox Grid.Row      = "2" 
                       SelectionMode = "Single"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
-                      ItemsSource   = "{Binding Projects}" 
+                      ItemsSource   = "{Binding ProjectsView}" 
                       ItemTemplate  = "{StaticResource ProjectItemTemplate}"
                       SelectedItem  = "{Binding SelectedProject}"
                       ContextMenuOpening = "OnProjectItemContextMenuOpening"

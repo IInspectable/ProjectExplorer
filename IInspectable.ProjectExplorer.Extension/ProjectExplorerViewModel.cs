@@ -1,12 +1,15 @@
 #region Using Directives
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
+using System.Text.RegularExpressions;
+using System.Windows.Data;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 
@@ -19,9 +22,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _menuCommandService;
-
-        ObservableCollection<ProjectViewModel> _projects;
-
+        readonly ObservableCollection<ProjectViewModel> _projects;
+        readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
 
         internal ProjectExplorerViewModel(SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
@@ -29,8 +31,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService    = solutionService;
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
-            _projects           = new ObservableCollection<ProjectViewModel>();
-
+            
             _solutionService.AfterLoadProject    += OnAfterLoadProject;
             _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
@@ -49,6 +50,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             RegisterCommands();
 
             PropertyChanged += (o, e) => UpdateCommandStates();
+
+            SearchOptions = new ProjectSearchOptions();
+            _projects     = new ObservableCollection<ProjectViewModel>();
+            _projectsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
+            _projectsView.CustomSort = new ProjectItemComparer();
         }
 
         void RegisterCommands() {
@@ -63,6 +69,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
+        // TODO Selection Logic
         ProjectViewModel _selectedProject;
 
         public ProjectViewModel SelectedProject {
@@ -134,8 +141,42 @@ namespace IInspectable.ProjectExplorer.Extension {
             return _projects.FirstOrDefault(p => p.ProjectGuid == projectGuid);
         }
 
-        public void Reload() {
+        public void ApplySearch(string searchString) {
 
+            Dictionary<ProjectStatus, bool> inlcudeStatus = new Dictionary<ProjectStatus, bool> {
+                {ProjectStatus.Closed  , SearchOptions.ClosedProjects},
+                {ProjectStatus.Unloaded, SearchOptions.UnloadedProjects},
+                {ProjectStatus.Loaded  , SearchOptions.LoadedProjects},
+            };
+
+            Regex regex = null;
+            if (!String.IsNullOrWhiteSpace(searchString)) {
+                searchString = Regex.Escape(searchString);
+                regex = new Regex($".*{searchString}.*", RegexOptions.IgnoreCase);
+            }
+           
+            ProjectsView.Filter = (item) => {
+
+                var projectVm = (ProjectViewModel) item;
+
+                var status = projectVm.Status;
+                if (!inlcudeStatus[status]) {
+                    return false;
+                }
+
+                return regex == null || regex.IsMatch(projectVm.Name);
+            };
+
+        }
+        public void ClearSearch() {
+            ProjectsView.Filter = null;
+        }
+
+         // asynchron 
+         public void Reload() {
+
+            // TODO Kann in separatem Thread laufen.
+         
             var projectFiles = _solutionService.LoadProjectFiles(ProjectsRoot);
 
             var projects = _solutionService.BindToHierarchy(projectFiles);
@@ -144,17 +185,19 @@ namespace IInspectable.ProjectExplorer.Extension {
                 projectVm.SetParent(this);
             }
 
-            var orderedProjects=projects.OrderByDescending(pvm => pvm.Status)
-                                        .ThenBy(pvm => pvm.Name);
-            
-            var oldProjects = Projects;
+            var oldProjects = Projects.ToList();
 
-            Projects = new ObservableCollection<ProjectViewModel>(orderedProjects);
+            Projects.Clear();
+            foreach(var project in projects) {
+                Projects.Add(project);
+            }
             SelectedProject = null;
 
             foreach (var projectVm in oldProjects) {
                 projectVm.Dispose();
             }
+
+            NotifyAllPropertiesChanged();
         }
 
         [NotNull]
@@ -162,18 +205,23 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _solutionService; }
         }
 
+        [NotNull]
         public ObservableCollection<ProjectViewModel> Projects {
-            get { return _projects; }
-            private set {
-                _projects = value;               
-                NotifyAllPropertiesChanged();
-            }
+            get { return _projects; }            
         }
+
+        [NotNull]
+        public ListCollectionView ProjectsView {
+            get { return _projectsView; }   
+        }
+
+        [NotNull]
+        public ProjectSearchOptions SearchOptions { get; }
 
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
         }
-        
+
         public void ShowSettingsButtonContextMenu(int x, int y) {
             
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, 
@@ -188,6 +236,34 @@ namespace IInspectable.ProjectExplorer.Extension {
                                           PackageIds.ProjectItemContextMenu);
 
             _menuCommandService.ShowContextMenu(commandId, x, y);
+        }        
+    }
+
+    sealed class ProjectItemComparer: IComparer<ProjectViewModel>, IComparer {
+
+        public int Compare(ProjectViewModel x, ProjectViewModel y) {
+
+            if (x == null && y != null) {
+                return -1;
+            }
+
+            if (x != null && y == null) {
+                return 1;
+            }
+            if (x == null) {
+                return 0;
+            }
+
+            var statusCmp= y.Status - x.Status;
+            if (statusCmp != 0) {
+                return statusCmp;
+            }
+
+            return String.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int Compare(object x, object y) {
+            return Compare(x as ProjectViewModel, y as ProjectViewModel);
         }
 
     }
