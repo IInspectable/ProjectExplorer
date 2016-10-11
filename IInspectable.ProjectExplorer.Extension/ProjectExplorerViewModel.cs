@@ -262,7 +262,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 ClearProjects(clearSearch:false);
 
-                var projectFiles = await _solutionService.LoadProjectFilesAsync(ProjectsRoot);
+                // TODO Error Handling
+                var projectFiles = await _solutionService.GetProjectFilesAsync(ProjectsRoot);
 
                 var projects = _solutionService.BindToHierarchy(projectFiles);
 
@@ -318,7 +319,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             _optionService.ProjectsRoot = path;
+
             await ReloadProjects();
+
             return true;
         }
 

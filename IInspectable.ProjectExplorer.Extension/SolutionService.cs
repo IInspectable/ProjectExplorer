@@ -2,9 +2,10 @@
 
 using System;
 using System.IO;
-using System.Diagnostics;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -18,6 +19,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly IVsSolution  _vsSolution1;
         readonly IVsSolution2 _vsSolution2;
         readonly IVsSolution4 _vsSolution4;
+
+        readonly Logger _logger = Logger.Create<SolutionService>();
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
@@ -56,8 +59,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _vsSolution4; }
         }
 
-        public Task<List<ProjectFile>> LoadProjectFilesAsync(string path) {
+        public Task<List<ProjectFile>> GetProjectFilesAsync(string path) {
             var task= Task.Run(() => {
+
+                // TODO Error Handling
                 var projectFiles = new List<ProjectFile>();
 
                 foreach (var file in Directory.EnumerateFiles(path, "*.csproj", SearchOption.AllDirectories)) {
@@ -107,7 +112,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 grfCreateFlags  : (uint)__VSCREATEPROJFLAGS.CPF_OPENFILE, 
                 iidProject      : ref projId, 
                 ppProject       : out ppProj))) {
-                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+
+                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
             }
 
         }
@@ -118,7 +124,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             
             
             if (ErrorHandler.Failed(res = _vsSolution1.GetGuidOfProject(pHierarchy, out projGuid))) {
-                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
             }
 
             return projGuid;
@@ -145,7 +151,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             int res;
             IVsHierarchy result;
             if(ErrorHandler.Failed(res = _vsSolution1.GetProjectOfGuid(projectGuid, out result))) {
-                Debug.WriteLine($"IVsolution::GetGuidOfProject retuend 0x{res:X}.");
+                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
                 return null;
             }
 

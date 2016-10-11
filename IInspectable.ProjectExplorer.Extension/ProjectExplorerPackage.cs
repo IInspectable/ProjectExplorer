@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-
+using IInspectable.Utilities.Logging;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -22,7 +22,12 @@ namespace IInspectable.ProjectExplorer.Extension {
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
     sealed class ProjectExplorerPackage : Package {
 
+        readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
+
         public ProjectExplorerPackage() {
+
+            LoggerConfig.Initialize(Path.GetTempPath(), "IInspectable.ProjectExplorer.Extension");
+
             AddOptionKey(OptionService.OptionKey);            
         }
 
@@ -31,6 +36,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         protected override void Initialize() {
+
+            _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
 
             var solutionService = new SolutionService();
             var optionService   = new OptionService(solutionService);

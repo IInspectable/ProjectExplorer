@@ -1,6 +1,7 @@
 ﻿
 $targetFiles=
-    "$PSScriptRoot'\..\IInspectable.ProjectExplorer.Extension\UpdateProductVersion.targets"
+    "$PSScriptRoot'\..\IInspectable.ProjectExplorer.Extension\UpdateProductVersion.targets",
+    "$PSScriptRoot'\..\IInspectable.Utilities\UpdateProductVersion.targets"
 
 function IncreaseMajor(){
     [CmdletBinding()]

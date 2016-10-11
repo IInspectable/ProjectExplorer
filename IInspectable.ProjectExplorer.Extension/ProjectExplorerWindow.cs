@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Internal.VisualStudio.PlatformUI;
+using Util= Microsoft.Internal.VisualStudio.PlatformUI.Utilities;
 using Microsoft.VisualStudio.Imaging;
 
 #endregion
@@ -87,13 +87,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)500);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)500);
             // TODO SHortcut Key anzeigen
-            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
         }
 
         public override void ClearSearch() {
