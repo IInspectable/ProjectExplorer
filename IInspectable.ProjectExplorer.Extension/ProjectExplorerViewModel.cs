@@ -163,8 +163,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             Regex regex = null;
             if (!String.IsNullOrWhiteSpace(searchString)) {
-                searchString = Regex.Escape(searchString);
-                regex = new Regex($".*{searchString}.*", RegexOptions.IgnoreCase);
+                var regexString = WildcardToRegex(searchString);
+
+                regex = new Regex(regexString, RegexOptions.IgnoreCase);
             }
            
             ProjectsView.Filter = item => {
@@ -181,7 +182,24 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             NotifyThisPropertyChanged(nameof(StatusText));
         }
-        
+
+        private static string WildcardToRegex(string searchString) {
+
+            if (!searchString.StartsWith("*")) {
+                searchString = "*" + searchString;
+            }
+            if (!searchString.EndsWith("*")) {
+                searchString += "*";
+            }
+
+            searchString = "^" + Regex.Escape(searchString)
+                               .Replace("\\*", ".*")
+                               .Replace("\\?", ".") +
+                           "$";
+            return searchString;
+
+        }
+
         public void ClearSearch() {
             ProjectsView.Filter = null;
 
