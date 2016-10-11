@@ -60,6 +60,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             _projectsView.CustomSort = new ProjectItemComparer();
 
             UpdateCommands();
+
+            if (IsSolutionLoaded) {
+                RefreshCommand.Execute();
+            }
         }
         
         void RegisterCommands() {
@@ -96,8 +100,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         public LoadProjectCommand LoadProjectCommand { get; }
         public SettingsCommand SettingsCommand { get; }
 
-        async void OnAfterOpenSolution(object sender, EventArgs e) {
-            await ReloadProjects();
+        void OnAfterOpenSolution(object sender, EventArgs e) {
+            RefreshCommand.Execute();
         }
 
         void OnAfterCloseSolution(object sender, EventArgs e) {
@@ -239,7 +243,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 }
 
                 if (ProjectsView.Count == 1) {
-                    return $"1 Project found";
+                    return "1 Project found";
                 }
 
                 return $"{ProjectsView.Count} Projects found";

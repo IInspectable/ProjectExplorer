@@ -6,7 +6,6 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
-
     sealed class SettingsCommand : Command {
 
         readonly ProjectExplorerViewModel _viewModel;
@@ -38,14 +37,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             Enabled = _viewModel.IsSolutionLoaded && !Executing;
         }
 
-        public override async void Execute(object parameter) {
+        public override async void Execute(object parameter=null) {
 
-            if(!CanExecute(null)) {
+            if(!CanExecute(parameter)) {
                 return;
             }
-            // TODO IVsUIShell::EnableModeless
+
             Executing = true;
             try {
+                
                 var dlg = new CommonOpenFileDialog {
                     Title                     = "Select Folder",
                     InitialDirectory          = _viewModel.ProjectsRoot,
@@ -59,9 +59,16 @@ namespace IInspectable.ProjectExplorer.Extension {
                     EnsureValidNames          = true
                 };
 
-                if(dlg.ShowDialog() == CommonFileDialogResult.Ok) {
+                CommonFileDialogResult result;
+
+                using (ShellUtil.EnterModalState()) {
+                    result = dlg.ShowDialog();
+                }
+
+                if(result == CommonFileDialogResult.Ok) {
                     await _viewModel.SetProjectsRoot(dlg.FileName);
                 }
+
             } finally {
                 Executing = false;
             }

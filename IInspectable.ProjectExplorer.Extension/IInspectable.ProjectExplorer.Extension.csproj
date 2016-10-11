@@ -58,6 +58,7 @@
     <Compile Include="Commands\ProjectExplorerSearchCommand.cs" />
     <Compile Include="Commands\RemoveProjectCommand.cs" />
     <Compile Include="Commands\SettingsCommand.cs" />
+    <Compile Include="Commands\ShellUtil.cs" />
     <Compile Include="Commands\UnloadProjectCommand.cs" />
     <Compile Include="Hierarchy.cs" />
     <Compile Include="OptionService.cs" />
@@ -147,6 +148,11 @@
     <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Imaging.14.3.25407\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\lib\VSSDK\v4.0\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
@@ -246,6 +252,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Preview.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\ProjectExplorer32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\ToolWindow1Package.ico" />
     <VSCTCompile Include="ProjectExplorerPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>

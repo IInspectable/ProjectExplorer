@@ -20,7 +20,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Enabled = _viewModel.IsSolutionLoaded && _viewModel?.SelectedProject != null;
         }
 
-        public override void Execute(object parameter) {
+        public override void Execute(object parameter = null) {
 
             _viewModel?.SelectedProject?.OpenFolderInFileExplorer();
         }

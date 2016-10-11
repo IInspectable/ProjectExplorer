@@ -8,7 +8,7 @@
             _package = package;
         }
         
-        public override void Execute(object parameter) {
+        public override void Execute(object parameter = null) {
 
             _package.ShowProjectExplorerWindow();
 

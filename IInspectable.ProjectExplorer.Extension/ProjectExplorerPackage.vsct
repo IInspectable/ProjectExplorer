@@ -102,7 +102,7 @@
               priority = "0x0100"
               type     = "Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWSEXPLORERS" />
-        <Icon guid="ImageCatalogGuid" id="CSProjectNode" />
+        <Icon guid="ImageCatalogGuid" id="SearchFolderOpened" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Project Explorer</ButtonText>

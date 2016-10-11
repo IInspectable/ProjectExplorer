@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Internal.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Imaging;
 
 #endregion
 
@@ -24,7 +25,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             ViewModel = new ProjectExplorerViewModel(solutionService, optionService, menuCommandService);
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-
+            ViewModel.SolutionService.AfterCloseSolution += OnAfterCloseSolution;
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
@@ -32,8 +33,22 @@ namespace IInspectable.ProjectExplorer.Extension {
             Content = new ProjectExplorerControl(ViewModel);
             ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
             Caption = "Project Explorer";
-
+            BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
+            
             // ReSharper restore VirtualMemberCallInConstructor
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void OnAfterCloseSolution(object sender, System.EventArgs e) {
+           // TODO Clear search text
         }
 
         public override void OnToolWindowCreated() {
@@ -76,6 +91,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
             Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
             Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
+            Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)500);
             // TODO SHortcut Key anzeigen
             Utilities.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
         }

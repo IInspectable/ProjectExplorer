@@ -20,7 +20,7 @@ namespace IInspectable.ProjectExplorer.Extension {
            Enabled = _viewModel.SelectedProject ?.Status==ProjectStatus.Closed;
         }
 
-        public override void Execute(object parameter) {
+        public override void Execute(object parameter = null) {
             _viewModel.SelectedProject?.Add();
         }
     }

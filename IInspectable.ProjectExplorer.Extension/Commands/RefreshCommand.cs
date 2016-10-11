@@ -25,7 +25,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Enabled = _viewModel.IsSolutionLoaded && !_viewModel.IsLoading;
         }
 
-        public override async void Execute(object parameter) {
+        public override async void Execute(object parameter=null) {
             await _viewModel.ReloadProjects();
         }
     }

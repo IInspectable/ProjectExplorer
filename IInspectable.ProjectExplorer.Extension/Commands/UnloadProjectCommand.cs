@@ -21,7 +21,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Visible = Enabled;
         }
 
-        public override void Execute(object parameter) {
+        public override void Execute(object parameter = null) {
             _viewModel.SelectedProject?.Unload();
         }
     }

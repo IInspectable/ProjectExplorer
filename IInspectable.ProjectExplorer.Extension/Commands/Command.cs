@@ -60,11 +60,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             commandService.RemoveCommand(_command);
         }
         
-        public bool CanExecute(object parameter) {
+        public bool CanExecute(object parameter=null) {
             return _command.Enabled && _command.Supported && _command.Visible;
         }
+        
+        public abstract void Execute(object parameter=null);
 
-        public abstract void Execute(object parameter);
         public virtual void UpdateState() { }
 
         void OnCommandChanged(object sender, EventArgs e) {

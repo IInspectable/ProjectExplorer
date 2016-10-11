@@ -22,7 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                       _viewModel.SelectedProject.Status != ProjectStatus.Closed;
         }
 
-        public override void Execute(object parameter) {
+        public override void Execute(object parameter = null) {
             _viewModel.SelectedProject?.Remove();
         }
     }
