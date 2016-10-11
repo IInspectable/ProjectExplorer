@@ -38,6 +38,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             set { _projectsRoot = value; }
         }
 
+        // TODO Als XML speichern/laden
         public void LoadOptions(Stream stream) {
 
             using(var sr = new StreamReader(stream)) {

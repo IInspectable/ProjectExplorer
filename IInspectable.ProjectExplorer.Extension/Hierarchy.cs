@@ -88,5 +88,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             return ErrorHandler.Succeeded(hr);
         }
+
+        public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
+            uint cookie;
+            var hr = _vsHierarchy.AdviseHierarchyEvents(eventSink, out cookie);
+            // TODO Error Logging
+            return cookie;
+        }
+
+        public void UnadviseHierarchyEvents(uint cookie) {
+            var hr = _vsHierarchy.UnadviseHierarchyEvents(cookie);
+            // TODO Error Logging
+        }
     }
 }

@@ -2,16 +2,21 @@
 
 using System;
 using System.Diagnostics;
+using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
     // TODO HierarchyEvent
-    class ProjectViewModel: ViewModelBase {
+    class ProjectViewModel: ViewModelBase, IVsHierarchyEvents {
+
+        static readonly Logger Logger = Logger.Create<ProjectViewModel>();
 
         [NotNull]
         readonly ProjectFile _projectFile;
@@ -22,6 +27,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         ProjectExplorerViewModel _parent;
         readonly string _uniqueNameOfProject;
+        uint _eventCookie;
         
         public ProjectViewModel(ProjectFile projectFile, string uniqueNameOfProject) {
 
@@ -64,10 +70,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 switch(Status) {
                     case ProjectStatus.Loaded:
-                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
-                        return _hierarchy.GetImageMoniker();
                     case ProjectStatus.Unloaded:
-                        return KnownMonikers.DocumentCollection;
+                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
+                        return _hierarchy.GetImageMoniker();                    
                 }
 
                 return KnownMonikers.NewDocumentCollection;
@@ -134,11 +139,16 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void Bind([CanBeNull] Hierarchy hierarchy) {
-            _hierarchy = hierarchy;
-            NotifyAllPropertiesChanged();
-            _parent?.UpdateCommands();
-        }
 
+            UnadviseHierarchyEvents();
+
+            _hierarchy = hierarchy;
+
+            AdviseHierarchyEvents();
+
+            NotifyAllPropertiesChanged();
+        }
+       
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {
             if(parent == null) {
                 throw new ArgumentNullException(nameof(parent));
@@ -147,8 +157,54 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void Dispose() {
+            UnadviseHierarchyEvents();
             _parent    = null;
             _hierarchy = null;
         }
+
+        #region IVsHierarchyEvents
+
+        void AdviseHierarchyEvents() {
+            if(_eventCookie != 0) {
+                Logger.Error($"{nameof(AdviseHierarchyEvents)}: event cookie not 0 ({_eventCookie})");
+            }
+            _eventCookie = _hierarchy?.AdviseHierarchyEvents(this) ?? 0;
+        }
+
+        void UnadviseHierarchyEvents() {
+            if(_eventCookie != 0) {
+                _hierarchy?.UnadviseHierarchyEvents(_eventCookie);
+                _eventCookie = 0;
+            }
+        }
+
+        int IVsHierarchyEvents.OnItemAdded(uint itemidParent, uint itemidSiblingPrev, uint itemidAdded) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsHierarchyEvents.OnItemsAppended(uint itemidParent) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsHierarchyEvents.OnItemDeleted(uint itemid) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsHierarchyEvents.OnPropertyChanged(uint itemid, int propid, uint flags) {
+            if(propid ==(int)__VSHPROPID.VSHPROPID_IconHandle) {
+                NotifyThisPropertyChanged(nameof(ImageMoniker));
+            }
+            return VSConstants.S_OK; 
+        }
+
+        int IVsHierarchyEvents.OnInvalidateItems(uint itemidParent) {
+            return VSConstants.S_OK;
+        }
+
+        int IVsHierarchyEvents.OnInvalidateIcon(IntPtr hicon) {            
+            return VSConstants.S_OK;
+        }
+
+        #endregion
     }
 }

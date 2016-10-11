@@ -74,7 +74,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnExecute(object sender, EventArgs e) {
-            Execute(null);
+            Execute();
         }
 
         void NotifyPropertiesChanged() {

@@ -12,12 +12,15 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
+using IInspectable.Utilities.Logging;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerViewModel: ViewModelBase {
+
+        static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
@@ -65,32 +68,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
         
-        void RegisterCommands() {
-            foreach(var command in _commands) {
-                command.Register(_menuCommandService);
-            }
-        }
-
-        public void UpdateCommands() {
-            foreach (var command in _commands) {
-                command.UpdateState();
-            }
-        }
-
-        // TODO Selection Logic
-        ProjectViewModel _selectedProject;
-
-        public ProjectViewModel SelectedProject {
-            get { return _selectedProject; }
-            set {
-                if(_selectedProject == value) {
-                    return;
-                }
-                _selectedProject = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         public RefreshCommand RefreshCommand { get; }
         public OpenInFileExplorerCommand OpenInFileExplorerCommand { get; }
         public AddProjectCommand AddProjectCommand { get; }
@@ -99,62 +76,138 @@ namespace IInspectable.ProjectExplorer.Extension {
         public LoadProjectCommand LoadProjectCommand { get; }
         public SettingsCommand SettingsCommand { get; }
 
+        [NotNull]
+        internal SolutionService SolutionService {
+            get { return _solutionService; }
+        }
+
+        [NotNull]
+        public ObservableCollection<ProjectViewModel> Projects {
+            get { return _projects; }
+        }
+
+        [NotNull]
+        public ListCollectionView ProjectsView {
+            get { return _projectsView; }
+        }
+
+        [NotNull]
+        public ProjectSearchOptions SearchOptions { get; }
+
+        public string ProjectsRoot {
+            get { return _optionService.ProjectsRoot; }
+        }
+
+        public bool IsSolutionLoaded {
+            get { return _solutionService.IsSolutionLoaded(); }
+        }
+
+        // TODO Selection Logic
+        ProjectViewModel _selectedProject;
+
+        public ProjectViewModel SelectedProject {
+            get { return _selectedProject; }
+            set {
+                if (_selectedProject == value) {
+                    return;
+                }
+                _selectedProject = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        bool _isLoading;
+        public bool IsLoading {
+            get { return _isLoading; }
+            private set {
+                if (value == _isLoading) {
+                    return;
+                }
+                _isLoading = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string StatusText {
+            get {
+
+                if (IsLoading) {
+                    return "Loading projects...";
+                }
+
+                if (ProjectsView.Count == 1) {
+                    return "1 Project found";
+                }
+
+                return $"{ProjectsView.Count} Projects found";
+            }
+        }
+
+        #region Event Handler
+
         void OnAfterOpenSolution(object sender, EventArgs e) {
+            Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");
             RefreshCommand.Execute();
         }
 
         void OnAfterCloseSolution(object sender, EventArgs e) {
+            Logger.Info($"{nameof(OnAfterCloseSolution)}");
             ClearProjects();
         }
         
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
+            Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.GetUniqueNameOfProject()}");
 
             var uniqueName = e.RealHierarchie.GetUniqueNameOfProject();
-
+            
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
             // wird es auch keine Hierarchie mehr geben...
             Application.Current.Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
                 new Action(() => {
+
                     var projectVm = FindProjectViewModel(uniqueName);
-                    var hier=SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
-                    projectVm?.Bind(hier);                    
+                    var hier      =SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
+
+                    projectVm?.Bind(hier);
+
+                    UpdateCommands();
                 }));
         }
 
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
+            Logger.Info($"{nameof(OnAfterOpenProject)}: {e.RealHierarchie.GetUniqueNameOfProject()}");
 
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
             projectVm?.Bind(e.RealHierarchie);
+
+            UpdateCommands();
         }
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
+            Logger.Info($"{nameof(OnBeforeUnloadProject)}: {e.StubHierarchie?.GetUniqueNameOfProject()}");
 
             var projectVm = FindProjectViewModel(e.StubHierarchie);
 
             projectVm?.Bind(e.StubHierarchie);
+
+            UpdateCommands();
         }
 
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
+            Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.GetUniqueNameOfProject()}");
 
             var projectVm= FindProjectViewModel(e.RealHierarchie);
 
             projectVm?.Bind(e.RealHierarchie);
+
+            UpdateCommands();
         }
 
-        [CanBeNull]
-        ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
-            string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
-            return FindProjectViewModel(uniqueNameOfProject);
-        }
-
-        [CanBeNull]
-        ProjectViewModel FindProjectViewModel(string uniqueNameOfProject) {
-            return _projects.FirstOrDefault(p => p.UniqueNameOfProject == uniqueNameOfProject);
-        }
-
+        #endregion
+        
         public void ApplySearch(string searchString) {
 
             Dictionary<ProjectStatus, bool> inlcudeStatus = new Dictionary<ProjectStatus, bool> {
@@ -184,34 +237,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             NotifyThisPropertyChanged(nameof(StatusText));
         }
-
-        static string WildcardToRegex(string searchString) {
-
-            if (!searchString.StartsWith("*")) {
-                searchString = "*" + searchString;
-            }
-            if (!searchString.EndsWith("*")) {
-                searchString += "*";
-            }
-
-            searchString = "^" + Regex.Escape(searchString)
-                               .Replace("\\*", ".*")
-                               .Replace("\\?", ".") +
-                           "$";
-            return searchString;
-
-        }
-
+       
         public void ClearSearch() {
             ProjectsView.Filter = null;
 
             NotifyThisPropertyChanged(nameof(StatusText));
         }
-
-        public bool IsSolutionLoaded {
-            get { return _solutionService.IsSolutionLoaded(); }
-        }
-
+        
         public void ClearProjects(bool clearSearch=true) {
             Projects.Clear();
             if (clearSearch) {                
@@ -220,35 +252,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             SelectedProject = null;
             NotifyAllPropertiesChanged();
         }
-
-        bool _isLoading;
-        public bool IsLoading {
-            get { return _isLoading; }
-            set {
-                if (value == _isLoading) {
-                    return;
-                }
-                _isLoading = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public string StatusText {
-            get {
-
-                if (IsLoading) {
-                    return "Loading projects...";
-                }
-
-                if (ProjectsView.Count == 1) {
-                    return "1 Project found";
-                }
-
-                return $"{ProjectsView.Count} Projects found";
-            }
-         
-        }
-
+        
         public async System.Threading.Tasks.Task ReloadProjects() {
 
             if (!IsSolutionLoaded || IsLoading) {
@@ -285,31 +289,10 @@ namespace IInspectable.ProjectExplorer.Extension {
                 IsLoading = false;
             }
 
+            UpdateCommands();
             NotifyAllPropertiesChanged();
         }
-
-        [NotNull]
-        internal SolutionService SolutionService {
-            get { return _solutionService; }
-        }
-
-        [NotNull]
-        public ObservableCollection<ProjectViewModel> Projects {
-            get { return _projects; }            
-        }
-
-        [NotNull]
-        public ListCollectionView ProjectsView {
-            get { return _projectsView; }   
-        }
-
-        [NotNull]
-        public ProjectSearchOptions SearchOptions { get; }
-
-        public string ProjectsRoot {
-            get { return _optionService.ProjectsRoot; }
-        }
-
+        
         public async Task<bool> SetProjectsRoot(string path) {
 
             if(!IsSolutionLoaded || IsLoading) {
@@ -337,6 +320,46 @@ namespace IInspectable.ProjectExplorer.Extension {
                                           PackageIds.ProjectItemContextMenu);
 
             _menuCommandService.ShowContextMenu(commandId, x, y);
-        }        
+        }
+
+        void RegisterCommands() {
+            foreach (var command in _commands) {
+                command.Register(_menuCommandService);
+            }
+        }
+
+        void UpdateCommands() {
+            foreach (var command in _commands) {
+                command.UpdateState();
+            }
+        }
+
+        [CanBeNull]
+        ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
+            string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
+            return FindProjectViewModel(uniqueNameOfProject);
+        }
+
+        [CanBeNull]
+        ProjectViewModel FindProjectViewModel(string uniqueNameOfProject) {
+            return _projects.FirstOrDefault(p => p.UniqueNameOfProject == uniqueNameOfProject);
+        }
+
+        static string WildcardToRegex(string searchString) {
+
+            if (!searchString.StartsWith("*")) {
+                searchString = "*" + searchString;
+            }
+            if (!searchString.EndsWith("*")) {
+                searchString += "*";
+            }
+
+            searchString = "^" + Regex.Escape(searchString)
+                               .Replace("\\*", ".*")
+                               .Replace("\\?", ".") +
+                           "$";
+            return searchString;
+
+        }
     }
 }

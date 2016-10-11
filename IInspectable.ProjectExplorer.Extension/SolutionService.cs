@@ -76,7 +76,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             
             var task= Task.Run(() => {
 
-                var patterns = new[] { "*.csproj"};// , "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
+                var patterns = new[] { "*.csproj"};//, "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
 
                 // TODO Error Handling
                 var projectFiles = new List<ProjectFile>();
@@ -88,7 +88,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                     }
                 }
                 
-
                 return projectFiles;
             });
 
@@ -165,6 +164,18 @@ namespace IInspectable.ProjectExplorer.Extension {
             _vsSolution1.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptsFile);
 
             return solutionDirectory;
+        }
+
+        [CanBeNull]
+        public string GetSolutionFile() {
+
+            string solutionDirectory;
+            string solutionFile;
+            string userOptsFile;
+
+            _vsSolution1.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptsFile);
+
+            return solutionFile;
         }
 
         public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
