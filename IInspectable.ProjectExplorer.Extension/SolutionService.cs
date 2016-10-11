@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using IInspectable.Utilities.IO;
 using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
@@ -80,14 +80,17 @@ namespace IInspectable.ProjectExplorer.Extension {
         public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
             var projectFileViewModels = new List<ProjectViewModel>();
 
-            var projectHierarchyById = GetProjectHierarchyById();
+            var projectHierarchyById = GetProjectHierarchyByUniqueName();
 
             foreach (var projectFile in projectFiles) {
 
-                var vm = new ProjectViewModel(projectFile);
+                var uniqueNameOfProject = PathHelper.GetRelativePath(GetSolutionDirectory(), projectFile.Path)
+                                                    .ToLowerInvariant();
+
+                var vm = new ProjectViewModel(projectFile, uniqueNameOfProject);
 
                 Hierarchy pHierarchy;
-                if(projectHierarchyById.TryGetValue(projectFile.ProjectGuid, out pHierarchy)) {
+                if(projectHierarchyById.TryGetValue(uniqueNameOfProject, out pHierarchy)) {
                     vm.Bind(pHierarchy);
                 }
 
@@ -146,21 +149,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             return solutionDirectory;
         }
 
-        public Hierarchy GetHierarchyByProjectGuid(Guid projectGuid) {
-
+        public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
             int res;
             IVsHierarchy result;
-            if(ErrorHandler.Failed(res = _vsSolution1.GetProjectOfGuid(projectGuid, out result))) {
+            if (ErrorHandler.Failed(res = _vsSolution1.GetProjectOfUniqueName(uniqueName, out result))) {
+                // TODO Error Handling
                 _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
                 return null;
             }
 
             return new Hierarchy(this, result);
         }
+        
+        Dictionary<string, Hierarchy> GetProjectHierarchyByUniqueName() {
 
-        Dictionary<Guid, Hierarchy> GetProjectHierarchyById() {
-
-            var result = new Dictionary<Guid, Hierarchy>();
+            var result = new Dictionary<string, Hierarchy>();
 
             Guid ignored = Guid.Empty;
             IEnumHierarchies hierEnum;
@@ -175,7 +178,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 var hierarchy = new Hierarchy(this, hier[0]);
 
-                result[hierarchy.GetProjectGuid()] =hierarchy;
+                result[hierarchy.GetUniqueNameOfProject()] =hierarchy;
             }
 
             return result;
@@ -271,5 +274,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         #endregion
+
+       
+
     }
 }

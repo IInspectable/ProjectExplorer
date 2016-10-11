@@ -73,7 +73,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 Debug.WriteLine($"IVsolution::GetUniqueNameOfProject retuend 0x{res:X}.");
             }
 
-            return uniqueName;
+            return uniqueName.ToLower();
         }
 
         public bool IsProjectUnloaded() {

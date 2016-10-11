@@ -1,7 +1,6 @@
 #region Using Directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -33,8 +32,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
 
-            _solutionService.AfterOpenSolution += OnAfterOpenSolution;
-            _solutionService.AfterCloseSolution += OnAfterCloseSolution;
+            _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
+            _solutionService.AfterCloseSolution  += OnAfterCloseSolution;
             _solutionService.AfterLoadProject    += OnAfterLoadProject;
             _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
@@ -110,7 +109,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
 
-            var guid= e.RealHierarchie.GetProjectGuid();
+            var uniqueName = e.RealHierarchie.GetUniqueNameOfProject();
 
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
@@ -118,8 +117,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             Application.Current.Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
                 new Action(() => {
-                    var hier=_solutionService.GetHierarchyByProjectGuid(guid);
-                    var projectVm = FindProjectViewModel(guid);
+                    var projectVm = FindProjectViewModel(uniqueName);
+                    var hier=SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
                     projectVm?.Bind(hier);                    
                 }));
         }
@@ -147,14 +146,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
-            var projectGuid = hierarchy.GetProjectGuid();
-            return FindProjectViewModel(projectGuid);
+            string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
+            return FindProjectViewModel(uniqueNameOfProject);
         }
 
         [CanBeNull]
-        ProjectViewModel FindProjectViewModel(Guid projectGuid) {
-            // TODO Performance Optimierung
-            return _projects.FirstOrDefault(p => p.ProjectGuid == projectGuid);
+        ProjectViewModel FindProjectViewModel(string uniqueNameOfProject) {
+            return _projects.FirstOrDefault(p => p.UniqueNameOfProject == uniqueNameOfProject);
         }
 
         public void ApplySearch(string searchString) {
@@ -187,7 +185,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             NotifyThisPropertyChanged(nameof(StatusText));
         }
 
-        private static string WildcardToRegex(string searchString) {
+        static string WildcardToRegex(string searchString) {
 
             if (!searchString.StartsWith("*")) {
                 searchString = "*" + searchString;
@@ -223,7 +221,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             NotifyAllPropertiesChanged();
         }
 
-        private bool _isLoading;
+        bool _isLoading;
         public bool IsLoading {
             get { return _isLoading; }
             set {
@@ -340,34 +338,5 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             _menuCommandService.ShowContextMenu(commandId, x, y);
         }        
-    }
-
-    sealed class ProjectItemComparer: IComparer<ProjectViewModel>, IComparer {
-
-        public int Compare(ProjectViewModel x, ProjectViewModel y) {
-
-            if (x == null && y != null) {
-                return -1;
-            }
-
-            if (x != null && y == null) {
-                return 1;
-            }
-            if (x == null) {
-                return 0;
-            }
-
-            var statusCmp= y.Status - x.Status;
-            if (statusCmp != 0) {
-                return statusCmp;
-            }
-
-            return String.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public int Compare(object x, object y) {
-            return Compare(x as ProjectViewModel, y as ProjectViewModel);
-        }
-
     }
 }

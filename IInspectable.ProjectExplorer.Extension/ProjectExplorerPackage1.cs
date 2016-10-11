@@ -10,7 +10,7 @@ namespace IInspectable.ProjectExplorer.Extension
     /// <summary>
     /// Helper class that exposes all GUIDs used across VS Package.
     /// </summary>
-    internal sealed partial class PackageGuids
+    sealed partial class PackageGuids
     {
         public const string ProjectExplorerWindowPackageGuidString = "f2f16ece-71b7-4b31-a2f1-c91aca261509";
         public const string ProjectExplorerWindowPackageCmdSetGuidString = "4c113c46-d7a3-45e2-926f-6504d7d796d1";
@@ -20,7 +20,7 @@ namespace IInspectable.ProjectExplorer.Extension
     /// <summary>
     /// Helper class that encapsulates all CommandIDs uses across VS Package.
     /// </summary>
-    internal sealed partial class PackageIds
+    sealed partial class PackageIds
     {
         public const int ProjectExplorerToolbar = 0x1010;
         public const int SettingsButtonContextMenu = 0x1011;

@@ -18,9 +18,25 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         ProjectExplorerViewModel _parent;
+        readonly string _uniqueNameOfProject;
+        
+        public ProjectViewModel(ProjectFile projectFile, string uniqueNameOfProject) {
 
-        public ProjectViewModel(ProjectFile projectFile) {
-            _projectFile = projectFile;
+            if (projectFile == null) {
+                throw new ArgumentNullException(nameof(projectFile));
+            }
+
+            if (uniqueNameOfProject == null) {
+                throw new ArgumentNullException(nameof(uniqueNameOfProject));
+            }
+
+            _projectFile         = projectFile;
+            _uniqueNameOfProject = uniqueNameOfProject;
+        }
+
+        [NotNull]
+        public string UniqueNameOfProject {
+            get { return _uniqueNameOfProject; }
         }
 
         [CanBeNull]
@@ -39,11 +55,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string Path {
             get { return _projectFile.Path; }
         }
-
-        public Guid ProjectGuid {
-            get { return _projectFile.ProjectGuid; }
-        }
-
+       
         public ProjectStatus Status {
             get {
 
@@ -112,7 +124,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             if(parent == null) {
                 throw new ArgumentNullException(nameof(parent));
             }
-            _parent = parent;
+            _parent = parent; 
         }
 
         public void Dispose() {

@@ -47,7 +47,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             base.Dispose(disposing);
         }
 
-        private void OnAfterCloseSolution(object sender, System.EventArgs e) {
+        void OnAfterCloseSolution(object sender, System.EventArgs e) {
            // TODO Clear search text
         }
 

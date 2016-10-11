@@ -1,9 +1,0 @@
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\Pharmatechnik.Nav.Utilities.dll
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\Pharmatechnik.Nav.Utilities.pdb
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\JetBrains.Annotations.dll
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\NLog.dll
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\JetBrains.Annotations.xml
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\bin\Debug\NLog.xml
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\obj\Debug\Pharmatechnik.Nav.Utilities.dll
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\obj\Debug\Pharmatechnik.Nav.Utilities.pdb
-C:\ws\git\Nav.Language.Extensions\Nav.Utilities\obj\Debug\Nav.Utilities.csprojResolveAssemblyReference.cache

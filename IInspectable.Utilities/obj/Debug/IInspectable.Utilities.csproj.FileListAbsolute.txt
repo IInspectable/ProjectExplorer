@@ -1,9 +1,0 @@
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\IInspectable.Utilities.dll
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\IInspectable.Utilities.pdb
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\JetBrains.Annotations.dll
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\NLog.dll
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\JetBrains.Annotations.xml
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\bin\Debug\NLog.xml
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\obj\Debug\IInspectable.Utilities.dll
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\obj\Debug\IInspectable.Utilities.pdb
-C:\ws\git\IInspectable.ProjectExplorer\IInspectable.Utilities\obj\Debug\IInspectable.Utilities.csprojResolveAssemblyReference.cache

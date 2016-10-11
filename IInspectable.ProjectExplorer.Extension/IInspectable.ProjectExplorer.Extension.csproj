@@ -64,6 +64,7 @@
     <Compile Include="Hierarchy.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="ProjectEventArgs.cs" />
+    <Compile Include="ProjectItemComparer.cs" />
     <Compile Include="ProjectSearchOptions.cs" />
     <Compile Include="ProjectSearchTask.cs" />
     <Compile Include="SolutionService.cs" />
