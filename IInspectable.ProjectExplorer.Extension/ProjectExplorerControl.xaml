@@ -19,21 +19,7 @@
              Name="MyToolWindow">
 
     <UserControl.Resources>
-
-        <Style x:Key="StatusImage" TargetType="imaging:CrispImage">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Status}" Value="Closed">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.NewDocumentCollection}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Status}" Value="Unloaded">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.DocumentCollection}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Status}" Value="Loaded">
-                    <Setter Property="Moniker" Value="{x:Static catalog:KnownMonikers.CSProjectNode}"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
+    
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
             <Border BorderThickness="0">
                 <Border.ToolTip>
@@ -51,10 +37,10 @@
 
                     <imaging:CrispImage Grid.Column = "0" 
                                         Grid.Row    = "0"
-                                        HorizontalAlignment="Right"
-                                        Style       = "{StaticResource StatusImage}"                                       
+                                        Moniker     = "{Binding ImageMoniker}"
                                         Width       = "16" 
-                                        Height      = "16"/>
+                                        Height      = "16"
+                                        HorizontalAlignment="Right"/>
                     
                     <TextBlock Grid.Column       = "1" 
                                Grid.Row          = "0" 

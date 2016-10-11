@@ -3,11 +3,14 @@
 using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
+    // TODO HierarchyEvent
     class ProjectViewModel: ViewModelBase {
 
         [NotNull]
@@ -55,7 +58,23 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string Path {
             get { return _projectFile.Path; }
         }
-       
+
+        public ImageMoniker ImageMoniker {
+            get {
+
+                switch(Status) {
+                    case ProjectStatus.Loaded:
+                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
+                        return _hierarchy.GetImageMoniker();
+                    case ProjectStatus.Unloaded:
+                        return KnownMonikers.DocumentCollection;
+                }
+
+                return KnownMonikers.NewDocumentCollection;
+            }
+        }
+
+
         public ProjectStatus Status {
             get {
 

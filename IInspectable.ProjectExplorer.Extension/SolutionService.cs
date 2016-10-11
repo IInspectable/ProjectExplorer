@@ -8,7 +8,9 @@ using IInspectable.Utilities.IO;
 using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
+
 
 #endregion
 
@@ -19,7 +21,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly IVsSolution  _vsSolution1;
         readonly IVsSolution2 _vsSolution2;
         readonly IVsSolution4 _vsSolution4;
-
+        readonly IVsImageService2 _vsImageService2;
         readonly Logger _logger = Logger.Create<SolutionService>();
 
         uint _solutionEvents1Cookie;
@@ -30,6 +32,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             _vsSolution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
             _vsSolution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
             _vsSolution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
+
+            _vsImageService2 = ProjectExplorerPackage.GetGlobalService<SVsImageService, IVsImageService2>();
             
             _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
             _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
@@ -59,17 +63,31 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _vsSolution4; }
         }
 
+        public ImageMoniker GetImageMonikerForFile(string filename) {
+            return _vsImageService2.GetImageMonikerForFile(filename);
+        }
+
+        public ImageMoniker GetImageMonikerForHierarchyItem(IVsHierarchy hierarchy) {
+            return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint)VSConstants.VSITEMID.Root, (int)__VSHIERARCHYIMAGEASPECT.HIA_Icon);
+        }
+
         public Task<List<ProjectFile>> GetProjectFilesAsync(string path) {
+
+            
             var task= Task.Run(() => {
+
+                var patterns = new[] { "*.csproj"};// , "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
 
                 // TODO Error Handling
                 var projectFiles = new List<ProjectFile>();
+                foreach(var pattern in patterns) {
+                    foreach (var file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)) {
+                        var projectFile = ProjectFile.FromFile(file);
 
-                foreach (var file in Directory.EnumerateFiles(path, "*.csproj", SearchOption.AllDirectories)) {
-                    var projectFile = ProjectFile.FromFile(file);
-
-                    projectFiles.Add(projectFile);
+                        projectFiles.Add(projectFile);
+                    }
                 }
+                
 
                 return projectFiles;
             });

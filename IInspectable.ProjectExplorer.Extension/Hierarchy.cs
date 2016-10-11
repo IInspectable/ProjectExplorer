@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
@@ -30,6 +31,10 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         IVsSolution  VsSolution1 { get { return _solutionService.VsSolution1; } }
         IVsSolution4 VsSolution4 { get { return _solutionService.VsSolution4; } }
+
+        public ImageMoniker GetImageMoniker() {
+            return _solutionService.GetImageMonikerForHierarchyItem(_vsHierarchy);
+        }
 
         public void UnloadProject() {
             // TODO Error Logging
