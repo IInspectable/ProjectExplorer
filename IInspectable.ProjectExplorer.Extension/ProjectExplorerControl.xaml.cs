@@ -3,7 +3,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.VisualStudio;
 
 #endregion
 
@@ -25,10 +24,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             // TODO Selection Handling in ViewModel verlagern
             var item=((ListBox) sender).SelectedItem as ProjectViewModel;
 
-            int hr= item?.DefaultAction() ?? VSConstants.S_OK;
-            if(ErrorHandler.Failed(hr)) {
-                ShellUtil.ReportErrorInfo(hr);
-            }
+            ShellUtil.ReportUserOnFailed(item?.DefaultAction());
         }
 
         void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {

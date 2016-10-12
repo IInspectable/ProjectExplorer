@@ -1,5 +1,4 @@
 using System;
-using Microsoft.VisualStudio;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -23,12 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void Execute(object parameter = null) {
-
-            int hr = _viewModel.SelectedProject?.Unload() ?? VSConstants.S_OK;
-
-            if(ErrorHandler.Failed(hr)) {
-                ShellUtil.ReportErrorInfo(hr);
-            }
+            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Unload());
         }
     }
 }

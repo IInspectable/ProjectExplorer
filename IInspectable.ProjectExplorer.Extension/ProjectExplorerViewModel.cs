@@ -47,6 +47,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
             _commands = new List<Command> {
+                // TODO CancelRefreshCommand
                 { RefreshCommand            = new RefreshCommand(this)},
                 { OpenInFileExplorerCommand = new OpenInFileExplorerCommand(this)},
                 { AddProjectCommand         = new AddProjectCommand(this)},
