@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 using IInspectable.Utilities.IO;
 using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
@@ -22,7 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly IVsSolution2 _vsSolution2;
         readonly IVsSolution4 _vsSolution4;
         readonly IVsImageService2 _vsImageService2;
-        readonly Logger _logger = Logger.Create<SolutionService>();
+        static readonly Logger Logger = Logger.Create<SolutionService>();
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
@@ -71,25 +72,41 @@ namespace IInspectable.ProjectExplorer.Extension {
             return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint)VSConstants.VSITEMID.Root, (int)__VSHIERARCHYIMAGEASPECT.HIA_Icon);
         }
 
-        public Task<List<ProjectFile>> GetProjectFilesAsync(string path) {
-
+        public Task<List<ProjectFile>> GetProjectFilesAsync(string path, CancellationToken cancellationToken) {
             
-            var task= Task.Run(() => {
+            var task = Task.Run(() => {
 
                 var patterns = new[] { "*.csproj"};//, "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
 
-                // TODO Error Handling
                 var projectFiles = new List<ProjectFile>();
+
+                if (String.IsNullOrWhiteSpace(path)) {
+                    Logger.Warn($"{nameof(GetProjectFilesAsync)}: path is null or empty");
+                    return projectFiles;
+                }
+
                 foreach(var pattern in patterns) {
                     foreach (var file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)) {
-                        var projectFile = ProjectFile.FromFile(file);
 
-                        projectFiles.Add(projectFile);
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        ProjectFile projectFile  =null;
+
+                        try {
+                            projectFile = ProjectFile.FromFile(file);
+                            
+                        } catch (Exception ex) {
+                            Logger.Error(ex, $"Fehler beim Laden der Projektdatei '{file}'");
+                        }
+
+                        if (projectFile != null) {                            
+                            projectFiles.Add(projectFile);
+                        }
                     }
                 }
                 
                 return projectFiles;
-            });
+            }, cancellationToken);
 
             return task;
         }
@@ -133,7 +150,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 iidProject      : ref projId, 
                 ppProject       : out ppProj))) {
 
-                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
+                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
             }
 
         }
@@ -144,7 +161,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             
             
             if (ErrorHandler.Failed(res = _vsSolution1.GetGuidOfProject(pHierarchy, out projGuid))) {
-                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
+                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
             }
 
             return projGuid;
@@ -183,7 +200,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             IVsHierarchy result;
             if (ErrorHandler.Failed(res = _vsSolution1.GetProjectOfUniqueName(uniqueName, out result))) {
                 // TODO Error Handling
-                _logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
+                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
                 return null;
             }
 

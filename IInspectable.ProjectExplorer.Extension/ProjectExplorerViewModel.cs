@@ -7,7 +7,10 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
+using System.IO;
+using System.Security;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using JetBrains.Annotations;
@@ -22,6 +25,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
+        private readonly ProjectExplorerWindow _toolWindow;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _menuCommandService;
@@ -29,8 +33,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
 
-        internal ProjectExplorerViewModel(SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
-
+        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
+            _toolWindow = toolWindow;
             _solutionService    = solutionService;
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
@@ -245,14 +249,30 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         public void ClearProjects(bool clearSearch=true) {
+            
+            _loadingCancellationToken?.Cancel();
+            
+            foreach(var project in Projects) {
+                project.Dispose();
+            }
+
             Projects.Clear();
+
             if (clearSearch) {                
                 ClearSearch();
             }
+
+            _toolWindow.RemoveErrorInfoBar();
+
             SelectedProject = null;
+
+            UpdateCommands();
             NotifyAllPropertiesChanged();
         }
-        
+
+        [CanBeNull]
+        private CancellationTokenSource _loadingCancellationToken;
+
         public async System.Threading.Tasks.Task ReloadProjects() {
 
             if (!IsSolutionLoaded || IsLoading) {
@@ -262,35 +282,42 @@ namespace IInspectable.ProjectExplorer.Extension {
             IsLoading = true;
             try {
 
-                ClearProjects(clearSearch:false);
+                ClearProjects(clearSearch: false);
 
-                // TODO Error Handling
-                var projectFiles = await _solutionService.GetProjectFilesAsync(ProjectsRoot);
+                _loadingCancellationToken = new CancellationTokenSource();
+                var projectFiles = await _solutionService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
 
-                var projects = _solutionService.BindToHierarchy(projectFiles);
+                var projectViewModels = _solutionService.BindToHierarchy(projectFiles);
 
-                foreach (var projectVm in projects) {
-                    projectVm.SetParent(this);
+                foreach (var viewModel in projectViewModels) {
+                    viewModel.SetParent(this);
                 }
 
-                var oldProjects = Projects.ToList();
-
-                Projects.Clear();
-                foreach (var project in projects) {
-                    Projects.Add(project);
-                }
-                SelectedProject = null;
-
-                foreach (var projectVm in oldProjects) {
-                    projectVm.Dispose();
+                foreach (var viewModel in projectViewModels) {
+                    Projects.Add(viewModel);
                 }
 
-            } finally {
-                IsLoading = false;
+            } catch (Exception ex) when (
+                    ex is DirectoryNotFoundException || 
+                    ex is IOException ||
+                    ex is UnauthorizedAccessException ||
+                    ex is SecurityException) {
+
+                Logger.Error(ex, $"{nameof(ReloadProjects)}");
+                _toolWindow.ShowErrorInfoBar(ex);
             }
+            catch (OperationCanceledException) {
+                // ist OK
+            } finally {
 
-            UpdateCommands();
-            NotifyAllPropertiesChanged();
+                _loadingCancellationToken?.Dispose();
+                _loadingCancellationToken = null;
+
+                IsLoading = false;
+
+                UpdateCommands();
+                NotifyAllPropertiesChanged();
+            }
         }
         
         public async Task<bool> SetProjectsRoot(string path) {

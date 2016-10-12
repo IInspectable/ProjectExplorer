@@ -1,6 +1,7 @@
 ﻿#region Using Directives
 
 using System;
+using System.IO;
 using System.Xml;
 
 #endregion
@@ -23,11 +24,12 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public static ProjectFile FromFile(string fileName) {
 
-            // TODO Im Fehlerfall null liefern und loggen.
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(fileName);
+
+            xmlDocument.Load(fileName + "");
+
             if (xmlDocument.DocumentElement?.NamespaceURI != "http://schemas.microsoft.com/developer/msbuild/2003") {
-                throw new ArgumentException("Not a supported C# project file: \"" + fileName + "\"");
+                throw new FileLoadException($"\'{fileName}' is not a supported MSBuild project file");
             }
 
             var assemblyName = "";
@@ -36,12 +38,16 @@ namespace IInspectable.ProjectExplorer.Extension {
                 assemblyName = assemblyNameElement[0].FirstChild.Value;
             }
 
-            var projectGuid = Guid.Parse(xmlDocument.GetElementsByTagName("ProjectGuid")[0].FirstChild.Value);
-
-            return new ProjectFile(name: System.IO.Path.GetFileNameWithoutExtension(fileName), 
-                                   path: fileName, 
+            var projectGuid = Guid.Empty;
+            var projectGuidElement = xmlDocument.GetElementsByTagName("ProjectGuid");
+            if(projectGuidElement.Count > 0) {
+                projectGuid = Guid.Parse(projectGuidElement[0].FirstChild.Value);
+            }
+            
+            return new ProjectFile(name        : System.IO.Path.GetFileNameWithoutExtension(fileName), 
+                                   path        : fileName, 
                                    assemblyName: assemblyName, 
-                                   projectGuid: projectGuid);
+                                   projectGuid : projectGuid);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region Using Directives
 
+using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 
@@ -23,7 +24,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var menuCommandService= (OleMenuCommandService)GetService(typeof(IMenuCommandService));
 
-            ViewModel = new ProjectExplorerViewModel(solutionService, optionService, menuCommandService);
+            ViewModel = new ProjectExplorerViewModel(this, solutionService, optionService, menuCommandService);
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             ViewModel.SolutionService.AfterCloseSolution += OnAfterCloseSolution;
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
@@ -47,13 +48,35 @@ namespace IInspectable.ProjectExplorer.Extension {
             base.Dispose(disposing);
         }
 
-        void OnAfterCloseSolution(object sender, System.EventArgs e) {
+        void OnAfterCloseSolution(object sender, EventArgs e) {
            // TODO Clear search text
         }
 
+        private InfoBarModel _errorInfoBar;
         public override void OnToolWindowCreated() {
             base.OnToolWindowCreated();
-            SearchHost.IsVisible = ViewModel.IsSolutionLoaded;
+            SearchHost.IsVisible = ViewModel.IsSolutionLoaded;            
+        }
+
+        protected override void OnInfoBarClosed(IVsInfoBarUIElement infoBarUI, IVsInfoBar infoBar) {
+            if (infoBar == _errorInfoBar) {
+                _errorInfoBar = null;
+            }
+            base.OnInfoBarClosed(infoBarUI, infoBar);
+        }
+
+        public void ShowErrorInfoBar(Exception ex) {
+            RemoveErrorInfoBar();
+            
+            _errorInfoBar = new InfoBarModel(ex.Message, KnownMonikers.StatusError);
+            AddInfoBar(_errorInfoBar);
+        }
+
+        public void RemoveErrorInfoBar() {
+            if (_errorInfoBar != null) {
+                RemoveInfoBar(_errorInfoBar);
+                _errorInfoBar = null;
+            }
         }
 
         public bool CanActivateSearch {
