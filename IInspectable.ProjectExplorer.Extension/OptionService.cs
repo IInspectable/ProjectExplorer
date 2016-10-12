@@ -2,7 +2,8 @@
 
 using System;
 using System.IO;
-
+using System.Linq;
+using System.Xml.Linq;
 using JetBrains.Annotations;
 
 using IInspectable.Utilities.Logging;
@@ -13,7 +14,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class OptionService {
 
-        readonly Logger _logger = Logger.Create<OptionService>();
+        static readonly Logger Logger = Logger.Create<OptionService>();
 
         string _projectsRoot;
 
@@ -38,18 +39,26 @@ namespace IInspectable.ProjectExplorer.Extension {
             set { _projectsRoot = value; }
         }
 
-        // TODO Als XML speichern/laden
         public void LoadOptions(Stream stream) {
 
-            using(var sr = new StreamReader(stream)) {
-                _projectsRoot = FromSolutionRelativePath(sr.ReadLine());
+            try {
+                var xDoc = XDocument.Load(stream);
+
+                _projectsRoot= FromSolutionRelativePath(xDoc.Root?.Descendants(nameof(ProjectsRoot)).FirstOrDefault()?.Value);
+
+            } catch (Exception ex) {
+                Logger.Error(ex, "Fehler beim Laden der Optionen");
             }
         }
-        
+
         public void SaveOptions(Stream stream) {
-            using(var sw = new StreamWriter(stream)) {
-                sw.Write(ToSolutionRelativePath(_projectsRoot));
-            }
+            
+            var xDoc = new XDocument(
+                new XElement(nameof(OptionService),
+                    new XElement(nameof(ProjectsRoot), ToSolutionRelativePath(_projectsRoot))
+            ));
+
+            xDoc.Save(stream);
         }
 
         void OnAfterCloseSolution(object sender, EventArgs e) {
@@ -59,48 +68,48 @@ namespace IInspectable.ProjectExplorer.Extension {
         string FromSolutionRelativePath([CanBeNull] string savedPath) {
 
             if (String.IsNullOrEmpty(savedPath)) {
-                _logger.Info($"{nameof(FromSolutionRelativePath)}: Path is null or empty");
+                Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is null or empty");
                 return null;
             }
 
             // Für den Fall, dass doch mal ein nicht relativer Pfad gespeichert wurde
             if (Path.IsPathRooted(savedPath)) {
-                _logger.Info($"{nameof(FromSolutionRelativePath)}: Path is rooted {savedPath}");
+                Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is rooted {savedPath}");
                 return savedPath;
             }
 
             var solutionDirectory = SolutionService.GetSolutionDirectory();
             if (solutionDirectory == null) {
-                _logger.Warn($"{nameof(FromSolutionRelativePath)}: No solution directory!");
+                Logger.Warn($"{nameof(FromSolutionRelativePath)}: No solution directory!");
                 return null;
             }
 
             var absolutePath = new FileInfo(Path.Combine(solutionDirectory, savedPath)).FullName;
 
-            _logger.Info($"{nameof(FromSolutionRelativePath)}: Absolute path: {absolutePath}");
+            Logger.Info($"{nameof(FromSolutionRelativePath)}: Absolute path: {absolutePath}");
 
             return absolutePath;
         }
 
         string ToSolutionRelativePath(string projectsRoot) {
 
-            _logger.Info($"{nameof(ToSolutionRelativePath)}: {(projectsRoot ?? "<Null>")}");
+            Logger.Info($"{nameof(ToSolutionRelativePath)}: {(projectsRoot ?? "<Null>")}");
 
             if(String.IsNullOrEmpty(projectsRoot)) {
-                _logger.Info($"{nameof(ToSolutionRelativePath)}: Path is null or empty");
+                Logger.Info($"{nameof(ToSolutionRelativePath)}: Path is null or empty");
                 return null;
             }
 
             var solutionDirectory = SolutionService.GetSolutionDirectory();
             if (solutionDirectory == null) {
-                _logger.Warn($"{nameof(ToSolutionRelativePath)}: No solution directory!");
+                Logger.Warn($"{nameof(ToSolutionRelativePath)}: No solution directory!");
 
                 return projectsRoot;
             }
 
             var relPath = Utilities.IO.PathHelper.GetRelativePath(solutionDirectory, projectsRoot);
 
-            _logger.Info($"{nameof(ToSolutionRelativePath)}: Relative path is {relPath}");
+            Logger.Info($"{nameof(ToSolutionRelativePath)}: Relative path is {relPath}");
 
             return relPath;
         }
