@@ -371,8 +371,25 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
+
             string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
-            return FindProjectViewModel(uniqueNameOfProject);
+            var viewModel = FindProjectViewModel(uniqueNameOfProject);
+
+            if(viewModel != null) {
+                return viewModel;
+            }
+
+            var file = hierarchy.GetFullPath();
+
+            viewModel = _solutionService.LoadAndBind(file, hierarchy);
+            if(viewModel == null) {
+                return null;
+            }
+
+            viewModel.SetParent(this);
+            Projects.Add(viewModel);
+
+            return viewModel;
         }
 
         [CanBeNull]

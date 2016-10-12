@@ -92,16 +92,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        ProjectFile projectFile  =null;
+                        var projectFile=LoadProjectFile(file);
 
-                        try {
-                            projectFile = ProjectFile.FromFile(file);
-                            
-                        } catch (Exception ex) {
-                            Logger.Error(ex, $"Fehler beim Laden der Projektdatei '{file}'");
-                        }
-
-                        if (projectFile != null) {                            
+                        if (projectFile != null) {
                             projectFiles.Add(projectFile);
                         }
                     }
@@ -111,6 +104,36 @@ namespace IInspectable.ProjectExplorer.Extension {
             }, cancellationToken);
 
             return task;
+        }
+
+        
+
+        [CanBeNull]
+        ProjectFile LoadProjectFile(string file) {
+            try {
+                return ProjectFile.FromFile(file);
+
+            } catch(Exception ex) {
+                Logger.Error(ex, $"Fehler beim Laden der Projektdatei '{file}'");
+                return null;
+            }            
+        }
+
+        public ProjectViewModel LoadAndBind(string file, Hierarchy hierarchy) {
+
+            var projectFile = LoadProjectFile(file);
+            if(projectFile == null) {
+                return null;
+            }
+            var uniqueNameOfProject = PathHelper.GetRelativePath(GetSolutionDirectory(), projectFile.Path)
+                                                .ToLowerInvariant();
+
+            var vm = new ProjectViewModel(projectFile, uniqueNameOfProject);
+            if(hierarchy != null) {                
+                vm.Bind(hierarchy);
+            }
+
+            return vm;
         }
 
         public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
@@ -125,9 +148,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 var vm = new ProjectViewModel(projectFile, uniqueNameOfProject);
 
-                Hierarchy pHierarchy;
-                if(projectHierarchyById.TryGetValue(uniqueNameOfProject, out pHierarchy)) {
-                    vm.Bind(pHierarchy);
+                Hierarchy hierarchy;
+                if (projectHierarchyById.TryGetValue(uniqueNameOfProject, out hierarchy)) {
+                    vm.Bind(hierarchy);
                 }
 
                 projectFileViewModels.Add(vm);

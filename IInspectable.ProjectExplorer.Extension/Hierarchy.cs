@@ -1,6 +1,7 @@
 #region Using Directives
 
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IInspectable.Utilities.Logging;
+using JetBrains.Annotations;
 
 #endregion
 
@@ -58,6 +60,16 @@ namespace IInspectable.ProjectExplorer.Extension {
                 grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, 
                 pHier       : _vsHierarchy, 
                 docCookie   : 0));
+        }
+
+        [CanBeNull]
+        public string GetFullPath() {
+            var solutionDir = _solutionService.GetSolutionDirectory();
+            if(solutionDir == null) {
+                return null;
+            }
+            var fullPath=Path.Combine(solutionDir, GetUniqueNameOfProject());
+            return fullPath;
         }
 
         public Guid GetProjectGuid() {
