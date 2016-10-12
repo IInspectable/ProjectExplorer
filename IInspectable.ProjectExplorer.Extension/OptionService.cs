@@ -6,8 +6,6 @@ using System.Linq;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 
-using IInspectable.Utilities.Logging;
-
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {

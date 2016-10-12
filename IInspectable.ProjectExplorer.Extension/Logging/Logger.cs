@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 #endregion
 
-namespace IInspectable.Utilities.Logging {
+namespace IInspectable.ProjectExplorer.Extension {
 
     public class Logger {
 
@@ -21,7 +21,7 @@ namespace IInspectable.Utilities.Logging {
         }
 
         public static Logger Create(Type type) {
-            NLog.Logger baseLogger = NLog.LogManager.GetLogger(type.FullName);
+            NLog.Logger baseLogger = LoggerConfig.GetLogger(type);
             return new Logger(baseLogger);
         }
 

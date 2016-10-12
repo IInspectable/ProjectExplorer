@@ -632,6 +632,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Trace(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Trace level.
@@ -659,6 +683,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Debug(System.Exception,System.String)">
             <summary>
@@ -688,6 +736,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Info(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Info level.
@@ -715,6 +787,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Warn(System.Exception,System.String)">
             <summary>
@@ -744,6 +840,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Error(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Error level.
@@ -771,6 +891,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Fatal(System.Exception,System.String)">
             <summary>
@@ -7293,11 +7437,6 @@
              we strongly recommend you use https://github.com/jstedfast/MailKit and https://github.com/jstedfast/MimeKit instead'	
             </remarks>
         </member>
-        <member name="M:NLog.Internal.MySmtpClient.Dispose">
-            <summary>
-            Sends a QUIT message to the SMTP server, gracefully ends the TCP connection, and releases all resources used by the current instance of the <see cref="T:System.Net.Mail.SmtpClient"/> class.
-            </summary>
-        </member>
         <member name="T:NLog.Internal.NetworkSenders.HttpNetworkSender">
             <summary>
             Network sender which uses HTTP or HTTPS POST.
@@ -7941,6 +8080,22 @@
             Stream helpers
             </summary>
         </member>
+        <member name="M:NLog.Internal.StreamHelpers.CopyAndSkipBom(System.IO.Stream,System.IO.Stream,System.Text.Encoding)">
+            <summary>
+            Copy to output stream and skip BOM if encoding is UTF8
+            </summary>
+            <param name="input"></param>
+            <param name="output"></param>
+            <param name="encoding"></param>
+        </member>
+        <member name="M:NLog.Internal.StreamHelpers.Copy(System.IO.Stream,System.IO.Stream)">
+            <summary>
+            Copy stream input to output. Skip the first bytes
+            </summary>
+            <param name="input">stream to read from</param>
+            <param name="output">stream to write to</param>
+            <remarks>.net35 doesn't have a .copyto</remarks>
+        </member>
         <member name="M:NLog.Internal.StreamHelpers.CopyWithOffset(System.IO.Stream,System.IO.Stream,System.Int32)">
             <summary>
             Copy stream input to output. Skip the first bytes
@@ -7962,6 +8117,22 @@
             <param name="o">value to append.</param>
             <param name="logEvent">current logEvent for FormatProvider.</param>
             <param name="configuration">Configuration for DefaultCultureInfo</param>
+        </member>
+        <member name="M:NLog.Internal.StringBuilderExt.AppendInvariant(System.Text.StringBuilder,System.Int32)">
+            <summary>
+            Appends int without using culture, and most importantly without garbage
+            </summary>
+            <param name="builder"></param>
+            <param name="value">value to append</param>
+        </member>
+        <member name="M:NLog.Internal.StringBuilderExt.AppendInvariant(System.Text.StringBuilder,System.UInt32)">
+            <summary>
+            Appends uint without using culture, and most importantly without garbage
+            
+            Credits Gavin Pugh  - http://www.gavpugh.com/2010/04/01/xnac-avoiding-garbage-when-working-with-stringbuilder/
+            </summary>
+            <param name="builder"></param>
+            <param name="value">value to append</param>
         </member>
         <member name="T:NLog.Internal.StringHelpers">
             <summary>
@@ -9221,6 +9392,24 @@
             </summary>
             <docgen category='Rendering Options' order='10' />
         </member>
+        <member name="T:NLog.LayoutRenderers.MdlcLayoutRenderer">
+            <summary>
+            Mapped Diagnostic Logical Context item (based on CallContext).
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.MdlcLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified MDLC item and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.MdlcLayoutRenderer.Item">
+            <summary>
+            Gets or sets the name of the item.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
         <member name="T:NLog.LayoutRenderers.MessageLayoutRenderer">
             <summary>
             The formatted log message.
@@ -9762,6 +9951,12 @@
             `\\` in value should be configured as `\\\\`.
             </summary>
             <remarks>Default value wasn't a Layout before and needed an escape of the slash</remarks>
+        </member>
+        <member name="P:NLog.LayoutRenderers.RegistryLayoutRenderer.View">
+            <summary>
+            Gets or sets the registry view (see: https://msdn.microsoft.com/de-de/library/microsoft.win32.registryview.aspx). 
+            Allowed values: Registry32, Registry64, Default 
+            </summary>
         </member>
         <member name="P:NLog.LayoutRenderers.RegistryLayoutRenderer.Key">
              <summary>
@@ -11663,6 +11858,11 @@
             </summary>
             <param name="e">Event arguments.</param>
         </member>
+        <member name="F:NLog.LogFactory.IsDisposing">
+            <summary>
+            Currenty this logfactory is disposing?
+            </summary>
+        </member>
         <member name="M:NLog.LogFactory.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -11690,11 +11890,6 @@
         <member name="M:NLog.LogFactory.GetDefaultCandidateConfigFilePaths">
             <summary>
             Get default file paths (including filename) for possible NLog config files. 
-            </summary>
-        </member>
-        <member name="F:NLog.LogFactory.IsDisposing">
-            <summary>
-            Currenty this logfactory is disposing?
             </summary>
         </member>
         <member name="E:NLog.LogFactory.ConfigurationChanged">
@@ -16573,6 +16768,93 @@
             Clears the content of current thread MDC.
             </summary>
         </member>
+        <member name="T:NLog.MappedDiagnosticsLogicalContext">
+            <summary>
+            Async version of Mapped Diagnostics Context - a logical context structure that keeps a dictionary
+            of strings and provides methods to output them in layouts.  Allows for maintaining state across
+            asynchronous tasks and call contexts.
+            </summary>
+            <remarks>
+            Ideally, these changes should be incorporated as a new version of the MappedDiagnosticsContext class in the original
+            NLog library so that state can be maintained for multiple threads in asynchronous situations.
+            </remarks>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.GetLogicalThreadDictionary(System.Boolean)">
+            <summary>
+            Simulate ImmutableDictionary behavior (which is not yet part of all .NET frameworks).
+            In future the real ImmutableDictionary could be used here to minimize memory usage and copying time.
+            </summary>
+            <param name="clone">Must be true for any subsequent dictionary modification operation</param>
+            <returns></returns>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Get(System.String)">
+            <summary>
+            Gets the current logical context named item, as <see cref="T:System.String"/>.
+            </summary>
+            <param name="item">Item name.</param>
+            <returns>The value of <paramref name="item"/>, if defined; otherwise <see cref="F:System.String.Empty"/>.</returns>
+            <remarks>If the value isn't a <see cref="T:System.String"/> already, this call locks the <see cref="T:NLog.LogFactory"/> for reading the <see cref="P:NLog.Config.LoggingConfiguration.DefaultCultureInfo"/> needed for converting to <see cref="T:System.String"/>. </remarks>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Get(System.String,System.IFormatProvider)">
+            <summary>
+            Gets the current logical context named item, as <see cref="T:System.String"/>.
+            </summary>
+            <param name="item">Item name.</param>
+            <param name="formatProvider">The <see cref="T:System.IFormatProvider"/> to use when converting a value to a string.</param>
+            <returns>The value of <paramref name="item"/>, if defined; otherwise <see cref="F:System.String.Empty"/>.</returns>
+            <remarks>If <paramref name="formatProvider"/> is <c>null</c> and the value isn't a <see cref="T:System.String"/> already, this call locks the <see cref="T:NLog.LogFactory"/> for reading the <see cref="P:NLog.Config.LoggingConfiguration.DefaultCultureInfo"/> needed for converting to <see cref="T:System.String"/>. </remarks>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.GetObject(System.String)">
+            <summary>
+            Gets the current logical context named item, as <see cref="T:System.Object"/>.
+            </summary>
+            <param name="item">Item name.</param>
+            <returns>The value of <paramref name="item"/>, if defined; otherwise <c>null</c>.</returns>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Set(System.String,System.String)">
+            <summary>
+            Sets the current logical context item to the specified value.
+            </summary>
+            <param name="item">Item name.</param>
+            <param name="value">Item value.</param>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Set(System.String,System.Object)">
+            <summary>
+            Sets the current logical context item to the specified value.
+            </summary>
+            <param name="item">Item name.</param>
+            <param name="value">Item value.</param>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.GetNames">
+            <summary>
+            Returns all item names
+            </summary>
+            <returns>A collection of the names of all items in current logical context.</returns>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Contains(System.String)">
+            <summary>
+            Checks whether the specified <paramref name="item"/> exists in current logical context.
+            </summary>
+            <param name="item">Item name.</param>
+            <returns>A boolean indicating whether the specified <paramref name="item"/> exists in current logical context.</returns>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Remove(System.String)">
+            <summary>
+            Removes the specified <paramref name="item"/> from current logical context.
+            </summary>
+            <param name="item">Item name.</param>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Clear">
+            <summary>
+            Clears the content of current logical context.
+            </summary>
+        </member>
+        <member name="M:NLog.MappedDiagnosticsLogicalContext.Clear(System.Boolean)">
+            <summary>
+            Clears the content of current logical context.
+            </summary>
+            <param name="free">Free the full slot.</param>
+        </member>
         <member name="T:NLog.MDC">
             <summary>
             Mapped Diagnostics Context - used for log4net compatibility.
@@ -17708,6 +17990,13 @@
              </summary>
             <remarks>Has side effect</remarks>
         </member>
+        <member name="P:NLog.Targets.ColoredConsoleTarget.DetectConsoleAvailable">
+            <summary>
+            Gets or sets a value indicating whether to auto-check if the console is available.
+             - Disables console writing if Environment.UserInteractive = False (Windows Service)
+             - Disables console writing if Console Standard Input is not available (Non-Console-App)
+            </summary>
+        </member>
         <member name="P:NLog.Targets.ColoredConsoleTarget.RowHighlightingRules">
             <summary>
             Gets the row highlighting rules.
@@ -17925,6 +18214,7 @@
         </member>
         <member name="M:NLog.Targets.ConsoleTarget.#ctor(System.String)">
             <summary>
+            
             Initializes a new instance of the <see cref="T:NLog.Targets.ConsoleTarget"/> class.
             </summary>
             <remarks>
@@ -17969,6 +18259,13 @@
             The encoding for writing messages to the <see cref="T:System.Console"/>.
              </summary>
             <remarks>Has side effect</remarks>
+        </member>
+        <member name="P:NLog.Targets.ConsoleTarget.DetectConsoleAvailable">
+            <summary>
+            Gets or sets a value indicating whether to auto-check if the console is available
+             - Disables console writing if Environment.UserInteractive = False (Windows Service)
+             - Disables console writing if Console Standard Input is not available (Non-Console-App)
+            </summary>
         </member>
         <member name="T:NLog.Targets.ConsoleWordHighlightingRule">
             <summary>
@@ -18223,6 +18520,17 @@
             optimize batch writes.
             </summary>
             <param name="logEvents">Logging events to be written out.</param>
+        </member>
+        <member name="M:NLog.Targets.DatabaseTarget.BuildConnectionString(NLog.LogEventInfo)">
+            <summary>
+            Build the connectionstring from the properties. 
+            </summary>
+            <remarks>
+             Using <see cref="P:NLog.Targets.DatabaseTarget.ConnectionString"/> at first, and falls back to the properties <see cref="P:NLog.Targets.DatabaseTarget.DBHost"/>, 
+             <see cref="P:NLog.Targets.DatabaseTarget.DBUserName"/>, <see cref="P:NLog.Targets.DatabaseTarget.DBPassword"/> and <see cref="P:NLog.Targets.DatabaseTarget.DBDatabase"/>
+            </remarks>
+            <param name="logEvent">Event to render the layout inside the properties.</param>
+            <returns></returns>
         </member>
         <member name="P:NLog.Targets.DatabaseTarget.DBProvider">
             <summary>
@@ -20906,13 +21214,14 @@
             action is taken as specified by <see cref="P:NLog.Targets.Wrappers.AsyncRequestQueue.OnOverflow"/>.
             </summary>
             <param name="logEventInfo">The log event info.</param>
+            <returns>Queue was empty before enqueue</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncRequestQueue.DequeueBatch(System.Int32)">
             <summary>
             Dequeues a maximum of <c>count</c> items from the queue
             and adds returns the list containing them.
             </summary>
-            <param name="count">Maximum number of items to be dequeued.</param>
+            <param name="count">Maximum number of items to be dequeued (-1 means everything).</param>
             <returns>The array of log events.</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncRequestQueue.Clear">
@@ -21050,6 +21359,13 @@
             Starts the lazy writer thread which periodically writes
             queued log messages.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StartInstantWriterTimer">
+            <summary>
+            Attempts to start an instant timer-worker-thread which can write
+            queued log messages.
+            </summary>
+            <returns>Returns true when scheduled a timer-worker-thread</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StopLazyWriterThread">
             <summary>

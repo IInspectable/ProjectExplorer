@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
-using IInspectable.Utilities.Logging;
 
 #endregion
 

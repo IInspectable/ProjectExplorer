@@ -620,6 +620,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Trace(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Trace(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Trace level.
@@ -647,6 +671,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Debug(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Debug(System.Exception,System.String)">
             <summary>
@@ -676,6 +724,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Info(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Info(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Info level.
@@ -703,6 +775,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Warn(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Warn(System.Exception,System.String)">
             <summary>
@@ -732,6 +828,30 @@
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
         </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Error(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
+        </member>
         <member name="M:NLog.Common.InternalLogger.Error(System.Exception,System.String)">
             <summary>
             Logs the specified message with an <see cref="T:System.Exception"/> at the Error level.
@@ -759,6 +879,30 @@
             <param name="ex">Exception to be logged.</param>
             <param name="message">Message which may include positional parameters.</param>
             <param name="args">Arguments to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+        </member>
+        <member name="M:NLog.Common.InternalLogger.Fatal(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Logs the specified message without an <see cref="T:System.Exception"/> at the Trace level.
+            </summary>
+            <param name="message">Message which may include positional parameters.</param>
+            <param name="arg0">Argument {0} to the message.</param>
+            <param name="arg1">Argument {1} to the message.</param>
+            <param name="arg2">Argument {2} to the message.</param>
         </member>
         <member name="M:NLog.Common.InternalLogger.Fatal(System.Exception,System.String)">
             <summary>
@@ -2622,6 +2766,11 @@
              Parsing of the XML file is also implemented in this class.
              </summary>
             <remarks>This class is thread-safe.<c>.ToList()</c> is used for that purpose.</remarks>
+        </member>
+        <member name="F:NLog.Config.XmlLoggingConfiguration.AssetsPrefix">
+            <summary>
+            Prefix for assets in Xamarin Android
+            </summary>
         </member>
         <member name="M:NLog.Config.XmlLoggingConfiguration.#ctor(System.String)">
             <summary>
@@ -6105,6 +6254,11 @@
             </summary>
             <returns>A value of <see langword="true" /> if logging is enabled for the <c>Fatal</c> level, otherwise it returns <see langword="false" />.</returns>
         </member>
+        <member name="T:NLog.Internal.AspHelper">
+            <summary>
+            Various helper methods for accessing state of ASP application.
+            </summary>
+        </member>
         <member name="T:NLog.Internal.DictionaryAdapter`2">
             <summary>
             Provides untyped IDictionary interface on top of generic IDictionary.
@@ -6517,25 +6671,6 @@
             </summary>
             <param name="dateTime">Date and time when the last write occurred in UTC.</param>
         </member>
-        <member name="M:NLog.Internal.FileAppenders.BaseFileAppender.CreateArchiveMutex">
-            <summary>
-            Creates a mutually-exclusive lock for archiving files.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Mutex"/> object which can be used for controlling the archiving of files.</returns>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.BaseFileAppender.CreateSharableArchiveMutex">
-            <summary>
-            Creates a mutex for archiving that is sharable by more than one process.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Mutex"/> object which can be used for controlling the archiving of files.</returns>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.BaseFileAppender.CreateSharableMutex(System.String)">
-            <summary>
-            Creates a mutex that is sharable by more than one process.
-            </summary>
-            <param name="mutexNamePrefix">The prefix to use for the name of the mutex.</param>
-            <returns>A <see cref="T:System.Threading.Mutex"/> object which is sharable by multiple processes.</returns>
-        </member>
         <member name="M:NLog.Internal.FileAppenders.BaseFileAppender.CreateFileStream(System.Boolean)">
             <summary>
             Creates the file stream.
@@ -6771,63 +6906,6 @@
             Should we capture the last write time of a file?
             </summary>
         </member>
-        <member name="T:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender">
-            <summary>
-            Provides a multiprocess-safe atomic file appends while
-            keeping the files open.
-            </summary>
-            <remarks>
-            On Unix you can get all the appends to be atomic, even when multiple 
-            processes are trying to write to the same file, because setting the file
-            pointer to the end of the file and appending can be made one operation.
-            On Win32 we need to maintain some synchronization between processes
-            (global named mutex is used for this)
-            </remarks>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.#ctor(System.String,NLog.Internal.FileAppenders.ICreateFileParameters)">
-            <summary>
-            Initializes a new instance of the <see cref="T:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender"/> class.
-            </summary>
-            <param name="fileName">Name of the file.</param>
-            <param name="parameters">The parameters.</param>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.Write(System.Byte[])">
-            <summary>
-            Writes the specified bytes.
-            </summary>
-            <param name="bytes">The bytes to be written.</param>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.Close">
-            <summary>
-            Closes this instance.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.Flush">
-            <summary>
-            Flushes this instance.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.CreateArchiveMutex">
-            <summary>
-            Creates a mutually-exclusive lock for archiving files.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Mutex"/> object which can be used for controlling the archiving of files.</returns>
-        </member>
-        <member name="T:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.Factory">
-            <summary>
-            Factory class.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender.Factory.NLog#Internal#FileAppenders#IFileAppenderFactory#Open(System.String,NLog.Internal.FileAppenders.ICreateFileParameters)">
-            <summary>
-            Opens the appender for given file name and parameters.
-            </summary>
-            <param name="fileName">Name of the file.</param>
-            <param name="parameters">Creation parameters.</param>
-            <returns>
-            Instance of <see cref="T:NLog.Internal.FileAppenders.BaseFileAppender"/> which can be used to write to the file.
-            </returns>
-        </member>
         <member name="T:NLog.Internal.FileAppenders.RetryingMultiProcessFileAppender">
             <summary>
             Multi-process and multi-host file appender which attempts
@@ -6856,12 +6934,6 @@
             <summary>
             Closes this instance.
             </summary>
-        </member>
-        <member name="M:NLog.Internal.FileAppenders.RetryingMultiProcessFileAppender.CreateArchiveMutex">
-            <summary>
-            Creates a mutually-exclusive lock for archiving files.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Mutex"/> object which can be used for controlling the archiving of files.</returns>
         </member>
         <member name="T:NLog.Internal.FileAppenders.RetryingMultiProcessFileAppender.Factory">
             <summary>
@@ -7551,6 +7623,71 @@
             <param name="fileHandle">The file handle.</param>
             <returns>The file characteristics, if the file information was retrieved successfully, otherwise null.</returns>
         </member>
+        <member name="T:NLog.Internal.PortableThreadIDHelper">
+            <summary>
+            Portable implementation of <see cref="T:NLog.Internal.ThreadIDHelper"/>.
+            </summary>
+        </member>
+        <member name="T:NLog.Internal.ThreadIDHelper">
+            <summary>
+            Returns details about current process and thread in a portable manner.
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.ThreadIDHelper.#cctor">
+            <summary>
+            Initializes static members of the ThreadIDHelper class.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.ThreadIDHelper.Instance">
+            <summary>
+            Gets the singleton instance of PortableThreadIDHelper or
+            Win32ThreadIDHelper depending on runtime environment.
+            </summary>
+            <value>The instance.</value>
+        </member>
+        <member name="P:NLog.Internal.ThreadIDHelper.CurrentProcessID">
+            <summary>
+            Gets current process ID.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.ThreadIDHelper.CurrentProcessName">
+            <summary>
+            Gets current process name.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.ThreadIDHelper.CurrentProcessBaseName">
+            <summary>
+            Gets current process name (excluding filename extension, if any).
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.PortableThreadIDHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Internal.PortableThreadIDHelper"/> class.
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.PortableThreadIDHelper.GetProcessName">
+            <summary>
+            Gets the name of the process.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.PortableThreadIDHelper.CurrentProcessID">
+            <summary>
+            Gets current process ID.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:NLog.Internal.PortableThreadIDHelper.CurrentProcessName">
+            <summary>
+            Gets current process name.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:NLog.Internal.PortableThreadIDHelper.CurrentProcessBaseName">
+            <summary>
+            Gets current process name (excluding filename extension, if any).
+            </summary>
+            <value></value>
+        </member>
         <member name="T:NLog.Internal.PropertyHelper">
             <summary>
             Reflection helpers for accessing properties.
@@ -7745,6 +7882,22 @@
             Stream helpers
             </summary>
         </member>
+        <member name="M:NLog.Internal.StreamHelpers.CopyAndSkipBom(System.IO.Stream,System.IO.Stream,System.Text.Encoding)">
+            <summary>
+            Copy to output stream and skip BOM if encoding is UTF8
+            </summary>
+            <param name="input"></param>
+            <param name="output"></param>
+            <param name="encoding"></param>
+        </member>
+        <member name="M:NLog.Internal.StreamHelpers.Copy(System.IO.Stream,System.IO.Stream)">
+            <summary>
+            Copy stream input to output. Skip the first bytes
+            </summary>
+            <param name="input">stream to read from</param>
+            <param name="output">stream to write to</param>
+            <remarks>.net35 doesn't have a .copyto</remarks>
+        </member>
         <member name="M:NLog.Internal.StreamHelpers.CopyWithOffset(System.IO.Stream,System.IO.Stream,System.Int32)">
             <summary>
             Copy stream input to output. Skip the first bytes
@@ -7766,6 +7919,22 @@
             <param name="o">value to append.</param>
             <param name="logEvent">current logEvent for FormatProvider.</param>
             <param name="configuration">Configuration for DefaultCultureInfo</param>
+        </member>
+        <member name="M:NLog.Internal.StringBuilderExt.AppendInvariant(System.Text.StringBuilder,System.Int32)">
+            <summary>
+            Appends int without using culture, and most importantly without garbage
+            </summary>
+            <param name="builder"></param>
+            <param name="value">value to append</param>
+        </member>
+        <member name="M:NLog.Internal.StringBuilderExt.AppendInvariant(System.Text.StringBuilder,System.UInt32)">
+            <summary>
+            Appends uint without using culture, and most importantly without garbage
+            
+            Credits Gavin Pugh  - http://www.gavpugh.com/2010/04/01/xnac-avoiding-garbage-when-working-with-stringbuilder/
+            </summary>
+            <param name="builder"></param>
+            <param name="value">value to append</param>
         </member>
         <member name="T:NLog.Internal.StringHelpers">
             <summary>
@@ -7898,6 +8067,34 @@
             <param name="fileName">Name of the file.</param>
             <param name="fileHandle">The file handle.</param>
             <returns>The file characteristics, if the file information was retrieved successfully, otherwise null.</returns>
+        </member>
+        <member name="T:NLog.Internal.Win32ThreadIDHelper">
+            <summary>
+            Win32-optimized implementation of <see cref="T:NLog.Internal.ThreadIDHelper"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.Win32ThreadIDHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Internal.Win32ThreadIDHelper"/> class.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.Win32ThreadIDHelper.CurrentProcessID">
+            <summary>
+            Gets current process ID.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:NLog.Internal.Win32ThreadIDHelper.CurrentProcessName">
+            <summary>
+            Gets current process name.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:NLog.Internal.Win32ThreadIDHelper.CurrentProcessBaseName">
+            <summary>
+            Gets current process name (excluding filename extension, if any).
+            </summary>
+            <value></value>
         </member>
         <member name="T:NLog.Internal.XmlHelper">
             <summary>
@@ -8117,6 +8314,84 @@
             The first parameter is the  <see cref="P:System.AppDomain.Id"/>, the second the second the  <see cref="P:System.AppDomain.FriendlyName"/>
             This string is used in <see cref="M:System.String.Format(System.String,System.Object[])"/>
             </summary>
+        </member>
+        <member name="T:NLog.LayoutRenderers.AspApplicationValueLayoutRenderer">
+            <summary>
+            ASP Application variable.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.AspApplicationValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Application variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspApplicationValueLayoutRenderer.Variable">
+            <summary>
+            Gets or sets the ASP Application variable name.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="T:NLog.LayoutRenderers.AspRequestValueLayoutRenderer">
+            <summary>
+            ASP Request variable.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Request variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.Item">
+            <summary>
+            Gets or sets the item name. The QueryString, Form, Cookies, or ServerVariables collection variables having the specified name are rendered.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.QueryString">
+            <summary>
+            Gets or sets the QueryString variable to be rendered.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.Form">
+            <summary>
+            Gets or sets the form variable to be rendered.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.Cookie">
+            <summary>
+            Gets or sets the cookie to be rendered.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspRequestValueLayoutRenderer.ServerVariable">
+            <summary>
+            Gets or sets the ServerVariables item to be rendered.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="T:NLog.LayoutRenderers.AspSessionValueLayoutRenderer">
+            <summary>
+            ASP Session variable.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.AspSessionValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Session variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.AspSessionValueLayoutRenderer.Variable">
+            <summary>
+            Gets or sets the session variable name.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
         </member>
         <member name="T:NLog.LayoutRenderers.AssemblyVersionLayoutRenderer">
             <summary>
@@ -9024,6 +9299,18 @@
             </summary>
             <docgen category='Advanced Options' order='10' />
         </member>
+        <member name="T:NLog.LayoutRenderers.ProcessIdLayoutRenderer">
+            <summary>
+            The identifier of the current process.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.ProcessIdLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the current process ID.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
         <member name="T:NLog.LayoutRenderers.ProcessInfoLayoutRenderer">
             <summary>
             The information about the running process.
@@ -9257,6 +9544,24 @@
             Working Set Size (64-bit).
             </summary>
         </member>
+        <member name="T:NLog.LayoutRenderers.ProcessNameLayoutRenderer">
+            <summary>
+            The name of the current process.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.ProcessNameLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the current process name (optionally with a full path).
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.ProcessNameLayoutRenderer.FullName">
+            <summary>
+            Gets or sets a value indicating whether to write the full path to the process executable.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
         <member name="T:NLog.LayoutRenderers.ProcessTimeLayoutRenderer">
             <summary>
             The process time in format HH:mm:ss.mmm.
@@ -9276,6 +9581,61 @@
             <param name="builder"></param>
             <param name="ts"></param>
             <param name="culture"></param>
+        </member>
+        <member name="T:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer">
+            <summary>
+            High precision timer, based on the value returned from QueryPerformanceCounter() optionally converted to seconds.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer"/> class.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.InitializeLayoutRenderer">
+            <summary>
+            Initializes the layout renderer.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the ticks value of current time and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.Normalize">
+            <summary>
+            Gets or sets a value indicating whether to normalize the result by subtracting 
+            it from the result of the first call (so that it's effectively zero-based).
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.Difference">
+            <summary>
+            Gets or sets a value indicating whether to output the difference between the result 
+            of QueryPerformanceCounter and the previous one.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.Seconds">
+            <summary>
+            Gets or sets a value indicating whether to convert the result to seconds by dividing 
+            by the result of QueryPerformanceFrequency().
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.Precision">
+            <summary>
+            Gets or sets the number of decimal digits to be included in output.
+            </summary>
+            <docgen category='Rendering Options' order='10' />
+        </member>
+        <member name="P:NLog.LayoutRenderers.QueryPerformanceCounterLayoutRenderer.AlignDecimalPoint">
+            <summary>
+            Gets or sets a value indicating whether to align decimal point (emit non-significant zeros).
+            </summary>
+            <docgen category='Rendering Options' order='10' />
         </member>
         <member name="T:NLog.LayoutRenderers.ShortDateLayoutRenderer">
             <summary>
@@ -11148,6 +11508,11 @@
             Invoke the Changed event; called whenever list changes
             </summary>
             <param name="e">Event arguments.</param>
+        </member>
+        <member name="F:NLog.LogFactory.IsDisposing">
+            <summary>
+            Currenty this logfactory is disposing?
+            </summary>
         </member>
         <member name="M:NLog.LogFactory.Dispose(System.Boolean)">
             <summary>
@@ -15641,98 +16006,11 @@
             The most recent archive has the highest number (in combination with the date).
             </summary>
         </member>
-        <member name="T:NLog.Targets.ChainsawTarget">
+        <member name="T:NLog.Targets.AspResponseTarget">
             <summary>
-            Sends log messages to the remote instance of Chainsaw application from log4j. 
+            Outputs log messages through the ASP Response object.
             </summary>
-            <seealso href="https://github.com/nlog/nlog/wiki/Chainsaw-target">Documentation on NLog Wiki</seealso>
-            <example>
-            <p>
-            To set up the target in the <a href="config.html">configuration file</a>, 
-            use the following syntax:
-            </p>
-            <code lang="XML" source="examples/targets/Configuration File/Chainsaw/NLog.config" />
-            <p>
-            This assumes just one target and a single rule. More configuration
-            options are described <a href="config.html">here</a>.
-            </p>
-            <p>
-            To set up the log target programmatically use code like this:
-            </p>
-            <code lang="C#" source="examples/targets/Configuration API/Chainsaw/Simple/Example.cs" />
-            <p>
-            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
-            or you'll get TCP timeouts and your application will crawl. 
-            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
-            so that your application threads will not be blocked by the timing-out connection attempts.
-            </p>
-            </example>
-        </member>
-        <member name="T:NLog.Targets.NLogViewerTarget">
-            <summary>
-            Sends log messages to the remote instance of NLog Viewer. 
-            </summary>
-            <seealso href="https://github.com/nlog/nlog/wiki/NLogViewer-target">Documentation on NLog Wiki</seealso>
-            <example>
-            <p>
-            To set up the target in the <a href="config.html">configuration file</a>, 
-            use the following syntax:
-            </p>
-            <code lang="XML" source="examples/targets/Configuration File/NLogViewer/NLog.config" />
-            <p>
-            This assumes just one target and a single rule. More configuration
-            options are described <a href="config.html">here</a>.
-            </p>
-            <p>
-            To set up the log target programmatically use code like this:
-            </p>
-            <code lang="C#" source="examples/targets/Configuration API/NLogViewer/Simple/Example.cs" />
-            <p>
-            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
-            or you'll get TCP timeouts and your application will crawl. 
-            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
-            so that your application threads will not be blocked by the timing-out connection attempts.
-            </p>
-            </example>
-        </member>
-        <member name="T:NLog.Targets.NetworkTarget">
-            <summary>
-            Sends log messages over the network.
-            </summary>
-            <seealso href="https://github.com/nlog/nlog/wiki/Network-target">Documentation on NLog Wiki</seealso>
-            <example>
-            <p>
-            To set up the target in the <a href="config.html">configuration file</a>, 
-            use the following syntax:
-            </p>
-            <code lang="XML" source="examples/targets/Configuration File/Network/NLog.config" />
-            <p>
-            This assumes just one target and a single rule. More configuration
-            options are described <a href="config.html">here</a>.
-            </p>
-            <p>
-            To set up the log target programmatically use code like this:
-            </p>
-            <code lang="C#" source="examples/targets/Configuration API/Network/Simple/Example.cs" />
-            <p>
-            To print the results, use any application that's able to receive messages over
-            TCP or UDP. <a href="http://m.nu/program/util/netcat/netcat.html">NetCat</a> is
-            a simple but very powerful command-line tool that can be used for that. This image
-            demonstrates the NetCat tool receiving log messages from Network target.
-            </p>
-            <img src="examples/targets/Screenshots/Network/Output.gif" />
-            <p>
-            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
-            or you'll get TCP timeouts and your application will be very slow. 
-            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
-            so that your application threads will not be blocked by the timing-out connection attempts.
-            </p>
-            <p>
-            There are two specialized versions of the Network target: <a href="target.Chainsaw.html">Chainsaw</a>
-            and <a href="target.NLogViewer.html">NLogViewer</a> which write to instances of Chainsaw log4j viewer
-            or NLogViewer application respectively.
-            </p>
-            </example>
+            <seealso href="https://github.com/nlog/nlog/wiki/AspResponse-target">Documentation on NLog Wiki</seealso>
         </member>
         <member name="T:NLog.Targets.TargetWithLayout">
             <summary>
@@ -15900,6 +16178,128 @@
             Gets or sets the layout used to format log messages.
             </summary>
             <docgen category='Layout Options' order='1' />
+        </member>
+        <member name="M:NLog.Targets.AspResponseTarget.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.AspResponseTarget"/> class.
+            </summary>
+            <remarks>
+            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
+            </remarks>
+        </member>
+        <member name="M:NLog.Targets.AspResponseTarget.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.AspResponseTarget"/> class with a name.
+            </summary>
+            <remarks>
+            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
+            </remarks>
+            <param name="name">Name of the target.</param>
+        </member>
+        <member name="M:NLog.Targets.AspResponseTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="P:NLog.Targets.AspResponseTarget.AddComments">
+            <summary>
+            Gets or sets a value indicating whether to add &lt;!-- --&gt; comments around all written texts.
+            </summary>
+            <docgen category='Layout Options' order='100' />
+        </member>
+        <member name="T:NLog.Targets.ChainsawTarget">
+            <summary>
+            Sends log messages to the remote instance of Chainsaw application from log4j. 
+            </summary>
+            <seealso href="https://github.com/nlog/nlog/wiki/Chainsaw-target">Documentation on NLog Wiki</seealso>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <code lang="XML" source="examples/targets/Configuration File/Chainsaw/NLog.config" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <code lang="C#" source="examples/targets/Configuration API/Chainsaw/Simple/Example.cs" />
+            <p>
+            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
+            or you'll get TCP timeouts and your application will crawl. 
+            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
+            so that your application threads will not be blocked by the timing-out connection attempts.
+            </p>
+            </example>
+        </member>
+        <member name="T:NLog.Targets.NLogViewerTarget">
+            <summary>
+            Sends log messages to the remote instance of NLog Viewer. 
+            </summary>
+            <seealso href="https://github.com/nlog/nlog/wiki/NLogViewer-target">Documentation on NLog Wiki</seealso>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <code lang="XML" source="examples/targets/Configuration File/NLogViewer/NLog.config" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <code lang="C#" source="examples/targets/Configuration API/NLogViewer/Simple/Example.cs" />
+            <p>
+            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
+            or you'll get TCP timeouts and your application will crawl. 
+            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
+            so that your application threads will not be blocked by the timing-out connection attempts.
+            </p>
+            </example>
+        </member>
+        <member name="T:NLog.Targets.NetworkTarget">
+            <summary>
+            Sends log messages over the network.
+            </summary>
+            <seealso href="https://github.com/nlog/nlog/wiki/Network-target">Documentation on NLog Wiki</seealso>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <code lang="XML" source="examples/targets/Configuration File/Network/NLog.config" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <code lang="C#" source="examples/targets/Configuration API/Network/Simple/Example.cs" />
+            <p>
+            To print the results, use any application that's able to receive messages over
+            TCP or UDP. <a href="http://m.nu/program/util/netcat/netcat.html">NetCat</a> is
+            a simple but very powerful command-line tool that can be used for that. This image
+            demonstrates the NetCat tool receiving log messages from Network target.
+            </p>
+            <img src="examples/targets/Screenshots/Network/Output.gif" />
+            <p>
+            NOTE: If your receiver application is ever likely to be off-line, don't use TCP protocol
+            or you'll get TCP timeouts and your application will be very slow. 
+            Either switch to UDP transport or use <a href="target.AsyncWrapper.html">AsyncWrapper</a> target
+            so that your application threads will not be blocked by the timing-out connection attempts.
+            </p>
+            <p>
+            There are two specialized versions of the Network target: <a href="target.Chainsaw.html">Chainsaw</a>
+            and <a href="target.NLogViewer.html">NLogViewer</a> which write to instances of Chainsaw log4j viewer
+            or NLogViewer application respectively.
+            </p>
+            </example>
         </member>
         <member name="M:NLog.Targets.NetworkTarget.#ctor">
             <summary>
@@ -16357,6 +16757,7 @@
         </member>
         <member name="M:NLog.Targets.ConsoleTarget.#ctor(System.String)">
             <summary>
+            
             Initializes a new instance of the <see cref="T:NLog.Targets.ConsoleTarget"/> class.
             </summary>
             <remarks>
@@ -16395,6 +16796,13 @@
             Gets or sets a value indicating whether to send the log messages to the standard error instead of the standard output.
             </summary>
             <docgen category='Console Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.ConsoleTarget.DetectConsoleAvailable">
+            <summary>
+            Gets or sets a value indicating whether to auto-check if the console is available
+             - Disables console writing if Environment.UserInteractive = False (Windows Service)
+             - Disables console writing if Console Standard Input is not available (Non-Console-App)
+            </summary>
         </member>
         <member name="T:NLog.Targets.ConsoleWordHighlightingRule">
             <summary>
@@ -18302,6 +18710,50 @@
             </summary>
             <docgen category='Layout Options' order='10' />
         </member>
+        <member name="T:NLog.Targets.OutputDebugStringTarget">
+            <summary>
+            Outputs log messages through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+            <seealso href="https://github.com/nlog/nlog/wiki/OutputDebugString-target">Documentation on NLog Wiki</seealso>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <code lang="XML" source="examples/targets/Configuration File/OutputDebugString/NLog.config" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <code lang="C#" source="examples/targets/Configuration API/OutputDebugString/Simple/Example.cs" />
+            </example>
+        </member>
+        <member name="M:NLog.Targets.OutputDebugStringTarget.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.OutputDebugStringTarget"/> class.
+            </summary>
+            <remarks>
+            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
+            </remarks>
+        </member>
+        <member name="M:NLog.Targets.OutputDebugStringTarget.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.OutputDebugStringTarget"/> class.
+            </summary>
+            <remarks>
+            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
+            </remarks>
+            <param name="name">Name of the target.</param>
+        </member>
+        <member name="M:NLog.Targets.OutputDebugStringTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
         <member name="T:NLog.Targets.SmtpAuthenticationMode">
             <summary>
             SMTP authentication modes.
@@ -18636,13 +19088,14 @@
             action is taken as specified by <see cref="P:NLog.Targets.Wrappers.AsyncRequestQueue.OnOverflow"/>.
             </summary>
             <param name="logEventInfo">The log event info.</param>
+            <returns>Queue was empty before enqueue</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncRequestQueue.DequeueBatch(System.Int32)">
             <summary>
             Dequeues a maximum of <c>count</c> items from the queue
             and adds returns the list containing them.
             </summary>
-            <param name="count">Maximum number of items to be dequeued.</param>
+            <param name="count">Maximum number of items to be dequeued (-1 means everything).</param>
             <returns>The array of log events.</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncRequestQueue.Clear">
@@ -18780,6 +19233,13 @@
             Starts the lazy writer thread which periodically writes
             queued log messages.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StartInstantWriterTimer">
+            <summary>
+            Attempts to start an instant timer-worker-thread which can write
+            queued log messages.
+            </summary>
+            <returns>Returns true when scheduled a timer-worker-thread</returns>
         </member>
         <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StopLazyWriterThread">
             <summary>
@@ -19157,6 +19617,119 @@
             to the wrapped target.
             </summary>
             <docgen category='Filtering Options' order='10' />
+        </member>
+        <member name="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper">
+            <summary>
+            Impersonates another user for the duration of the write.
+            </summary>
+            <seealso href="https://github.com/nlog/nlog/wiki/ImpersonatingWrapper-target">Documentation on NLog Wiki</seealso>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper"/> class.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.#ctor(System.String,NLog.Targets.Target)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper"/> class.
+            </summary>
+            <param name="name">Name of the target.</param>
+            <param name="wrappedTarget">The wrapped target.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.#ctor(NLog.Targets.Target)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper"/> class.
+            </summary>
+            <param name="wrappedTarget">The wrapped target.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.InitializeTarget">
+            <summary>
+            Initializes the impersonation context.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.CloseTarget">
+            <summary>
+            Closes the impersonation context.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.Write(NLog.Common.AsyncLogEventInfo)">
+            <summary>
+            Changes the security context, forwards the call to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>.Write()
+            and switches the context back to original.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.Write(NLog.Common.AsyncLogEventInfo[])">
+            <summary>
+            Changes the security context, forwards the call to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>.Write()
+            and switches the context back to original.
+            </summary>
+            <param name="logEvents">Log events.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.FlushAsync(NLog.Common.AsyncContinuation)">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+            <param name="asyncContinuation">The asynchronous continuation.</param>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.UserName">
+            <summary>
+            Gets or sets username to change context to.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.Password">
+            <summary>
+            Gets or sets the user account password.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.Domain">
+            <summary>
+            Gets or sets Windows domain name to change context to.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.LogOnType">
+            <summary>
+            Gets or sets the Logon Type.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.LogOnProvider">
+            <summary>
+            Gets or sets the type of the logon provider.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.ImpersonationLevel">
+            <summary>
+            Gets or sets the required impersonation level.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="P:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.RevertToSelf">
+            <summary>
+            Gets or sets a value indicating whether to revert to the credentials of the process instead of impersonating another user.
+            </summary>
+            <docgen category='Impersonation Options' order='10' />
+        </member>
+        <member name="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.ContextReverter">
+            <summary>
+            Helper class which reverts the given <see cref="T:System.Security.Principal.WindowsImpersonationContext"/> 
+            to its original value as part of <see cref="M:System.IDisposable.Dispose"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.ContextReverter.#ctor(System.Security.Principal.WindowsImpersonationContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.ContextReverter"/> class.
+            </summary>
+            <param name="windowsImpersonationContext">The windows impersonation context.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.ImpersonatingTargetWrapper.ContextReverter.Dispose">
+            <summary>
+            Reverts the impersonation context.
+            </summary>
         </member>
         <member name="T:NLog.Targets.Wrappers.LogOnProviderType">
             <summary>

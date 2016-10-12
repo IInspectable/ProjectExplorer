@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
-
-using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
 
 #endregion

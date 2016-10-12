@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics;
-using IInspectable.Utilities.Logging;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging;

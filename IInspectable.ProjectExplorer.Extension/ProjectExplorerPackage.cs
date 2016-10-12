@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using IInspectable.Utilities.Logging;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -25,10 +24,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
 
         public ProjectExplorerPackage() {
-
-            // TODO Logging separieren => LogFactory
-            LoggerConfig.Initialize(Path.GetTempPath(), "IInspectable.ProjectExplorer.Extension");
-
             AddOptionKey(OptionService.OptionKey);            
         }
 
