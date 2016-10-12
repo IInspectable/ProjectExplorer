@@ -374,7 +374,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
             var viewModel = FindProjectViewModel(uniqueNameOfProject);
 
-            if(viewModel != null) {
+            if(viewModel != null || IsLoading) {
                 return viewModel;
             }
 
