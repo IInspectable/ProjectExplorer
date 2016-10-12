@@ -26,6 +26,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public ProjectExplorerPackage() {
 
+            // TODO Logging separieren => LogFactory
             LoggerConfig.Initialize(Path.GetTempPath(), "IInspectable.ProjectExplorer.Extension");
 
             AddOptionKey(OptionService.OptionKey);            
