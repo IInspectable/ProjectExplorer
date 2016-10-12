@@ -23,7 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public override void Execute(object parameter = null) {
 
-            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Load());
+            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Reload());
         }
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using IInspectable.Utilities.IO;
 using IInspectable.Utilities.Logging;
@@ -139,31 +141,20 @@ namespace IInspectable.ProjectExplorer.Extension {
             Guid empty = Guid.Empty;
             Guid projId=Guid.Empty;
             IntPtr ppProj;
-            int hr;
-            // TODO: Fehlerbehandlung
-            if(ErrorHandler.Failed(hr = _vsSolution1.CreateProject(
-                rguidProjectType: ref empty, 
-                lpszMoniker     : path, 
-                lpszLocation    : null,
-                lpszName        : null, 
-                grfCreateFlags  : (uint)__VSCREATEPROJFLAGS.CPF_OPENFILE, 
-                iidProject      : ref projId, 
-                ppProject       : out ppProj))) {
 
-                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{hr:X}.");
-            }
-            return hr;
+            return LogFailed(_vsSolution1.CreateProject(
+                rguidProjectType: ref empty,
+                lpszMoniker     : path,
+                lpszLocation    : null,
+                lpszName        : null,
+                grfCreateFlags  : (uint) __VSCREATEPROJFLAGS.CPF_OPENFILE,
+                iidProject      : ref projId,
+                ppProject       : out ppProj));
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
-            int res;
             Guid projGuid;
-            
-            
-            if (ErrorHandler.Failed(res = _vsSolution1.GetGuidOfProject(pHierarchy, out projGuid))) {
-                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
-            }
-
+            LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out projGuid));              
             return projGuid;
         }
 
@@ -196,11 +187,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
-            int res;
             IVsHierarchy result;
-            if (ErrorHandler.Failed(res = _vsSolution1.GetProjectOfUniqueName(uniqueName, out result))) {
-                // TODO Error Handling
-                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
+            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out result))) {
                 return null;
             }
 
@@ -214,7 +202,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Guid ignored = Guid.Empty;
             IEnumHierarchies hierEnum;
             var flags = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
-            if (ErrorHandler.Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out hierEnum))) {
+            if (Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out hierEnum))) {
                 return result;
             }
 
@@ -320,5 +308,18 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         #endregion    
+
+        bool Failed(int hr, [CallerMemberName] string callerMemberName = null) {
+            // ReSharper disable once ExplicitCallerInfoArgument Ist hier gewünscht
+            return ErrorHandler.Failed(LogFailed(hr, callerMemberName));
+        }
+
+        int LogFailed(int hr, [CallerMemberName] string callerMemberName = null) {
+            if(ErrorHandler.Failed(hr)) {
+                var ex=Marshal.GetExceptionForHR(hr);
+                Logger.Error($"{callerMemberName} failed with code 0x{hr:X}: '{ex.Message}'");
+            }
+            return hr;
+        }
     }
 }

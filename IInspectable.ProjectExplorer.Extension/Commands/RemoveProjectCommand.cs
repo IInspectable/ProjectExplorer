@@ -32,7 +32,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return;
             }
 
-            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject.Remove());
+            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject.Close());
         }
     }
 }

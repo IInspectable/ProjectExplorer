@@ -19,13 +19,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [NotNull]
         readonly ProjectFile _projectFile;
+        readonly string _uniqueNameOfProject;
 
         [CanBeNull]
         Hierarchy _hierarchy;
 
         [CanBeNull]
         ProjectExplorerViewModel _parent;
-        readonly string _uniqueNameOfProject;
         uint _eventCookie;
         
         public ProjectViewModel(ProjectFile projectFile, string uniqueNameOfProject) {
@@ -90,19 +90,19 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public int Open() {
-            return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.S_OK;
+            return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.E_FAIL;
         }
 
-        public int Remove() {      
+        public int Close() {      
             return _hierarchy?.CloseProject() ?? VSConstants.S_OK;
         }
 
-        public int Load() {
-            return _hierarchy?.LoadProject() ?? VSConstants.S_OK;
+        public int Reload() {
+            return _hierarchy?.ReloadProject() ?? VSConstants.E_FAIL;
         }
 
         public int Unload() {
-            return _hierarchy?.UnloadProject() ?? VSConstants.S_OK;
+            return _hierarchy?.UnloadProject() ?? VSConstants.E_FAIL;
         }
 
         public int DefaultAction() {
@@ -110,7 +110,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 case ProjectStatus.Closed:
                     return Open();
                 case ProjectStatus.Unloaded:
-                    return Load();
+                    return Reload();
                 case ProjectStatus.Loaded:
                     return Unload();
             }
@@ -119,7 +119,6 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void OpenFolderInFileExplorer() {
 
-            // TODO Error Handling
             string args = $"/e, /select, \"{Path}\"";
 
             ProcessStartInfo info = new ProcessStartInfo {

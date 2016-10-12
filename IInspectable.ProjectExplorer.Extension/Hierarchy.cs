@@ -1,7 +1,8 @@
 #region Using Directives
 
 using System;
-
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -42,64 +43,33 @@ namespace IInspectable.ProjectExplorer.Extension {
         public int UnloadProject() {
 
             Guid projectGuid = GetProjectGuid();
-            int hr = VsSolution4.UnloadProject(ref projectGuid, (uint) _VSProjectUnloadStatus.UNLOADSTATUS_UnloadedByUser);
-
-            if(ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::UnloadProject returned 0x{hr:X}.");
-            }
-            return hr;
+            return LogFailed(VsSolution4.UnloadProject(ref projectGuid, (uint) _VSProjectUnloadStatus.UNLOADSTATUS_UnloadedByUser));
         }
 
-        public int LoadProject() {
+        public int ReloadProject() {
 
             Guid projectGuid = GetProjectGuid();
-            int hr = VsSolution4.ReloadProject(ref projectGuid);
-
-            if(ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                // TODO wirklich per guid laden, und nicht per uniqueName?
-                Logger.Warn($"IVsolution::LoadProject with guid {projectGuid} returned 0x{hr:X}.");
-            }
-            return hr;
+            return LogFailed(VsSolution4.ReloadProject(ref projectGuid));
         }
 
         public int CloseProject() {
 
-            int hr = VsSolution1.CloseSolutionElement(grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, 
-                                                      pHier: _vsHierarchy, 
-                                                      docCookie: 0);
-
-            if (ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::CloseProject returned 0x{hr:X}.");
-            }
-
-            return hr;
+            return LogFailed(VsSolution1.CloseSolutionElement(
+                grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject, 
+                pHier       : _vsHierarchy, 
+                docCookie   : 0));
         }
 
         public Guid GetProjectGuid() {
-
             Guid projGuid;
-            int hr = VsSolution1.GetGuidOfProject(_vsHierarchy, out projGuid);
-
-            if (ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::GetProjectGuid returned 0x{hr:X}.");
-            }
-
+            LogFailed(VsSolution1.GetGuidOfProject(_vsHierarchy, out projGuid));
             return projGuid;
         }
 
         public string GetUniqueNameOfProject() {
             string uniqueName;
-            int hr = VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out uniqueName);
-            if (ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::GetUniqueNameOfProject returned 0x{hr:X}.");
-            }
-
-            return uniqueName.ToLower();
+            LogFailed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out uniqueName));
+            return uniqueName?.ToLower();
         }
 
         public bool IsProjectUnloaded() {
@@ -111,20 +81,20 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
             uint cookie;
-            var hr = _vsHierarchy.AdviseHierarchyEvents(eventSink, out cookie);
-            if(ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::AdviseHierarchyEvents returned 0x{hr:X}.");
-            }
+            LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out cookie));           
             return cookie;
         }
 
-        public void UnadviseHierarchyEvents(uint cookie) {
-            var hr = _vsHierarchy.UnadviseHierarchyEvents(cookie);
+        public int UnadviseHierarchyEvents(uint cookie) {
+            return LogFailed(_vsHierarchy.UnadviseHierarchyEvents(cookie));            
+        }
+
+        int LogFailed(int hr, [CallerMemberName] string callerMemberName = null) {
             if(ErrorHandler.Failed(hr)) {
-                // TODO Error Logging
-                Logger.Warn($"IVsolution::UnadviseHierarchyEvents returned 0x{hr:X}.");
+                var ex = Marshal.GetExceptionForHR(hr);
+                Logger.Error($"{callerMemberName} failed with code 0x{hr:X}: '{ex.Message}'");
             }
+            return hr;
         }
     }
 }
