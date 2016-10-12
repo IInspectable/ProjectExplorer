@@ -13,16 +13,16 @@
     <SolidColorBrush x:Key="Button.MouseOver.Background"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
     <SolidColorBrush x:Key="Button.MouseOver.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextHoverColorKey}}"/>
     <SolidColorBrush x:Key="Button.MouseOver.GlyphBackground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarBorderColorKey}}"/>
-    
-    <SolidColorBrush x:Key="Button.Pressed.Border"          Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarBorderColorKey}}"/>
+
+    <SolidColorBrush x:Key="Button.Pressed.Border"          Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseDownBackgroundBeginColorKey}}"/>
     <SolidColorBrush x:Key="Button.Pressed.Background"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseDownBackgroundBeginColorKey}}"/>
     <SolidColorBrush x:Key="Button.Pressed.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextMouseDownColorKey}}"/>
     <SolidColorBrush x:Key="Button.Pressed.GlyphBackground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarBorderColorKey}}"/>
-    
-    <SolidColorBrush x:Key="Button.Disabled.Border"          Color="Transparent"/>
-    <SolidColorBrush x:Key="Button.Disabled.Background"      Color="Transparent"/>
+
+    <SolidColorBrush x:Key="Button.Disabled.Border"          Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Disabled.Background"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginColorKey}}"/>
     <SolidColorBrush x:Key="Button.Disabled.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextInactiveColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Disabled.GlyphBackground" Color="Transparent"/>
+    <SolidColorBrush x:Key="Button.Disabled.GlyphBackground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginColorKey}}"/>
     
     <Style TargetType="{x:Type local:VsButton}">
         <Setter Property="Cursor" Value="Hand"/>
