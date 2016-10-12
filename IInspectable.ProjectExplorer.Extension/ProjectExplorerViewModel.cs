@@ -47,8 +47,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
 
             _commands = new List<Command> {
-                // TODO CancelRefreshCommand
                 { RefreshCommand            = new RefreshCommand(this)},
+                { CancelRefreshCommand      = new CancelRefreshCommand(this)},
                 { OpenInFileExplorerCommand = new OpenInFileExplorerCommand(this)},
                 { AddProjectCommand         = new AddProjectCommand(this)},
                 { RemoveProjectCommand      = new RemoveProjectCommand(this)},
@@ -74,6 +74,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         public RefreshCommand RefreshCommand { get; }
+        public CancelRefreshCommand CancelRefreshCommand { get; }
         public OpenInFileExplorerCommand OpenInFileExplorerCommand { get; }
         public AddProjectCommand AddProjectCommand { get; }
         public RemoveProjectCommand RemoveProjectCommand { get; }
@@ -250,8 +251,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         public void ClearProjects(bool clearSearch=true) {
-            
-            _loadingCancellationToken?.Cancel();
+
+            CancelReloadProjects();
             
             foreach(var project in Projects) {
                 project.Dispose();
@@ -269,10 +270,15 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             UpdateCommands();
             NotifyAllPropertiesChanged();
+            ShellUtil.UpdateCommandUI();
         }
 
         [CanBeNull]
         private CancellationTokenSource _loadingCancellationToken;
+
+        public void CancelReloadProjects() {
+            _loadingCancellationToken?.Cancel();
+        }
 
         public async System.Threading.Tasks.Task ReloadProjects() {
 
@@ -318,6 +324,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 UpdateCommands();
                 NotifyAllPropertiesChanged();
+                ShellUtil.UpdateCommandUI();
             }
         }
         

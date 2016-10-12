@@ -57,6 +57,7 @@
     <Compile Include="Commands\OpenInFileExplorerCommand.cs" />
     <Compile Include="Commands\AddProjectCommand.cs" />
     <Compile Include="Commands\ProjectExplorerSearchCommand.cs" />
+    <Compile Include="Commands\CancelRefreshCommand.cs" />
     <Compile Include="Commands\RemoveProjectCommand.cs" />
     <Compile Include="Commands\SettingsCommand.cs" />
     <Compile Include="Commands\ShellUtil.cs" />

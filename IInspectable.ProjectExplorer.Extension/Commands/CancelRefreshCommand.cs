@@ -6,13 +6,12 @@ using System;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class RefreshCommand: Command {
-
+    sealed class CancelRefreshCommand: Command {
 
         readonly ProjectExplorerViewModel _viewModel;
 
-        public RefreshCommand(ProjectExplorerViewModel viewModel)
-            : base(PackageIds.RefreshCommandId) {
+        public CancelRefreshCommand(ProjectExplorerViewModel viewModel)
+            : base(PackageIds.CancelRefreshCommandId) {
 
             if (viewModel == null) {
                 throw new ArgumentNullException(nameof(viewModel));
@@ -22,12 +21,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            Enabled = _viewModel.IsSolutionLoaded && !_viewModel.IsLoading;
-            Visible = !_viewModel.IsLoading;
+            Enabled = _viewModel.IsSolutionLoaded && _viewModel.IsLoading;
+            Visible = _viewModel.IsLoading;
         }
 
-        public override async void Execute(object parameter=null) {
-            await _viewModel.ReloadProjects();
+        public override void Execute(object parameter=null) {
+            _viewModel.CancelReloadProjects();
         }
     }
 }

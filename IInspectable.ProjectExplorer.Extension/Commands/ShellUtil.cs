@@ -36,8 +36,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public static bool ConfirmOkCancel(string text) {
+        public static void UpdateCommandUI(bool immediateUpdate=true) {
+            Shell.UpdateCommandUI(fImmediateUpdate: immediateUpdate?1:0);
+        }
 
+        public static bool ConfirmOkCancel(string text) {
+            
             Guid unused=Guid.Empty;
             int result;
 

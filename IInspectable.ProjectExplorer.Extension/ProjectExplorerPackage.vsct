@@ -141,13 +141,26 @@
     <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="RefreshCommandId" priority="3" type="Button">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarRefreshGroup" />
         <Icon guid="ImageCatalogGuid" id="Refresh" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Refresh</ButtonText>
         </Strings>
     </Button>
-    
-    <!--Settings context menu-->
+      
+      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="CancelRefreshCommandId" priority="3" type="Button">
+        <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="ToolbarRefreshGroup" />
+        <Icon guid="ImageCatalogGuid" id="Cancel" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Cancel</ButtonText>
+        </Strings>
+      </Button>
+      
+
+      <!--Settings context menu-->
      <Button guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsCommandId" priority="1" type="Button">
         <Parent guid="ProjectExplorerWindowPackageCmdSetGuid" id="SettingsButtonCtxMnuGroup" />
         <Icon guid="ImageCatalogGuid" id="Open" />
@@ -215,13 +228,14 @@
       <!-- CommandIds -->
       <IDSymbol name="ProjectExplorerCommandId"       value="0x0100"/>
       <IDSymbol name="ProjectExplorerSearchCommandId" value="0x0101"/>
-      <IDSymbol name="RefreshCommandId"               value="0x0102"/>      
+      <IDSymbol name="RefreshCommandId"               value="0x0102"/> 
       <IDSymbol name="AddProjectCommandId"            value="0x0103"/>
       <IDSymbol name="RemoveProjectCommandId"         value="0x0104"/>
       <IDSymbol name="LoadProjectCommandId"           value="0x0105"/>
       <IDSymbol name="UnloadProjectCommandId"         value="0x0106"/>
       <IDSymbol name="SettingsCommandId"              value="0x0107"/>
       <IDSymbol name="OpenInFileExplorerCommandId"    value="0x0108"/>
+      <IDSymbol name="CancelRefreshCommandId"         value="0x0109"/>
       
       <!--Groups-->
       <IDSymbol name="ToolbarGroup"        value="0x1050"/>
