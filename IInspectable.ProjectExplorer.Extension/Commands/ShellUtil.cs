@@ -17,12 +17,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             return new ShellUtil(); 
         }
 
-        IVsUIShell Shell {
+        static IVsUIShell Shell {
             get { return ProjectExplorerPackage.GetGlobalService<IVsUIShell, IVsUIShell>(); }
         }
 
         public void Dispose() {
             Shell?.EnableModeless(1);
+        }
+
+        public static void ReportErrorInfo(int hr) {
+            Shell.ReportErrorInfo(hr);
         }
     }
 }

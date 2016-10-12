@@ -134,14 +134,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             return projectFileViewModels;
         }
 
-        public void OpenProject(string path) {
+        public int OpenProject(string path) {
 
             Guid empty = Guid.Empty;
             Guid projId=Guid.Empty;
             IntPtr ppProj;
-            int res;
+            int hr;
             // TODO: Fehlerbehandlung
-            if(ErrorHandler.Failed(res = _vsSolution1.CreateProject(
+            if(ErrorHandler.Failed(hr = _vsSolution1.CreateProject(
                 rguidProjectType: ref empty, 
                 lpszMoniker     : path, 
                 lpszLocation    : null,
@@ -150,9 +150,9 @@ namespace IInspectable.ProjectExplorer.Extension {
                 iidProject      : ref projId, 
                 ppProject       : out ppProj))) {
 
-                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{res:X}.");
+                Logger.Error($"IVsolution::GetGuidOfProject returned 0x{hr:X}.");
             }
-
+            return hr;
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
@@ -319,9 +319,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             return VSConstants.S_OK;
         }
 
-        #endregion
-
-       
-
+        #endregion    
     }
 }

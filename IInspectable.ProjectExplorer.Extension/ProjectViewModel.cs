@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    // TODO HierarchyEvent
     class ProjectViewModel: ViewModelBase, IVsHierarchyEvents {
 
         static readonly Logger Logger = Logger.Create<ProjectViewModel>();
@@ -79,7 +78,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-
         public ProjectStatus Status {
             get {
 
@@ -91,39 +89,32 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        // TODO Confirmation/Fehlerbehandlung
-        public void Add() {
-            _parent?.SolutionService.OpenProject(_projectFile.Path);
+        public int Open() {
+            return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.S_OK;
         }
 
-        // TODO Confirmation/Fehlerbehandlung
-        public void Remove() {      
-            _hierarchy?.CloseProject();
+        public int Remove() {      
+            return _hierarchy?.CloseProject() ?? VSConstants.S_OK;
         }
 
-        // TODO Confirmation/Fehlerbehandlung
-        public void Load() {
-            _hierarchy?.LoadProject();            
+        public int Load() {
+            return _hierarchy?.LoadProject() ?? VSConstants.S_OK;
         }
 
-        // TODO Confirmation/Fehlerbehandlung
-        public void Unload() {
-            _hierarchy?.UnloadProject();           
+        public int Unload() {
+            return _hierarchy?.UnloadProject() ?? VSConstants.S_OK;
         }
 
-        // TODO Confirmation/Fehlerbehandlung
-        public void DefaultAction() {
+        public int DefaultAction() {
             switch (Status) {
                 case ProjectStatus.Closed:
-                    Add();
-                    break;
+                    return Open();
                 case ProjectStatus.Unloaded:
-                    Load();
-                    break;
+                    return Load();
                 case ProjectStatus.Loaded:
-                    Unload();
-                    break;
+                    return Unload();
             }
+            return VSConstants.S_OK;
         }
 
         public void OpenFolderInFileExplorer() {

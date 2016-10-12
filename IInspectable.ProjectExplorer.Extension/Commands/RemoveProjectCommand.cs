@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -23,7 +24,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void Execute(object parameter = null) {
-            _viewModel.SelectedProject?.Remove();
+
+            // TODO Confirm
+
+            int hr = _viewModel.SelectedProject?.Remove() ?? VSConstants.S_OK;
+
+            if (ErrorHandler.Failed(hr)) {
+                ShellUtil.ReportErrorInfo(hr);
+            }
         }
     }
 }
