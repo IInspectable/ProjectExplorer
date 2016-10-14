@@ -22,6 +22,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public override void Execute(object parameter = null) {
 
+            if(ShellUtil.ReportUserOnFailed(_viewModel.EnsureSolution())) {
+                return;
+            }
             ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Open());
         }
     }

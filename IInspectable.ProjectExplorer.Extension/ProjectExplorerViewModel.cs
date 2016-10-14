@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using JetBrains.Annotations;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 #endregion
@@ -24,13 +25,15 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
-        private readonly ProjectExplorerWindow _toolWindow;
+        readonly ProjectExplorerWindow _toolWindow;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _menuCommandService;
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
+
+        bool _suspendReload;
 
         internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
             _toolWindow = toolWindow;
@@ -67,7 +70,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             UpdateCommands();
 
-            if (IsSolutionLoaded) {
+            if (IsSolutionOpen) {
                 RefreshCommand.Execute();
             }
         }
@@ -103,8 +106,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _optionService.ProjectsRoot; }
         }
 
-        public bool IsSolutionLoaded {
-            get { return _solutionService.IsSolutionLoaded(); }
+        public bool IsSolutionOpen {
+            get { return _solutionService.IsSolutionOpen(); }
         }
 
         // TODO Selection Logic
@@ -150,14 +153,14 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #region Event Handler
 
-        void OnAfterOpenSolution(object sender, EventArgs e) {
-            Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");
+        void OnAfterOpenSolution(object sender, EventArgs e) {            
+            Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");           
             RefreshCommand.Execute();
         }
 
         void OnAfterCloseSolution(object sender, EventArgs e) {
             Logger.Info($"{nameof(OnAfterCloseSolution)}");
-            ClearProjects();
+            UnbindProjects();
         }
         
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
@@ -213,6 +216,20 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
         
+        public int EnsureSolution() {
+
+            // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot übernommen werden
+            using (Suspend.Reload(this))
+            using (Capture.ProjectsRoot(this)) {
+
+                var hr = _solutionService.EnsureSolution();
+                if (ErrorHandler.Failed(hr)) {
+                    return hr;
+                }
+                return hr;
+            } 
+        }
+
         public void ApplySearch(string searchString) {
 
             Dictionary<ProjectStatus, bool> inlcudeStatus = new Dictionary<ProjectStatus, bool> {
@@ -248,6 +265,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             NotifyThisPropertyChanged(nameof(StatusText));
         }
+
+        public void UnbindProjects() {
+            foreach (var project in Projects) {
+                project.Bind(null);
+            }
+            UpdateCommands();
+        }
         
         public void ClearProjects(bool clearSearch=true) {
 
@@ -281,7 +305,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public async System.Threading.Tasks.Task ReloadProjects() {
 
-            if (!IsSolutionLoaded || IsLoading) {
+            if (IsLoading || _suspendReload) {
                 return;
             }
 
@@ -329,7 +353,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         
         public async Task<bool> SetProjectsRoot(string path) {
 
-            if(!IsSolutionLoaded || IsLoading) {
+            if(IsLoading) {
                 return false;
             }
 
@@ -411,6 +435,42 @@ namespace IInspectable.ProjectExplorer.Extension {
                            "$";
             return searchString;
 
+        }
+
+        sealed class StateSaver<T> : IDisposable {
+
+            readonly T _previousState;
+            readonly Action<T> _setter;
+
+            public StateSaver(T value, Func<T> getter, Action<T> setter) {
+                _previousState = getter();
+                _setter        = setter;
+                _setter(value);
+            }
+
+            public void Dispose() {
+                _setter(_previousState);
+            }
+        }
+
+        static class Capture {
+
+            public static IDisposable ProjectsRoot(ProjectExplorerViewModel model) {
+                return new StateSaver<string>(
+                    value : model._optionService.ProjectsRoot,
+                    getter: () => model._optionService.ProjectsRoot,
+                    setter: value => model._optionService.ProjectsRoot = value);
+            }
+        }
+
+        static class Suspend {
+
+            public static IDisposable Reload(ProjectExplorerViewModel model) {
+                return new StateSaver<bool>(
+                    value : true,
+                    getter: () => model._suspendReload,
+                    setter: value => model._suspendReload = value);
+            }
         }
     }
 }

@@ -26,14 +26,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             Shell?.EnableModeless(1);
         }
 
-        public static void ReportUserOnFailed(int? hr) {
-            ReportUserOnFailed(hr ?? VSConstants.S_OK);
+        public static bool ReportUserOnFailed(int? hr) {
+            return ReportUserOnFailed(hr ?? VSConstants.S_OK);
         }
 
-        public static void ReportUserOnFailed(int hr) {
+        public static bool ReportUserOnFailed(int hr) {
             if (ErrorHandler.Failed(hr)) {
                 Shell.ReportErrorInfo(hr);
+                return true;
             }
+            return false;
         }
 
         public static void UpdateCommandUI(bool immediateUpdate=true) {

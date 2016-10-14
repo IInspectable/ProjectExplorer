@@ -17,12 +17,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            Enabled =_viewModel.IsSolutionLoaded && _viewModel.SelectedProject?.Status == ProjectStatus.Unloaded;
+            Enabled = _viewModel.SelectedProject?.Status == ProjectStatus.Unloaded;
             Visible = Enabled;
         }
 
         public override void Execute(object parameter = null) {
-
             ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Reload());
         }
     }

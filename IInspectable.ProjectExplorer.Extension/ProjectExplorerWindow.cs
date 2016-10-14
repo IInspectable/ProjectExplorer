@@ -52,12 +52,8 @@ namespace IInspectable.ProjectExplorer.Extension {
            // TODO Clear search text
         }
 
-        private InfoBarModel _errorInfoBar;
-        public override void OnToolWindowCreated() {
-            base.OnToolWindowCreated();
-            SearchHost.IsVisible = ViewModel.IsSolutionLoaded;            
-        }
-
+        InfoBarModel _errorInfoBar;
+        
         protected override void OnInfoBarClosed(IVsInfoBarUIElement infoBarUI, IVsInfoBar infoBar) {
             if (infoBar == _errorInfoBar) {
                 _errorInfoBar = null;
@@ -91,11 +87,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (string.IsNullOrEmpty(e.PropertyName) || 
-                e.PropertyName == nameof(ProjectExplorerViewModel.IsSolutionLoaded)) {
-
-                SearchHost.IsVisible = ViewModel.IsSolutionLoaded;
-            }
             if(string.IsNullOrEmpty(e.PropertyName) ||
                e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
 

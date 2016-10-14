@@ -105,7 +105,17 @@ namespace IInspectable.ProjectExplorer.Extension {
             return task;
         }
 
-        
+        public int EnsureSolution() {
+
+            if(IsSolutionOpen()) {
+                return VSConstants.S_OK;
+            }
+
+            return LogFailed(_vsSolution1.CreateSolution(
+                lpszLocation  : null, 
+                lpszName      : null, 
+                grfCreateFlags: 0));
+        }
 
         [CanBeNull]
         ProjectFile LoadProjectFile(string file) {
@@ -180,8 +190,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             return projGuid;
         }
 
-        public bool IsSolutionLoaded() {
-            return GetSolutionDirectory() != null;
+        public bool IsSolutionOpen() {
+
+            object value;
+            LogFailed(_vsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out value));
+            return (bool) value;
         }
 
         [CanBeNull]

@@ -22,7 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            Enabled = _viewModel.IsSolutionLoaded && !_viewModel.IsLoading;
+            Enabled = !_viewModel.IsLoading && !String.IsNullOrEmpty(_viewModel.ProjectsRoot);
             Visible = !_viewModel.IsLoading;
         }
 

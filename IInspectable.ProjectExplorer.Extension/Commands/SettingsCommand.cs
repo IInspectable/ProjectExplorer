@@ -34,7 +34,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
-            Enabled = !Executing && _viewModel.IsSolutionLoaded && !_viewModel.IsLoading;
+            Enabled = !Executing && !_viewModel.IsLoading;
         }
 
         public override async void Execute(object parameter=null) {

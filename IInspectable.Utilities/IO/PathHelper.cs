@@ -20,7 +20,7 @@ namespace IInspectable.Utilities.IO {
         /// <exception cref="System.UriFormatException"></exception>
         public static string GetRelativePath(string fromPath, string toPath) {
             if (string.IsNullOrEmpty(fromPath)) {
-                throw new ArgumentNullException(nameof(fromPath));
+                return toPath;
             }
 
             if (string.IsNullOrEmpty(toPath)) {

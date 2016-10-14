@@ -52,10 +52,9 @@
             </Border>
         </DataTemplate>
 
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Visibility="{Binding IsSolutionLoaded, Converter={StaticResource  BooleanToVisibilityConverter}}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
