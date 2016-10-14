@@ -30,7 +30,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ProjectExplorerWindow _toolWindow;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
-        readonly OleMenuCommandService _menuCommandService;
+        readonly OleMenuCommandService _oleMenuCommandService;
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
@@ -38,11 +38,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         bool _suspendReload;
 
-        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, SolutionService solutionService, OptionService optionService, OleMenuCommandService menuCommandService) {
+        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, SolutionService solutionService, OptionService optionService, OleMenuCommandService oleMenuCommandService) {
             _toolWindow = toolWindow;
             _solutionService    = solutionService;
             _optionService      = optionService;
-            _menuCommandService = menuCommandService;
+            _oleMenuCommandService = oleMenuCommandService;
             _selectionService   = new ProjectViewModelSelectionService();
 
             _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
@@ -368,7 +368,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, 
                                           PackageIds.SettingsButtonContextMenu);
 
-            _menuCommandService.ShowContextMenu(commandId, x, y);
+            _oleMenuCommandService.ShowContextMenu(commandId, x, y);
         }
 
         public void ShowProjectItemContextMenu(int x, int y) {
@@ -376,12 +376,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             var commandId = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid,
                                           PackageIds.ProjectItemContextMenu);
 
-            _menuCommandService.ShowContextMenu(commandId, x, y);
+            _oleMenuCommandService.ShowContextMenu(commandId, x, y);
         }
 
         void RegisterCommands() {
             foreach (var command in _commands) {
-                command.Register(_menuCommandService);
+                command.Register(_oleMenuCommandService);
             }
         }
 

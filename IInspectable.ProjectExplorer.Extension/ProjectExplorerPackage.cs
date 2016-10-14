@@ -5,8 +5,10 @@ using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.ComponentModel.Composition;
 
 #endregion
 
@@ -23,25 +25,25 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
 
+        [Import]
+        OptionService _optionService;
+        [Import]
+        ProjectExplorerViewModelProvider _projectExplorerViewModelProvider;
+
         public ProjectExplorerPackage() {
             AddOptionKey(OptionService.OptionKey);            
-        }
-
-        public static ProjectExplorerPackage Instance {
-            get { return GetGlobalService<ProjectExplorerPackage, ProjectExplorerPackage>(); }
         }
         
         protected override void Initialize() {
 
             _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
 
-            var solutionService = new SolutionService();
-            var optionService   = new OptionService(solutionService);
+            var componentModel = GetGlobalService<SComponentModel, IComponentModel>();
+            componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
 
             ((IServiceContainer)this).AddService(GetType()                , this           , promote: true);
-            ((IServiceContainer)this).AddService(solutionService.GetType(), solutionService, promote: true);
-            ((IServiceContainer)this).AddService(optionService.GetType()  , optionService  , promote: true);
-             
+            ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
+
             var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
             var projectExplorerCommand       = new ProjectExplorerCommand(this);
@@ -80,18 +82,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             return GetGlobalService(typeof(TService)) as TInterface;
         }
 
-        OptionService OptionService { get { return GetGlobalService<OptionService, OptionService>(); } }
-
         protected override void OnLoadOptions(string key, Stream stream) {
             if(OptionService.OptionKey == key) {
-                OptionService.LoadOptions(stream);
+                _optionService.LoadOptions(stream);
             }
             base.OnLoadOptions(key, stream);
         }
 
         protected override void OnSaveOptions(string key, Stream stream) {
             if (OptionService.OptionKey == key) {
-                OptionService.SaveOptions(stream);
+                _optionService.SaveOptions(stream);
             }
             base.OnSaveOptions(key, stream);
         }

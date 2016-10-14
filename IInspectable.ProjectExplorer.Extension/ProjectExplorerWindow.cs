@@ -15,16 +15,15 @@ using Microsoft.VisualStudio.Imaging;
 namespace IInspectable.ProjectExplorer.Extension {
     
     [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
-     class ProjectExplorerWindow : ToolWindowPane {
+    class ProjectExplorerWindow : ToolWindowPane {
 
         public ProjectExplorerWindow() : base(null) {
             // ReSharper disable VirtualMemberCallInConstructor
-            var solutionService = ProjectExplorerPackage.GetGlobalService<SolutionService, SolutionService>();
-            var optionService   = ProjectExplorerPackage.GetGlobalService<OptionService, OptionService>();
+  
+            var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+            var viewModelProvider  = ProjectExplorerPackage.GetGlobalService<ProjectExplorerViewModelProvider, ProjectExplorerViewModelProvider>();
 
-            var menuCommandService= (OleMenuCommandService)GetService(typeof(IMenuCommandService));
-
-            ViewModel = new ProjectExplorerViewModel(this, solutionService, optionService, menuCommandService);
+            ViewModel = viewModelProvider.CreateViewModel(this, menuCommandService);
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             ViewModel.SolutionService.AfterCloseSolution += OnAfterCloseSolution;
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,

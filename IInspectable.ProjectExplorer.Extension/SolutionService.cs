@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -11,13 +12,22 @@ using IInspectable.Utilities.IO;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using Task = System.Threading.Tasks.Task;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
+    static class ServiceProviderExtensions {
+
+        public static TInterface GetService<TService, TInterface>(this IServiceProvider sp) where TInterface : class {
+            return sp.GetService(typeof(TService)) as TInterface;
+        }
+    }
+
+    [Export]
     class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
         readonly IVsSolution  _vsSolution1;
@@ -28,17 +38,18 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
+        
+        [ImportingConstructor]
+        public SolutionService([Import(typeof(SVsServiceProvider))]IServiceProvider serviceProvider) {
 
-        public SolutionService() {
-
-            _vsSolution1 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution>();
-            _vsSolution2 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution2>();
-            _vsSolution4 = ProjectExplorerPackage.GetGlobalService<SVsSolution, IVsSolution4>();
-
-            _vsImageService2 = ProjectExplorerPackage.GetGlobalService<SVsImageService, IVsImageService2>();
-            
-            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
-            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
+          _vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
+          _vsSolution2 = serviceProvider.GetService<SVsSolution, IVsSolution2>();
+          _vsSolution4 = serviceProvider.GetService<SVsSolution, IVsSolution4>();
+          
+          _vsImageService2 = serviceProvider.GetService<SVsImageService, IVsImageService2>();
+          
+          _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
+          _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
         }
 
         public void Dispose() {
