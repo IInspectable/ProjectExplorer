@@ -1,37 +1,38 @@
-﻿using System;
+﻿#region Using Directives
+
+using System.Linq;
+using System.Collections.Generic;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class RemoveProjectCommand : Command {
+    sealed class RemoveProjectCommand : ProjectSelectionCommand {
 
-        readonly ProjectExplorerViewModel _viewModel;
-
-        public RemoveProjectCommand(ProjectExplorerViewModel viewModel)
-            : base(PackageIds.RemoveProjectCommandId) {
-
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;
+        public RemoveProjectCommand(ProjectExplorerViewModel viewModel):
+            base(viewModel, PackageIds.RemoveProjectCommandId) {
         }
 
-        public override void UpdateState() {
-            Enabled = _viewModel.SelectedProject?.Status == ProjectStatus.Loaded ||
-                      _viewModel.SelectedProject?.Status == ProjectStatus.Unloaded;
+        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+            return projectViewModel.Status == ProjectStatus.Loaded ||
+                   projectViewModel.Status == ProjectStatus.Unloaded; 
         }
 
-        public override void Execute(object parameter = null) {
+        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+            return true;
+        }
 
-            if (_viewModel.SelectedProject == null) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+
+            string itemsList =  string.Join(", ", projects.Select(project => $"'{project.Name}'"));
+
+            if (!ShellUtil.ConfirmOkCancel($"{itemsList}{(projects.Count == 1 ? " " : "\r\n")}will be removed.")) {
                 return;
             }
-
-            if (!ShellUtil.ConfirmOkCancel($"'{_viewModel.SelectedProject.Name}' will be removed.")) {
-                return;
+            // TODO Wait Dialog
+            foreach (var project in projects) {
+                ShellUtil.ReportUserOnFailed(project.Close());
             }
-
-            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject.Close());
-        }
+        }        
     }
 }

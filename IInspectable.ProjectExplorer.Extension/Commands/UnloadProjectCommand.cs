@@ -1,28 +1,31 @@
-using System;
+#region Using Directives
+
+using System.Collections.Generic;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class UnloadProjectCommand : Command {
+    sealed class UnloadProjectCommand : ProjectSelectionCommand {
 
-        readonly ProjectExplorerViewModel _viewModel;
+        public UnloadProjectCommand(ProjectExplorerViewModel viewModel):
+            base(viewModel, PackageIds.UnloadProjectCommandId) {
+        }
 
-        public UnloadProjectCommand(ProjectExplorerViewModel viewModel)
-            : base(PackageIds.UnloadProjectCommandId) {
+        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+            return projectViewModel?.Status == ProjectStatus.Loaded;
+        }
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
+        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+            return EnableOverride(projectViewModel);
+        }
+
+        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+            foreach (var project in projects) {
+                if (ShellUtil.ReportUserOnFailed(project.Unload())) {
+                    break;
+                }
             }
-
-            _viewModel = viewModel;
-        }
-
-        public override void UpdateState() {
-            Enabled = _viewModel.SelectedProject?.Status == ProjectStatus.Loaded;
-            Visible = Enabled;
-        }
-
-        public override void Execute(object parameter = null) {
-            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Unload());
         }
     }
 }

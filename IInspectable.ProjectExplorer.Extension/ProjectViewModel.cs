@@ -88,6 +88,17 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
+        public bool IsSelected {
+            get { return _parent?.SelectionService.IsSelected(this) ?? false; }
+            set {
+                if(value) {
+                    _parent?.SelectionService.AddSelection(this);
+                } else {
+                    _parent?.SelectionService.RemoveSelection(this);
+                }
+            }
+        }
+
         public int Open() {
             return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.E_FAIL;
         }
@@ -146,9 +157,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void Dispose() {
+            IsSelected = false;
             UnadviseHierarchyEvents();
             _parent    = null;
             _hierarchy = null;
+        }
+
+        internal void NotifyIsSelectedChanged() {
+            NotifyThisPropertyChanged(nameof(IsSelected));
         }
 
         #region IVsHierarchyEvents

@@ -1,31 +1,32 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class AddProjectCommand : Command {
-
-        readonly ProjectExplorerViewModel _viewModel;
-
+    sealed class AddProjectCommand : ProjectSelectionCommand {
+        
         public AddProjectCommand(ProjectExplorerViewModel viewModel)
-            : base(PackageIds.AddProjectCommandId) {
-
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;
+            : base(viewModel, PackageIds.AddProjectCommandId) {        
         }
 
-        public override void UpdateState() {
-           Enabled = _viewModel.SelectedProject ?.Status==ProjectStatus.Closed;
+        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+            return projectViewModel.Status == ProjectStatus.Closed;
         }
 
-        public override void Execute(object parameter = null) {
+        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+            return true;
+        }
 
-            if(ShellUtil.ReportUserOnFailed(_viewModel.EnsureSolution())) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+
+            if (ShellUtil.ReportUserOnFailed(ViewModel.EnsureSolution())) {
                 return;
             }
-            ShellUtil.ReportUserOnFailed(_viewModel.SelectedProject?.Open());
-        }
+
+            foreach (var project in projects) {
+                if (ShellUtil.ReportUserOnFailed(project.Open())) {
+                    break;
+                }
+            }
+        }        
     }
 }

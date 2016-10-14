@@ -58,6 +58,7 @@
     <Compile Include="Commands\AddProjectCommand.cs" />
     <Compile Include="Commands\ProjectExplorerSearchCommand.cs" />
     <Compile Include="Commands\CancelRefreshCommand.cs" />
+    <Compile Include="Commands\ProjectSelectionCommand.cs" />
     <Compile Include="Commands\RemoveProjectCommand.cs" />
     <Compile Include="Commands\SettingsCommand.cs" />
     <Compile Include="Commands\ShellUtil.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="ProjectItemComparer.cs" />
     <Compile Include="ProjectSearchOptions.cs" />
     <Compile Include="ProjectSearchTask.cs" />
+    <Compile Include="ProjectViewModelSelectionService.cs" />
     <Compile Include="SolutionService.cs" />
     <Compile Include="ProjectExplorerPackage1.cs">
       <AutoGen>True</AutoGen>

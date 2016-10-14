@@ -1,29 +1,29 @@
-﻿using System;
+﻿#region Using Directives
+
+using System.Collections.Generic;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class OpenInFileExplorerCommand : Command {
+    sealed class OpenInFileExplorerCommand : ProjectSelectionCommand {
 
-        readonly ProjectExplorerViewModel _viewModel;
+        public OpenInFileExplorerCommand(ProjectExplorerViewModel viewModel):
+            base(viewModel, PackageIds.OpenInFileExplorerCommandId) {
+        }
 
-        public OpenInFileExplorerCommand(ProjectExplorerViewModel viewModel)
-            : base(PackageIds.OpenInFileExplorerCommandId) {
+        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+            return SelectedItems.Count<=5;
+        }
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
+        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+            return true;
+        }
+
+        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+            foreach (var project in projects) {
+                project.OpenFolderInFileExplorer();
             }
-
-            _viewModel = viewModel;
-        }
-
-        public override void UpdateState() {
-            Enabled = _viewModel?.SelectedProject != null;
-        }
-
-        public override void Execute(object parameter = null) {
-
-            _viewModel?.SelectedProject?.OpenFolderInFileExplorer();
-        }
+       }
     }
-
 }

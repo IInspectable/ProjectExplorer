@@ -80,13 +80,18 @@
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
         <ui:VsListBox Grid.Row      = "2" 
-                      SelectionMode = "Single"
+                      SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
-                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"
-                      SelectedItem  = "{Binding SelectedProject}"
+                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"   
                       ContextMenuOpening = "OnProjectItemContextMenuOpening"
-                      MouseDoubleClick   = "OnProjectListMouseDoubleClick"/>
+                      MouseDoubleClick   = "OnProjectListMouseDoubleClick">
+            <ui:VsListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ui:VsListBoxItem}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                </Style>
+            </ui:VsListBox.ItemContainerStyle>
+        </ui:VsListBox>
         
         <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>
     </Grid>

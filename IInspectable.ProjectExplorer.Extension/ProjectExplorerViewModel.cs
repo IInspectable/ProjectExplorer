@@ -1,19 +1,21 @@
 #region Using Directives
 
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
-using System.IO;
 using System.Security;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+
 using JetBrains.Annotations;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -32,6 +34,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
+        readonly ProjectViewModelSelectionService _selectionService;
 
         bool _suspendReload;
 
@@ -40,6 +43,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService    = solutionService;
             _optionService      = optionService;
             _menuCommandService = menuCommandService;
+            _selectionService   = new ProjectViewModelSelectionService();
 
             _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
             _solutionService.AfterCloseSolution  += OnAfterCloseSolution;
@@ -47,6 +51,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
+
+            _selectionService.SelectionChanged += OnSelectionChanged;
 
             _commands = new List<Command> {
                 { RefreshCommand            = new RefreshCommand(this)},
@@ -90,6 +96,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [NotNull]
+        public ProjectViewModelSelectionService SelectionService {
+            get { return _selectionService; }
+        }
+
+        [NotNull]
         public ObservableCollection<ProjectViewModel> Projects {
             get { return _projects; }
         }
@@ -108,20 +119,6 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public bool IsSolutionOpen {
             get { return _solutionService.IsSolutionOpen(); }
-        }
-
-        // TODO Selection Logic
-        ProjectViewModel _selectedProject;
-
-        public ProjectViewModel SelectedProject {
-            get { return _selectedProject; }
-            set {
-                if (_selectedProject == value) {
-                    return;
-                }
-                _selectedProject = value;
-                NotifyPropertyChanged();
-            }
         }
 
         bool _isLoading;
@@ -152,6 +149,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         #region Event Handler
+
+        void OnSelectionChanged(object sender, EventArgs e) {
+            UpdateCommands();
+        }
 
         void OnAfterOpenSolution(object sender, EventArgs e) {            
             Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");           
@@ -288,8 +289,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             _toolWindow.RemoveErrorInfoBar();
-
-            SelectedProject = null;
 
             UpdateCommands();
             NotifyAllPropertiesChanged();
