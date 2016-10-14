@@ -10,14 +10,13 @@ namespace IInspectable.ProjectExplorer.Extension {
     [Export]
     class ProjectExplorerViewModelProvider {
 
-        [Import]
-        readonly SolutionService _solutionService;
-        [Import]
-        readonly OptionService _optionService;
+        [Import] readonly SolutionService _solutionService;
+        [Import] readonly OptionService _optionService;
+        [Import] readonly IWaitIndicator _waitIndicator;
 
         public ProjectExplorerViewModel CreateViewModel(ProjectExplorerWindow toolWindow, OleMenuCommandService oleMenuCommandService) {
 
-            return new ProjectExplorerViewModel(toolWindow, _solutionService, _optionService, oleMenuCommandService);
+            return new ProjectExplorerViewModel(toolWindow, _solutionService, _optionService, oleMenuCommandService, _waitIndicator);
         }
     }
 }

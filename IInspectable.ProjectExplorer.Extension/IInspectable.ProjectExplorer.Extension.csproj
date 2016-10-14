@@ -96,6 +96,11 @@
     <Compile Include="UI\VsListBox.cs" />
     <Compile Include="UI\VsListBoxItem.cs" />
     <Compile Include="ViewModelBase.cs" />
+    <Compile Include="WaitIndicator\IWaitContext.cs" />
+    <Compile Include="WaitIndicator\IWaitIndicator.cs" />
+    <Compile Include="WaitIndicator\VisualStudioWaitContext.Callback.cs" />
+    <Compile Include="WaitIndicator\VisualStudioWaitContext.cs" />
+    <Compile Include="WaitIndicator\VisualStudioWaitIndicator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

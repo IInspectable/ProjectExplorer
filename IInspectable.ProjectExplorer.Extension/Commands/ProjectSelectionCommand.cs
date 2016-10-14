@@ -30,6 +30,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _viewModel; }
         }
 
+        protected IWaitIndicator WaitIndicator {
+            get { return _viewModel.WaitIndicator; }
+        }
+
         public sealed override void UpdateState() {
             Enabled = SelectedItems.Any() && SelectedItems.All(EnableOverride);
             Visible = SelectedItems.Any() && SelectedItems.All(VisibleOverride);

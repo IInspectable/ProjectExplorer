@@ -31,6 +31,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _oleMenuCommandService;
+        readonly IWaitIndicator _waitIndicator;
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
@@ -38,12 +39,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         bool _suspendReload;
 
-        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, SolutionService solutionService, OptionService optionService, OleMenuCommandService oleMenuCommandService) {
-            _toolWindow = toolWindow;
-            _solutionService    = solutionService;
-            _optionService      = optionService;
+        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, 
+                                          SolutionService solutionService, 
+                                          OptionService optionService, 
+                                          OleMenuCommandService oleMenuCommandService, 
+                                          IWaitIndicator waitIndicator) {
+            _toolWindow            = toolWindow;
+            _solutionService       = solutionService;
+            _optionService         = optionService;
             _oleMenuCommandService = oleMenuCommandService;
-            _selectionService   = new ProjectViewModelSelectionService();
+            _waitIndicator         = waitIndicator;
+            _selectionService      = new ProjectViewModelSelectionService();
 
             _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
             _solutionService.AfterCloseSolution  += OnAfterCloseSolution;
@@ -98,6 +104,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         [NotNull]
         public ProjectViewModelSelectionService SelectionService {
             get { return _selectionService; }
+        }
+
+        [NotNull]
+        public IWaitIndicator WaitIndicator {
+            get { return _waitIndicator; }
         }
 
         [NotNull]

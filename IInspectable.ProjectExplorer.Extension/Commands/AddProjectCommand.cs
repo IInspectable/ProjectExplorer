@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -22,11 +23,23 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return;
             }
 
-            foreach (var project in projects) {
-                if (ShellUtil.ReportUserOnFailed(project.Open())) {
-                    break;
+            try {
+                // TODO message/disable cancel
+                using(var indicator = WaitIndicator.StartWait("Project Explorer", "message", true)) {
+                    foreach(var project in projects) {
+
+                        indicator.Message = $"Adding project '{project.Name}'.";
+
+                        indicator.CancellationToken.ThrowIfCancellationRequested();
+
+                        if(ShellUtil.ReportUserOnFailed(project.Open())) {
+                            break;
+                        }
+                    }
                 }
+            } catch(OperationCanceledException) {
             }
+
         }        
     }
 }
