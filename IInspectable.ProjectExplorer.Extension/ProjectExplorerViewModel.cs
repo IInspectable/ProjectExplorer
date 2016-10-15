@@ -128,6 +128,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _optionService.ProjectsRoot; }
         }
 
+        public string ProjectsRootLabel {
+            get {
+                if(String.IsNullOrEmpty(_optionService.ProjectsRoot)) {
+                    return "Select Folder...";
+                }
+                return _optionService.ProjectsRoot;
+            }
+        }
+
         public bool IsSolutionOpen {
             get { return _solutionService.IsSolutionOpen(); }
         }
@@ -148,7 +157,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             get {
 
                 if (IsLoading) {
-                    return "Loading projects...";
+                    return String.Empty;
+                }
+
+                if(Projects.Count == 0 && String.IsNullOrEmpty(ProjectsRoot)) {
+                    return String.Empty;
                 }
 
                 if (ProjectsView.Count == 1) {

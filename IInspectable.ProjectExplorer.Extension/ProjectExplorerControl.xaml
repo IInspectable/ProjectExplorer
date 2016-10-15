@@ -19,6 +19,8 @@
              Name="MyToolWindow">
 
     <UserControl.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
             <Border BorderThickness="0">
@@ -61,7 +63,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
+        <!--Select Folder Button-->
         <ui:VsButton Command="{Binding SettingsCommand}"  ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
             <ui:VsButton.Glyph>
                 <imaging:CrispImage HorizontalAlignment = "Center"
@@ -73,12 +75,13 @@
             </ui:VsButton.Glyph>
             <TextBlock Padding="3"
                        VerticalAlignment="Center" 
-                       Text="{Binding ProjectsRoot}" TextWrapping="Wrap"/>
+                       Text="{Binding ProjectsRootLabel}" TextWrapping="Wrap"/>
         </ui:VsButton>
-        
+        <!--Separator-->
         <Rectangle Grid.Row ="1"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
+        <!--Projects Listbox-->
         <ui:VsListBox Grid.Row      = "2" 
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
@@ -92,7 +95,30 @@
                 </Style>
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>
-        
+        <!--Watermark "Status Loading"-->
+        <Grid Grid.Row = "2" 
+              HorizontalAlignment="Center"
+              VerticalAlignment  ="Center"
+              Visibility         ="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <imaging:CrispImage HorizontalAlignment   = "Center"
+                                    VerticalAlignment = "Center"
+                                    Margin  = "2"
+                                    Moniker = "{x:Static catalog:KnownMonikers.StatusInformation}"   
+                                    Width   = "16" 
+                                    Height  = "16"/>
+
+            <TextBlock Grid.Column= "1" 
+                       Margin     = "2" 
+                       Foreground = "{DynamicResource {x:Static vsui:EnvironmentColors.SystemGrayTextBrushKey}}"
+                       Text       = "Loading projects..." />
+        </Grid>
+        <!--Status Text-->
         <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
