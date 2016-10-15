@@ -15,9 +15,9 @@ using Microsoft.VisualStudio.Imaging;
 namespace IInspectable.ProjectExplorer.Extension {
     
     [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
-    class ProjectExplorerWindow : ToolWindowPane {
+    class ProjectExplorerToolWindow : ToolWindowPane {
 
-        public ProjectExplorerWindow() : base(null) {
+        public ProjectExplorerToolWindow() : base(null) {
             // ReSharper disable VirtualMemberCallInConstructor
   
             var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
@@ -36,6 +36,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
             
             // ReSharper restore VirtualMemberCallInConstructor
+        }
+
+        public override void OnToolWindowCreated() {
+            base.OnToolWindowCreated();
+            UpdateSearchEnabled();
         }
 
         protected override void Dispose(bool disposing) {
@@ -88,9 +93,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if(string.IsNullOrEmpty(e.PropertyName) ||
                e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
-
-                SearchHost.IsEnabled = !ViewModel.IsLoading;
+                UpdateSearchEnabled();
             }
+        }
+
+        void UpdateSearchEnabled() {
+            SearchHost.IsEnabled = !ViewModel.IsLoading && ViewModel.Projects.Count > 0;
         }
 
         internal ProjectExplorerViewModel ViewModel { get; }

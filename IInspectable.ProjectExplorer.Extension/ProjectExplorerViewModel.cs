@@ -27,7 +27,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
-        readonly ProjectExplorerWindow _toolWindow;
+        readonly ProjectExplorerToolWindow _toolWindow;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _oleMenuCommandService;
@@ -39,7 +39,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         bool _suspendReload;
 
-        internal ProjectExplorerViewModel(ProjectExplorerWindow toolWindow, 
+        internal ProjectExplorerViewModel(ProjectExplorerToolWindow toolWindow, 
                                           SolutionService solutionService, 
                                           OptionService optionService, 
                                           OleMenuCommandService oleMenuCommandService, 
@@ -137,6 +137,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
+        public string StatusText {
+            get {
+
+                if (IsLoading || Projects.Count == 0) {
+                    return String.Empty;
+                }
+
+                if (ProjectsView.Count == 1) {
+                    return "1 Project";
+                }
+
+                return $"{ProjectsView.Count} Projects";
+            }
+        }
+
         public bool IsSolutionOpen {
             get { return _solutionService.IsSolutionOpen(); }
         }
@@ -152,26 +167,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 NotifyPropertyChanged();
             }
         }
-
-        public string StatusText {
-            get {
-
-                if (IsLoading) {
-                    return String.Empty;
-                }
-
-                if(Projects.Count == 0 && String.IsNullOrEmpty(ProjectsRoot)) {
-                    return String.Empty;
-                }
-
-                if (ProjectsView.Count == 1) {
-                    return "1 Project found";
-                }
-
-                return $"{ProjectsView.Count} Projects found";
-            }
-        }
-
+        
         #region Event Handler
 
         void OnSelectionChanged(object sender, EventArgs e) {

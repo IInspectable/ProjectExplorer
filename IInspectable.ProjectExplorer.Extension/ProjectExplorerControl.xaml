@@ -1,27 +1,28 @@
-﻿<UserControl x:Class="IInspectable.ProjectExplorer.Extension.ProjectExplorerControl"
-             x:ClassModifier="internal"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
-             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
-             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
-             xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
-             xmlns:ui="clr-namespace:IInspectable.ProjectExplorer.Extension.UI"
-             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
-             xmlns:extension="clr-namespace:IInspectable.ProjectExplorer.Extension"
-             Background="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowBackgroundKey}}"
-             Foreground="{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowTextKey}}"
+﻿<UserControl x:Class         = "IInspectable.ProjectExplorer.Extension.ProjectExplorerControl"
+             x:ClassModifier = "internal"
+             xmlns           = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x         = "http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc        = "http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d         = "http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsShell   = "clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:imaging   = "clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:catalog   = "clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:platformUi= "clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:ui        = "clr-namespace:IInspectable.ProjectExplorer.Extension.UI"
+             xmlns:vsui      = "clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:extension = "clr-namespace:IInspectable.ProjectExplorer.Extension"             
+             mc:Ignorable    = "d"
+             d:DesignHeight  = "300"
+             d:DesignWidth   = "300"
+             Background      = "{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowBackgroundKey}}"
+             Foreground      = "{DynamicResource {x:Static vsShell:VsBrushes.ToolWindowTextKey}}"
              platformUi:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow">
+             >
 
     <UserControl.Resources>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    
+
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
             <Border BorderThickness="0">
                 <Border.ToolTip>
@@ -31,7 +32,7 @@
                     </StackPanel>
                 </Border.ToolTip>
                 <Grid Margin="0,0">
-      
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="25" />
                         <ColumnDefinition Width="*" />
@@ -43,7 +44,7 @@
                                         Width       = "16" 
                                         Height      = "16"
                                         HorizontalAlignment="Right"/>
-                    
+
                     <TextBlock Grid.Column       = "1" 
                                Grid.Row          = "0" 
                                Margin            = "5,1" 
@@ -100,12 +101,12 @@
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center"
               Visibility         ="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-            
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
             <imaging:CrispImage HorizontalAlignment   = "Center"
                                     VerticalAlignment = "Center"
                                     Margin  = "2"
@@ -117,6 +118,28 @@
                        Margin     = "2" 
                        Foreground = "{DynamicResource {x:Static vsui:EnvironmentColors.SystemGrayTextBrushKey}}"
                        Text       = "Loading projects..." />
+        </Grid>
+        <!--Watermark "No projects found"-->
+        <Grid Grid.Row = "2" 
+              HorizontalAlignment="Center"
+              VerticalAlignment  ="Center">
+            <Grid.Style>
+                <Style>
+                    <Setter Property="Control.Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsLoading}"      Value="false" />
+                                <Condition Binding="{Binding Path=Projects.Count}" Value="0" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Control.Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <TextBlock Margin     = "2" 
+                       Foreground = "{DynamicResource {x:Static vsui:EnvironmentColors.SystemGrayTextBrushKey}}"
+                       Text       = "No projects found." />
         </Grid>
         <!--Status Text-->
         <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>

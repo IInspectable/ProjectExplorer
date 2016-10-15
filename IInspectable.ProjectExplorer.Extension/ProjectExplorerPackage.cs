@@ -17,7 +17,7 @@ namespace IInspectable.ProjectExplorer.Extension {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", version: 2)]
-    [ProvideToolWindow(typeof(ProjectExplorerWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
+    [ProvideToolWindow(typeof(ProjectExplorerToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
@@ -55,11 +55,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             base.Initialize();
         }
 
-        internal ProjectExplorerWindow GetProjectExplorerWindow() {
+        internal ProjectExplorerToolWindow GetProjectExplorerWindow() {
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            var window = (ProjectExplorerWindow)FindToolWindow(typeof(ProjectExplorerWindow), 0, true);
+            var window = (ProjectExplorerToolWindow)FindToolWindow(typeof(ProjectExplorerToolWindow), 0, true);
             return window;
         }
 

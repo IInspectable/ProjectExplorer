@@ -85,7 +85,7 @@
     <Compile Include="ProjectStatus.cs" />
     <Compile Include="ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProjectExplorerWindow.cs" />
+    <Compile Include="ProjectExplorerToolWindow.cs" />
     <Compile Include="Commands\ProjectExplorerCommand.cs" />
     <Compile Include="ProjectExplorerControl.xaml.cs">
       <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>

@@ -14,7 +14,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         [Import] readonly OptionService _optionService;
         [Import] readonly IWaitIndicator _waitIndicator;
 
-        public ProjectExplorerViewModel CreateViewModel(ProjectExplorerWindow toolWindow, OleMenuCommandService oleMenuCommandService) {
+        public ProjectExplorerViewModel CreateViewModel(ProjectExplorerToolWindow toolWindow, OleMenuCommandService oleMenuCommandService) {
 
             return new ProjectExplorerViewModel(toolWindow, _solutionService, _optionService, oleMenuCommandService, _waitIndicator);
         }
