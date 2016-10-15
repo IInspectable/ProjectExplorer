@@ -52,6 +52,35 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected abstract bool EnableOverride(ProjectViewModel projectViewModel);
         protected abstract bool VisibleOverride(ProjectViewModel projectViewModel);
-        protected abstract void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects);       
+        protected abstract void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects);
+
+        protected void ForeachWithWaitIndicatorAndErrorReport(IReadOnlyList<ProjectViewModel> projects,
+                                                              string verb, 
+                                                              Func<ProjectViewModel, int> action,
+                                                              bool breakOnFirstError=true) {
+            try {
+
+                bool allowCancel = projects.Count > 1;
+
+                using (var indicator = WaitIndicator.StartWait("Project Explorer", "", allowCancel)) {
+                    for (int i = 0; i < projects.Count; i++) {
+                        var project = projects[i];
+
+                        indicator.Message = $"{verb} project '{project.Name}'.";
+
+                        indicator.CancellationToken.ThrowIfCancellationRequested();
+
+                        if (i == projects.Count - 1) {
+                            indicator.AllowCancel = false;
+                        }
+
+                        if (ShellUtil.ReportUserOnFailed(action(project)) && breakOnFirstError) {
+                            break;
+                        }
+                    }
+                }
+            } catch (OperationCanceledException) {
+            }
+        }
     }
 }

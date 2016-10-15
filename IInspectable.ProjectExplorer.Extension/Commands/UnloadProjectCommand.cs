@@ -21,11 +21,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
-            foreach (var project in projects) {
-                if (ShellUtil.ReportUserOnFailed(project.Unload())) {
-                    break;
-                }
-            }
+
+            ForeachWithWaitIndicatorAndErrorReport(projects, "Unloading", p => p.Unload());            
         }
     }
 }

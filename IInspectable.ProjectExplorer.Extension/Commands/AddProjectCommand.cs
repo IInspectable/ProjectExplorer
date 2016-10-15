@@ -1,5 +1,8 @@
-﻿using System;
+﻿#region Using Directives
+
 using System.Collections.Generic;
+
+#endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -23,23 +26,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return;
             }
 
-            try {
-                // TODO message/disable cancel
-                using(var indicator = WaitIndicator.StartWait("Project Explorer", "message", true)) {
-                    foreach(var project in projects) {
-
-                        indicator.Message = $"Adding project '{project.Name}'.";
-
-                        indicator.CancellationToken.ThrowIfCancellationRequested();
-
-                        if(ShellUtil.ReportUserOnFailed(project.Open())) {
-                            break;
-                        }
-                    }
-                }
-            } catch(OperationCanceledException) {
-            }
-
+            ForeachWithWaitIndicatorAndErrorReport(projects, "Adding", p => p.Open());
         }        
     }
 }

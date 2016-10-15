@@ -29,10 +29,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             if (!ShellUtil.ConfirmOkCancel($"{itemsList}{(projects.Count == 1 ? " " : "\r\n")}will be removed.")) {
                 return;
             }
-            // TODO Wait Dialog
-            foreach (var project in projects) {
-                ShellUtil.ReportUserOnFailed(project.Close());
-            }
+
+            ForeachWithWaitIndicatorAndErrorReport(projects, "Removing", p => p.Close());
         }        
     }
 }

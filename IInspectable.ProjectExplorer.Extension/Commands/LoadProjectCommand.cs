@@ -22,11 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
 
-            foreach(var project in projects) {
-                if(ShellUtil.ReportUserOnFailed(project.Reload())) {
-                    break;
-                }
-            }
+            ForeachWithWaitIndicatorAndErrorReport(projects, "Reloading", p => p.Reload());            
         }
     }
 }
