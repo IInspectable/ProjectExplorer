@@ -236,7 +236,34 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         #endregion
-        
+
+        public void ExecuteDefaultAction() {
+
+            var selectedProject = SelectionService.SelectedItems.LastOrDefault();
+            if(selectedProject == null) {
+                return;
+            }
+
+            Command command = null;
+            switch (selectedProject.Status) {
+                case ProjectStatus.Closed:
+                    command = AddProjectCommand;
+                    break;
+                case ProjectStatus.Unloaded:
+                    command = LoadProjectCommand;
+                    break;
+                case ProjectStatus.Loaded:
+                    command = UnloadProjectCommand;
+                    break;
+            }
+
+            if(command?.CanExecute()==false) {
+                return;
+            }
+
+            command?.Execute();
+        }
+
         public int EnsureSolution() {
 
             // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot übernommen werden

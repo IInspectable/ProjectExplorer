@@ -114,19 +114,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public int Unload() {
             return _hierarchy?.UnloadProject() ?? VSConstants.E_FAIL;
         }
-
-        public int DefaultAction() {
-            switch (Status) {
-                case ProjectStatus.Closed:
-                    return Open();
-                case ProjectStatus.Unloaded:
-                    return Reload();
-                case ProjectStatus.Loaded:
-                    return Unload();
-            }
-            return VSConstants.S_OK;
-        }
-
+        
         public void OpenFolderInFileExplorer() {
 
             string args = $"/e, /select, \"{Path}\"";

@@ -1,5 +1,6 @@
 ﻿#region Using Directives
 
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,13 +20,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         ProjectExplorerViewModel ViewModel { get { return DataContext as ProjectExplorerViewModel; } }
 
-       void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
-
-            // TODO Selection Handling in ViewModel verlagern
-            var item=((ListBox) sender).SelectedItem as ProjectViewModel;
-
-            ShellUtil.ReportUserOnFailed(item?.DefaultAction());
-        }
+       void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {    
+           ViewModel.ExecuteDefaultAction();
+       }
 
         void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {
             // TODO Tastaturfall berücksichtigen (-1, -1)
