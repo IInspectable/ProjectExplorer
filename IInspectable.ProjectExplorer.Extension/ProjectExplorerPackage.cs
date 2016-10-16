@@ -58,6 +58,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         protected override void Dispose(bool disposing) {
             if(disposing) {
                 UnegisterCommands();
+                ((IServiceContainer)this).RemoveService(_projectExplorerViewModelProvider.GetType(), true);
             }
             base.Dispose(disposing);
         }
