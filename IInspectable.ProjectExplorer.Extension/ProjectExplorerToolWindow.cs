@@ -13,9 +13,9 @@ using Microsoft.VisualStudio.Imaging;
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
-    
+
     [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
-    class ProjectExplorerToolWindow : ToolWindowPane {
+    class ProjectExplorerToolWindow : ToolWindowPane, IErrorInfoService {
 
         public ProjectExplorerToolWindow() : base(null) {
             // ReSharper disable VirtualMemberCallInConstructor
@@ -38,6 +38,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             // ReSharper restore VirtualMemberCallInConstructor
         }
 
+        ProjectExplorerViewModel ViewModel { get; }
+
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
@@ -53,9 +55,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             UpdateSearchEnabled();
         }
         
-        void OnAfterCloseSolution(object sender, EventArgs e) {
-           // TODO Clear search text
-        }
+        #region IErrorInfoService
 
         InfoBarModel _errorInfoBar;
         
@@ -66,19 +66,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             base.OnInfoBarClosed(infoBarUI, infoBar);
         }
 
-        public void ShowErrorInfoBar(Exception ex) {
-            RemoveErrorInfoBar();
+        void IErrorInfoService.ShowErrorInfoBar(Exception ex) {
+            ((IErrorInfoService)this).RemoveErrorInfoBar();
             
             _errorInfoBar = new InfoBarModel(ex.Message, KnownMonikers.StatusError);
             AddInfoBar(_errorInfoBar);
         }
 
-        public void RemoveErrorInfoBar() {
+        void IErrorInfoService.RemoveErrorInfoBar() {
             if (_errorInfoBar != null) {
                 RemoveInfoBar(_errorInfoBar);
                 _errorInfoBar = null;
             }
         }
+
+        #endregion
 
         public bool CanActivateSearch {
             get { return SearchHost.IsVisible && SearchHost.IsEnabled; }
@@ -92,7 +94,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if(string.IsNullOrEmpty(e.PropertyName) ||
+            if (string.IsNullOrEmpty(e.PropertyName) ||
                e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
                 UpdateSearchEnabled();
             }
@@ -102,8 +104,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             SearchHost.IsEnabled = !ViewModel.IsLoading && ViewModel.Projects.Count > 0;
         }
 
-        internal ProjectExplorerViewModel ViewModel { get; }
+        void OnAfterCloseSolution(object sender, EventArgs e) {
+            // TODO Clear search text
+        }
 
+        // TODO Search Textbox in Control verlagern
         public override bool SearchEnabled {
             get { return true; }
         }
@@ -114,7 +119,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)500);
-            // TODO SHortcut Key anzeigen
+            // TODO Shortcut Key anzeigen
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
         }
 

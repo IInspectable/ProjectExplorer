@@ -28,7 +28,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
-        readonly ProjectExplorerToolWindow _toolWindow;
+        readonly IErrorInfoService _errorInfoService;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
         readonly ProjectSearchOptions _searchOptions;
@@ -43,12 +43,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         CancellationTokenSource _loadingCancellationToken;
         bool _suspendReload;
 
-        internal ProjectExplorerViewModel(ProjectExplorerToolWindow toolWindow, 
+        internal ProjectExplorerViewModel(IErrorInfoService errorInfoService, 
                                           SolutionService solutionService, 
                                           OptionService optionService, 
                                           OleMenuCommandService oleMenuCommandService, 
                                           IWaitIndicator waitIndicator) {
-            _toolWindow            = toolWindow;
+            _errorInfoService      = errorInfoService;
             _solutionService       = solutionService;
             _optionService         = optionService;
             _oleMenuCommandService = oleMenuCommandService;
@@ -361,7 +361,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 ClearSearch();
             }
 
-            _toolWindow.RemoveErrorInfoBar();
+            _errorInfoService.RemoveErrorInfoBar();
 
             UpdateCommands();
             NotifyAllPropertiesChanged();
@@ -405,7 +405,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     ex is SecurityException) {
 
                 Logger.Error(ex, $"{nameof(ReloadProjects)}");
-                _toolWindow.ShowErrorInfoBar(ex);
+                _errorInfoService.ShowErrorInfoBar(ex);
             }
             catch (OperationCanceledException) {
                 // ist OK
