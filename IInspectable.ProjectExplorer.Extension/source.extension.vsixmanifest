@@ -4,6 +4,7 @@
     <Identity Id="IInspectable.ProjectExplorer.0dbf2108-ac5b-47a6-b12a-f69ee101235f" Version="1.1.5" Language="en-US" Publisher="Dipl. -Ing. Maximilian Hänel" />
     <DisplayName>Project Explorer</DisplayName>
     <Description xml:space="preserve">Project Explorer makes ist easy to manage projects in a Solution, like adding or removing projects.</Description>
+    <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>
     <Icon>Resources\ProjectExplorer32.png</Icon>
     <PreviewImage>Resources\Preview.png</PreviewImage>
   </Metadata>
