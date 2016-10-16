@@ -8,15 +8,19 @@ namespace IInspectable.ProjectExplorer.Extension {
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         protected void NotifyThisPropertyChanged(string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         protected void NotifyAllPropertiesChanged() {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
+            OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+        }
+
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
+            PropertyChanged?.Invoke(this, e);
         }
     }
 }

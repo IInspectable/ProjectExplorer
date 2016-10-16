@@ -18,6 +18,7 @@ using JetBrains.Annotations;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+using System.ComponentModel;
 
 #endregion
 
@@ -30,6 +31,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ProjectExplorerToolWindow _toolWindow;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
+        readonly ProjectSearchOptions _searchOptions;
         readonly OleMenuCommandService _oleMenuCommandService;
         readonly IWaitIndicator _waitIndicator;
         readonly ObservableCollection<ProjectViewModel> _projects;
@@ -37,6 +39,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly List<Command> _commands;
         readonly ProjectViewModelSelectionService _selectionService;
 
+        [CanBeNull]
+        CancellationTokenSource _loadingCancellationToken;
         bool _suspendReload;
 
         internal ProjectExplorerViewModel(ProjectExplorerToolWindow toolWindow, 
@@ -50,16 +54,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _oleMenuCommandService = oleMenuCommandService;
             _waitIndicator         = waitIndicator;
             _selectionService      = new ProjectViewModelSelectionService();
-
-            _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
-            _solutionService.AfterCloseSolution  += OnAfterCloseSolution;
-            _solutionService.AfterLoadProject    += OnAfterLoadProject;
-            _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
-            _solutionService.AfterOpenProject    += OnAfterOpenProject;
-            _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
-
-            _selectionService.SelectionChanged += OnSelectionChanged;
-
+            
             _commands = new List<Command> {
                 { RefreshCommand            = new RefreshCommand(this)},
                 { CancelRefreshCommand      = new CancelRefreshCommand(this)},
@@ -71,20 +66,44 @@ namespace IInspectable.ProjectExplorer.Extension {
                 { SettingsCommand           = new SettingsCommand(this)},
             };
             
-            RegisterCommands();
-
-            PropertyChanged += (o, e) => UpdateCommands();
-
-            SearchOptions = new ProjectSearchOptions();
-            _projects     = new ObservableCollection<ProjectViewModel>();
-            _projectsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
+            _searchOptions = new ProjectSearchOptions();
+            _projects      = new ObservableCollection<ProjectViewModel>();
+            _projectsView  = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
 
+            WireEvents();
+            RegisterCommands();
             UpdateCommands();
 
             if (IsSolutionOpen) {
                 RefreshCommand.Execute();
             }
+        }
+
+        void WireEvents() {
+            _solutionService.AfterOpenSolution   += OnAfterOpenSolution;
+            _solutionService.AfterCloseSolution  += OnAfterCloseSolution;
+            _solutionService.AfterLoadProject    += OnAfterLoadProject;
+            _solutionService.BeforeUnloadProject += OnBeforeUnloadProject;
+            _solutionService.AfterOpenProject    += OnAfterOpenProject;
+            _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
+            _selectionService.SelectionChanged   += OnSelectionChanged;
+        }
+        
+        void UnwireEvents() {
+            _solutionService.AfterOpenSolution   -= OnAfterOpenSolution;
+            _solutionService.AfterCloseSolution  -= OnAfterCloseSolution;
+            _solutionService.AfterLoadProject    -= OnAfterLoadProject;
+            _solutionService.BeforeUnloadProject -= OnBeforeUnloadProject;
+            _solutionService.AfterOpenProject    -= OnAfterOpenProject;
+            _solutionService.BeforeRemoveProject -= OnBeforeRemoveProject;
+            _selectionService.SelectionChanged   -= OnSelectionChanged;
+        }
+
+        public void Dispose() {
+            UnwireEvents();
+            UnregisterCommands();
+            ClearProjects();
         }
         
         public RefreshCommand RefreshCommand { get; }
@@ -122,7 +141,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [NotNull]
-        public ProjectSearchOptions SearchOptions { get; }
+        public ProjectSearchOptions SearchOptions {
+            get { return _searchOptions; }
+        }
 
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
@@ -167,8 +188,13 @@ namespace IInspectable.ProjectExplorer.Extension {
                 NotifyPropertyChanged();
             }
         }
-        
+
         #region Event Handler
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
+            base.OnPropertyChanged(e);
+            UpdateCommands();
+        }
 
         void OnSelectionChanged(object sender, EventArgs e) {
             UpdateCommands();
@@ -342,8 +368,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             ShellUtil.UpdateCommandUI();
         }
 
-        [CanBeNull]
-        private CancellationTokenSource _loadingCancellationToken;
+        
 
         public void CancelReloadProjects() {
             _loadingCancellationToken?.Cancel();
@@ -429,6 +454,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         void RegisterCommands() {
             foreach (var command in _commands) {
                 command.Register(_oleMenuCommandService);
+            }
+        }
+
+        void UnregisterCommands() {
+            foreach (var command in _commands) {
+                command.Unregister(_oleMenuCommandService);
             }
         }
 

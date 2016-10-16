@@ -21,7 +21,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             // ReSharper disable VirtualMemberCallInConstructor
   
             var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
-            var viewModelProvider  = ProjectExplorerPackage.GetGlobalService<ProjectExplorerViewModelProvider, ProjectExplorerViewModelProvider>();
+            var viewModelProvider  = ProjectExplorerPackage.GetGlobalService<ProjectExplorerViewModelProvider>();
 
             ViewModel = viewModelProvider.CreateViewModel(this, menuCommandService);
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
@@ -38,20 +38,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             // ReSharper restore VirtualMemberCallInConstructor
         }
 
-        public override void OnToolWindowCreated() {
-            base.OnToolWindowCreated();
-            UpdateSearchEnabled();
-        }
-
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
+                ViewModel.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
+        public override void OnToolWindowCreated() {
+            base.OnToolWindowCreated();
+            UpdateSearchEnabled();
+        }
+        
         void OnAfterCloseSolution(object sender, EventArgs e) {
            // TODO Clear search text
         }

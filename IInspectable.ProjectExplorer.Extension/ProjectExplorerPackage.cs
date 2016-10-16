@@ -1,6 +1,8 @@
 ﻿#region Using Directives
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
@@ -30,6 +32,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         [Import]
         ProjectExplorerViewModelProvider _projectExplorerViewModelProvider;
 
+        ImmutableList<Command> _commands;
+
         public ProjectExplorerPackage() {
             AddOptionKey(OptionService.OptionKey);            
         }
@@ -38,24 +42,49 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
 
-            var componentModel = GetGlobalService<SComponentModel, IComponentModel>();
+            var componentModel = GetGlobalService<SComponentModel, IComponentModel>();            
             componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
 
-            ((IServiceContainer)this).AddService(GetType()                , this           , promote: true);
             ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
 
-            var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-
-            var projectExplorerCommand       = new ProjectExplorerCommand(this);
-            var projectExplorerSearchCommand = new ProjectExplorerSearchCommand(this);
-
-            projectExplorerCommand.Register(commandService);
-            projectExplorerSearchCommand.Register(commandService);
+            RegisterCommands(new List<Command> {
+                new ProjectExplorerCommand(this),
+                new ProjectExplorerSearchCommand(this)
+            });
 
             base.Initialize();
         }
 
-        internal ProjectExplorerToolWindow GetProjectExplorerWindow() {
+        protected override void Dispose(bool disposing) {
+            if(disposing) {
+                UnegisterCommands();
+            }
+            base.Dispose(disposing);
+        }
+
+        void RegisterCommands(IList<Command> commands) {
+
+            var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+
+            foreach(var command in commands) {
+                command.Register(commandService);
+            }
+            _commands = commands.ToImmutableList();
+        }
+
+        void UnegisterCommands() {
+
+            if(_commands == null) {
+                return;
+            }
+            var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            foreach (var command in _commands) {
+                command.Unregister(commandService);
+            }
+            _commands = null;
+        }
+
+        public ProjectExplorerToolWindow GetProjectExplorerToolWindow() {
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
@@ -65,7 +94,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void ShowProjectExplorerWindow() {
 
-            var window = GetProjectExplorerWindow();
+            var window = GetProjectExplorerToolWindow();
             if (window?.Frame == null) {
                 throw new NotSupportedException("Cannot create tool window");
             }
@@ -74,8 +103,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
-        public static object GetGlobalService<TService>() where TService : class {
-            return GetGlobalService(typeof(TService));
+        public static TService GetGlobalService<TService>() where TService : class {
+            return GetGlobalService(typeof(TService)) as TService;
         }
 
         public static TInterface GetGlobalService<TService, TInterface>() where TInterface : class {

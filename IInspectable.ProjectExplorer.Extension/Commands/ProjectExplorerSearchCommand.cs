@@ -12,7 +12,7 @@
 
             _package.ShowProjectExplorerWindow();
 
-            var toolwindow=_package.GetProjectExplorerWindow();
+            var toolwindow=_package.GetProjectExplorerToolWindow();
             if(toolwindow.CanActivateSearch) {                
                 toolwindow.ActivateSearch();
             }
