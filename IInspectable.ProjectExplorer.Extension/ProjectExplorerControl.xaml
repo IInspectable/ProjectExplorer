@@ -139,7 +139,7 @@
             </Grid.Style>
             <TextBlock Margin     = "2" 
                        Foreground = "{DynamicResource {x:Static vsui:EnvironmentColors.SystemGrayTextBrushKey}}"
-                       Text       = "No projects found." />
+                       Text       = "No projects found" />
         </Grid>
         <!--Status Text-->
         <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>
