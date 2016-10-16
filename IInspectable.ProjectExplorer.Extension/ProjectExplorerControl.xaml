@@ -60,12 +60,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" x:Name="SearchControlHost"/>
         <!--Select Folder Button-->
-        <ui:VsButton Command="{Binding SettingsCommand}"  ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
+        <ui:VsButton Grid.Row="1" Command="{Binding SettingsCommand}"  ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
             <ui:VsButton.Glyph>
                 <imaging:CrispImage HorizontalAlignment = "Center"
                                     VerticalAlignment   = "Center"
@@ -79,11 +82,11 @@
                        Text="{Binding ProjectsRootLabel}" TextWrapping="Wrap"/>
         </ui:VsButton>
         <!--Separator-->
-        <Rectangle Grid.Row ="1"  
+        <Rectangle Grid.Row ="2"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
         <!--Projects Listbox-->
-        <ui:VsListBox Grid.Row      = "2" 
+        <ui:VsListBox Grid.Row      = "3" 
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
@@ -97,7 +100,7 @@
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>
         <!--Watermark "Status Loading"-->
-        <Grid Grid.Row = "2" 
+        <Grid Grid.Row = "3" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center"
               Visibility         ="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -120,7 +123,7 @@
                        Text       = "Loading projects..." />
         </Grid>
         <!--Watermark "No projects found"-->
-        <Grid Grid.Row = "2" 
+        <Grid Grid.Row = "3" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center">
             <Grid.Style>
@@ -142,7 +145,7 @@
                        Text       = "No projects found" />
         </Grid>
         <!--Status Text-->
-        <TextBlock Grid.Row="3" Margin="2" Text="{Binding StatusText}"/>
+        <TextBlock Grid.Row="4" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
 </UserControl>
