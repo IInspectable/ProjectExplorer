@@ -84,7 +84,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     return ProjectStatus.Closed;
                 }
 
-                return _hierarchy.IsProjectUnloaded() ? ProjectStatus.Unloaded: ProjectStatus.Loaded;                
+                return _hierarchy.GetStatus();                
             }
         }
 

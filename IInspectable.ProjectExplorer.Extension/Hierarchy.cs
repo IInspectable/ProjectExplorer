@@ -83,10 +83,23 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public bool IsProjectUnloaded() {
+
             object status;
             var hr = _vsHierarchy.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID5.VSHPROPID_ProjectUnloadStatus, out status);
 
             return ErrorHandler.Succeeded(hr);
+        }
+
+        public ProjectStatus GetStatus() {
+            string uniqueName;
+            if (ErrorHandler.Failed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out uniqueName))) {
+                return ProjectStatus.Closed;
+            }
+
+            if (IsProjectUnloaded()) {
+                return ProjectStatus.Unloaded;
+            }
+            return ProjectStatus.Loaded;
         }
 
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
