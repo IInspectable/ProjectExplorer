@@ -66,6 +66,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             if(solutionDir == null) {
                 return null;
             }
+            // Functioniert nicht mit logischen Ordnern...
             var fullPath=Path.Combine(solutionDir, GetUniqueNameOfProject());
             return fullPath;
         }

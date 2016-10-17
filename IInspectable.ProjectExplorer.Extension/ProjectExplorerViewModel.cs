@@ -254,7 +254,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.GetUniqueNameOfProject()}");
 
-            var projectVm= FindProjectViewModel(e.RealHierarchie);
+            var projectVm= FindProjectViewModel(e.StubHierarchie);
 
             projectVm?.Bind(e.RealHierarchie);
 
