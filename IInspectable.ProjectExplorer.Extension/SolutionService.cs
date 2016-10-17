@@ -234,10 +234,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
             IVsHierarchy result;
-            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out result))) {
+            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out result), except: VSConstants.E_FAIL) || result==null) {
                 return null;
-            }
-
+            } 
             return new Hierarchy(this, result);
         }
         
@@ -355,13 +354,14 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion    
 
-        bool Failed(int hr, [CallerMemberName] string callerMemberName = null) {
+        bool Failed(int hr, int except= VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
             // ReSharper disable once ExplicitCallerInfoArgument Ist hier gewünscht
-            return ErrorHandler.Failed(LogFailed(hr, callerMemberName));
+            return ErrorHandler.Failed(LogFailed(hr, except, callerMemberName));
         }
 
-        int LogFailed(int hr, [CallerMemberName] string callerMemberName = null) {
-            if(ErrorHandler.Failed(hr)) {
+        int LogFailed(int hr, int except = VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
+            hr = hr == except ? VSConstants.S_OK : hr;
+            if( ErrorHandler.Failed(hr)) {
                 var ex=Marshal.GetExceptionForHR(hr);
                 Logger.Error($"{callerMemberName} failed with code 0x{hr:X}: '{ex.Message}'");
             }
