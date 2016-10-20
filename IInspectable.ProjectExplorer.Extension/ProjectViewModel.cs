@@ -18,7 +18,6 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [NotNull]
         readonly ProjectFile _projectFile;
-        readonly string _uniqueNameOfProject;
 
         [CanBeNull]
         Hierarchy _hierarchy;
@@ -27,23 +26,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         ProjectExplorerViewModel _parent;
         uint _eventCookie;
         
-        public ProjectViewModel(ProjectFile projectFile, string uniqueNameOfProject) {
+        public ProjectViewModel(ProjectFile projectFile) {
 
             if (projectFile == null) {
                 throw new ArgumentNullException(nameof(projectFile));
             }
-
-            if (uniqueNameOfProject == null) {
-                throw new ArgumentNullException(nameof(uniqueNameOfProject));
-            }
-
-            _projectFile         = projectFile;
-            _uniqueNameOfProject = uniqueNameOfProject;
-        }
-
-        [NotNull]
-        public string UniqueNameOfProject {
-            get { return _uniqueNameOfProject; }
+            
+            _projectFile = projectFile;
         }
 
         [CanBeNull]

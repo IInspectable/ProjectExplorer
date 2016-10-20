@@ -213,7 +213,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.GetUniqueNameOfProject()}");
 
-            var uniqueName = e.RealHierarchie.GetUniqueNameOfProject();
+            var fullName = e.RealHierarchie.GetMkDocument();
             
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
@@ -222,8 +222,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 DispatcherPriority.Background,
                 new Action(() => {
 
-                    var projectVm = FindProjectViewModel(uniqueName);
-                    var hier      =SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
+                    var projectVm = FindProjectViewModel(fullName);
+                    var hier      =SolutionService.GetHierarchyByUniqueNameOfProject(fullName);
 
                     projectVm?.Bind(hier);
 
@@ -472,8 +472,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
 
-            string uniqueNameOfProject = hierarchy.GetUniqueNameOfProject();
-            var viewModel = FindProjectViewModel(uniqueNameOfProject);
+            string path = hierarchy.GetMkDocument();
+            var viewModel = FindProjectViewModel(path);
 
             if(viewModel != null || IsLoading) {
                 return viewModel;
@@ -493,8 +493,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [CanBeNull]
-        ProjectViewModel FindProjectViewModel(string uniqueNameOfProject) {
-            return _projects.FirstOrDefault(p => p.UniqueNameOfProject == uniqueNameOfProject);
+        ProjectViewModel FindProjectViewModel(string path) {
+            return _projects.FirstOrDefault(p => p.Path.ToLower() == path?.ToLower());
         }
 
         static string WildcardToRegex(string searchString) {

@@ -64,6 +64,7 @@
     <Compile Include="Commands\ShellUtil.cs" />
     <Compile Include="Commands\UnloadProjectCommand.cs" />
     <Compile Include="Hierarchy.cs" />
+    <Compile Include="HierarchyId.cs" />
     <Compile Include="IErrorInfoService.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerConfig.cs" />
