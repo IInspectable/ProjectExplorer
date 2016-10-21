@@ -135,7 +135,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IVsEnumWindowSearchOptions SearchOptionsEnum {
-            get { return ViewModel.SearchOptions.SearchOptionsEnum; }
+            get { return null; }
         }
 
         #endregion

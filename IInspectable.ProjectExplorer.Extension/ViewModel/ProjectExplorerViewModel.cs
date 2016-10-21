@@ -12,7 +12,6 @@ using System.Windows.Threading;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
 
@@ -31,7 +30,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly IErrorInfoService _errorInfoService;
         readonly SolutionService _solutionService;
         readonly OptionService  _optionService;
-        readonly ProjectSearchOptions _searchOptions;
         readonly OleMenuCommandService _oleMenuCommandService;
         readonly IWaitIndicator _waitIndicator;
         readonly ObservableCollection<ProjectViewModel> _projects;
@@ -42,6 +40,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         CancellationTokenSource _loadingCancellationToken;
         bool _suspendReload;
+
+        bool _isLoading;
+        SearchContext _searchContext;
 
         internal ProjectExplorerViewModel(IErrorInfoService errorInfoService, 
                                           SolutionService solutionService, 
@@ -66,7 +67,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                 { SettingsCommand           = new SettingsCommand(this)},
             };
             
-            _searchOptions = new ProjectSearchOptions();
             _projects      = new ObservableCollection<ProjectViewModel>();
             _projectsView  = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
@@ -139,12 +139,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ListCollectionView ProjectsView {
             get { return _projectsView; }
         }
-
-        [NotNull]
-        public ProjectSearchOptions SearchOptions {
-            get { return _searchOptions; }
-        }
-
+        
         public string ProjectsRoot {
             get { return _optionService.ProjectsRoot; }
         }
@@ -161,15 +156,16 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string StatusText {
             get {
 
-                if (IsLoading || Projects.Count == 0) {
+                int projectCount = Projects.Count(p => p.Visible);
+                if (IsLoading || projectCount == 0) {
                     return String.Empty;
                 }
 
-                if (ProjectsView.Count == 1) {
+                if (projectCount == 1) {
                     return "1 Project";
                 }
 
-                return $"{ProjectsView.Count} Projects";
+                return $"{projectCount} Projects";
             }
         }
 
@@ -177,7 +173,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _solutionService.IsSolutionOpen(); }
         }
 
-        bool _isLoading;
+        
+
         public bool IsLoading {
             get { return _isLoading; }
             private set {
@@ -187,6 +184,17 @@ namespace IInspectable.ProjectExplorer.Extension {
                 _isLoading = value;
                 NotifyPropertyChanged();
             }
+        }
+
+        [CanBeNull]
+        public SearchContext SearchContext {
+            get {
+                if(_searchContext == null) {
+                    _searchContext = new SearchContext();
+                }
+                return _searchContext;
+            }
+            private set { _searchContext = value; }
         }
 
         #region Event Handler
@@ -306,37 +314,22 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void ApplySearch(string searchString) {
 
-            Dictionary<ProjectStatus, bool> inlcudeStatus = new Dictionary<ProjectStatus, bool> {
-                {ProjectStatus.Closed  , SearchOptions.ClosedProjects},
-                {ProjectStatus.Unloaded, SearchOptions.UnloadedProjects},
-                {ProjectStatus.Loaded  , SearchOptions.LoadedProjects},
-            };
+            SearchContext = new SearchContext(searchString);
 
-            Regex regex = null;
-            if (!String.IsNullOrWhiteSpace(searchString)) {
-                var regexString = WildcardToRegex(searchString);
+            ApplySearch();
+        }
 
-                regex = new Regex(regexString, RegexOptions.IgnoreCase);
+        void ApplySearch() {
+            
+            foreach(var p in Projects) {
+                p.Filter(SearchContext);
             }
-           
-            ProjectsView.Filter = item => {
 
-                var projectVm = (ProjectViewModel) item;
-
-                var status = projectVm.Status;
-                if (!inlcudeStatus[status]) {
-                    return false;
-                }
-
-                return regex == null || regex.IsMatch(projectVm.DisplayName);
-            };
-            SelectionService.ClearSelection();
             NotifyThisPropertyChanged(nameof(StatusText));
         }
-       
-        public void ClearSearch() {
-            ProjectsView.Filter = null;
 
+        public void ClearSearch() {
+            ApplySearch(null);
             NotifyThisPropertyChanged(nameof(StatusText));
         }
 
@@ -367,9 +360,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             NotifyAllPropertiesChanged();
             ShellUtil.UpdateCommandUI();
         }
-
         
-
         public void CancelReloadProjects() {
             _loadingCancellationToken?.Cancel();
         }
@@ -397,6 +388,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 foreach (var viewModel in projectViewModels) {
                     Projects.Add(viewModel);
                 }
+
+                ApplySearch();
 
             } catch (Exception ex) when (
                     ex is DirectoryNotFoundException || 
@@ -497,23 +490,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(string path) {
             return _projects.FirstOrDefault(p => p.Path.ToLower() == path?.ToLower());
-        }
-
-        static string WildcardToRegex(string searchString) {
-
-            if (!searchString.StartsWith("*")) {
-                searchString = "*" + searchString;
-            }
-            if (!searchString.EndsWith("*")) {
-                searchString += "*";
-            }
-
-            searchString = "^" + Regex.Escape(searchString)
-                               .Replace("\\*", ".*")
-                               .Replace("\\?", ".") +
-                           "$";
-            return searchString;
-
         }
 
         sealed class StateSaver<T> : IDisposable {

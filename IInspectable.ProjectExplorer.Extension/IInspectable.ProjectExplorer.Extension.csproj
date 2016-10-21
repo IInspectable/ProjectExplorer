@@ -70,10 +70,10 @@
     <Compile Include="Logging\LoggerConfig.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="Model\ProjectEventArgs.cs" />
+    <Compile Include="ViewModel\SearchContext.cs" />
     <Compile Include="ViewModel\ItemViewModel.cs" />
     <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
     <Compile Include="ViewModel\ProjectItemComparer.cs" />
-    <Compile Include="ProjectSearchOptions.cs" />
     <Compile Include="ProjectSearchTask.cs" />
     <Compile Include="ViewModel\ProjectViewModelSelectionService.cs" />
     <Compile Include="Model\SolutionService.cs" />

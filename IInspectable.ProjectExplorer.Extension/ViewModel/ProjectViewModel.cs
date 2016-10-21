@@ -86,7 +86,15 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return _hierarchy.IsProjectUnloaded()?ProjectStatus.Unloaded:ProjectStatus.Loaded;                
             }
         }
-        
+
+        public override void Filter(SearchContext context) {
+            Visible = context.IsMatch(DisplayName);
+
+            if(IsSelected && !Visible) {
+                IsSelected = false;
+            }
+        }
+
         public int Open() {
             return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.E_FAIL;
         }
