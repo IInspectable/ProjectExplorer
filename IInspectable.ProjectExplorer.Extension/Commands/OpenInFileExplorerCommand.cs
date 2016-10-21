@@ -1,6 +1,7 @@
 ﻿#region Using Directives
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 #endregion
 
@@ -22,7 +23,14 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
             foreach (var project in projects) {
-                project.OpenFolderInFileExplorer();
+
+                string args = $"/e, /select, \"{project.Path}\"";
+
+                ProcessStartInfo info = new ProcessStartInfo {
+                    FileName  = "explorer",
+                    Arguments = args
+                };
+                Process.Start(info);
             }
        }
     }

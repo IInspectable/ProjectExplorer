@@ -27,7 +27,7 @@
             <Border BorderThickness="0">
                 <Border.ToolTip>
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="{Binding DisplayName}"/>
                         <TextBlock Text="{Binding Directory}"/>
                     </StackPanel>
                 </Border.ToolTip>
@@ -49,7 +49,7 @@
                                Grid.Row          = "0" 
                                Margin            = "5,1" 
                                VerticalAlignment = "Center" 
-                               Text              = "{Binding Name}"/>
+                               Text              = "{Binding DisplayName}"/>
 
                 </Grid>
             </Border>

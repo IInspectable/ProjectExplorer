@@ -28,7 +28,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return statusCmp;
             }
 
-            return String.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+            return String.Compare(x.DisplayName, y.DisplayName, StringComparison.OrdinalIgnoreCase);
         }
 
         public int Compare(object x, object y) {

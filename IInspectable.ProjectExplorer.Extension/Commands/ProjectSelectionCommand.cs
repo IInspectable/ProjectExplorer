@@ -66,7 +66,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     for (int i = 0; i < projects.Count; i++) {
                         var project = projects[i];
 
-                        indicator.Message = $"{verb} project '{project.Name}'.";
+                        indicator.Message = $"{verb} project '{project.DisplayName}'.";
 
                         indicator.CancellationToken.ThrowIfCancellationRequested();
 

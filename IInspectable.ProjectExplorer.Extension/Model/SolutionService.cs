@@ -154,7 +154,7 @@ namespace IInspectable.ProjectExplorer.Extension {
  
             var vm = new ProjectViewModel(projectFile);
             if(hierarchy != null) {                
-                vm.Bind(hierarchy);
+                vm.BindToHierarchy(hierarchy);
             }
 
             return vm;
@@ -171,7 +171,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 Hierarchy hierarchy;
                 if (projectHierarchyById.TryGetValue(projectFile.Path.ToLower(), out hierarchy)) {
-                    vm.Bind(hierarchy);
+                    vm.BindToHierarchy(hierarchy);
                 }
 
                 projectFileViewModels.Add(vm);

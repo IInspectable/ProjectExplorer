@@ -24,7 +24,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
 
-            string itemsList =  string.Join(", ", projects.Select(project => $"'{project.Name}'"));
+            string itemsList =  string.Join(", ", projects.Select(project => $"'{project.DisplayName}'"));
 
             if (!ShellUtil.ConfirmOkCancel($"{itemsList}{(projects.Count == 1 ? " " : "\r\n")}will be removed.")) {
                 return;

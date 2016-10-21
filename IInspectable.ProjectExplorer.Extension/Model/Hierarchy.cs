@@ -236,7 +236,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         public Hierarchy GetNestedHierarchy() {
             var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
-            uint nestedItemId = 0;
+            uint nestedItemId;
             IntPtr nestedHiearchyValue;
             LogFailed(_vsHierarchy.GetNestedHierarchy(ItemId, ref nestedHierarchyGuid, out nestedHiearchyValue, out nestedItemId));
 
@@ -255,6 +255,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public string GetMkDocument() {
+            // ReSharper disable once SuspiciousTypeConversion.Global
             var ao = _vsHierarchy as IVsProject;
             string doc=null;
             ao?.GetMkDocument(ItemId, out doc);
@@ -264,7 +265,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         public string GetCanonicalName() {
             string cn= null;
-            var ao = _vsHierarchy?.GetCanonicalName(ItemId, out cn);
+            LogFailed(_vsHierarchy?.GetCanonicalName(ItemId, out cn)?? VSConstants.S_OK);
             return cn;
         }
 
@@ -344,19 +345,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             return ErrorHandler.Succeeded(hr);
         }
-
-        public ProjectStatus GetStatus() {
-            string uniqueName;
-            if(ErrorHandler.Failed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out uniqueName))) {
-                return ProjectStatus.Closed;
-            }
-
-            if(IsProjectUnloaded()) {
-                return ProjectStatus.Unloaded;
-            }
-            return ProjectStatus.Loaded;
-        }
-
+       
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
             uint cookie;
             LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out cookie));

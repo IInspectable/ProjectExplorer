@@ -63,33 +63,34 @@
     <Compile Include="Commands\SettingsCommand.cs" />
     <Compile Include="Commands\ShellUtil.cs" />
     <Compile Include="Commands\UnloadProjectCommand.cs" />
-    <Compile Include="Hierarchy.cs" />
-    <Compile Include="HierarchyId.cs" />
+    <Compile Include="Model\Hierarchy.cs" />
+    <Compile Include="Model\HierarchyId.cs" />
     <Compile Include="IErrorInfoService.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerConfig.cs" />
     <Compile Include="OptionService.cs" />
-    <Compile Include="ProjectEventArgs.cs" />
-    <Compile Include="ProjectExplorerViewModelProvider.cs" />
-    <Compile Include="ProjectItemComparer.cs" />
+    <Compile Include="Model\ProjectEventArgs.cs" />
+    <Compile Include="ViewModel\ItemViewModel.cs" />
+    <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
+    <Compile Include="ViewModel\ProjectItemComparer.cs" />
     <Compile Include="ProjectSearchOptions.cs" />
     <Compile Include="ProjectSearchTask.cs" />
-    <Compile Include="ProjectViewModelSelectionService.cs" />
-    <Compile Include="SolutionService.cs" />
+    <Compile Include="ViewModel\ProjectViewModelSelectionService.cs" />
+    <Compile Include="Model\SolutionService.cs" />
     <Compile Include="ProjectExplorerPackage1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
     </Compile>
     <Compile Include="Commands\RefreshCommand.cs" />
-    <Compile Include="ProjectExplorerViewModel.cs" />
-    <Compile Include="ProjectFile.cs" />
-    <Compile Include="ProjectStatus.cs" />
-    <Compile Include="ProjectViewModel.cs" />
+    <Compile Include="ViewModel\ProjectExplorerViewModel.cs" />
+    <Compile Include="Model\ProjectFile.cs" />
+    <Compile Include="ViewModel\ProjectStatus.cs" />
+    <Compile Include="ViewModel\ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectExplorerToolWindow.cs" />
     <Compile Include="Commands\ProjectExplorerCommand.cs" />
-    <Compile Include="ProjectExplorerControl.xaml.cs">
+    <Compile Include="View\ProjectExplorerControl.xaml.cs">
       <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProjectExplorerPackage.cs" />
@@ -97,7 +98,7 @@
     <Compile Include="UI\VsButton.cs" />
     <Compile Include="UI\VsListBox.cs" />
     <Compile Include="UI\VsListBoxItem.cs" />
-    <Compile Include="ViewModelBase.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="WaitIndicator\IWaitContext.cs" />
     <Compile Include="WaitIndicator\IWaitIndicator.cs" />
     <Compile Include="WaitIndicator\VisualStudioWaitContext.Callback.cs" />
@@ -112,7 +113,7 @@
     <None Include="UpdateProductVersion.targets" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ProjectExplorerControl.xaml">
+    <Page Include="View\ProjectExplorerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

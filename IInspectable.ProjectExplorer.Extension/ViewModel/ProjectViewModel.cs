@@ -1,7 +1,6 @@
 #region Using Directives
 
 using System;
-using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging;
@@ -12,7 +11,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectViewModel: ViewModelBase, IVsHierarchyEvents {
+    class ProjectViewModel: ItemViewModel, IVsHierarchyEvents {
 
         static readonly Logger Logger = Logger.Create<ProjectViewModel>();
 
@@ -40,8 +39,33 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return _parent; }
         }
 
-        public string Name {
+        public override string DisplayName {
             get { return _projectFile.Name; }
+        }
+
+        public override ImageMoniker ImageMoniker {
+            get {
+
+                switch (Status) {
+                    case ProjectStatus.Loaded:
+                    case ProjectStatus.Unloaded:
+                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
+                        return _hierarchy.GetImageMoniker();
+                }
+
+                return KnownMonikers.NewDocumentCollection;
+            }
+        }
+
+        public override bool IsSelected {
+            get { return _parent?.SelectionService.IsSelected(this) ?? false; }
+            set {
+                if (value) {
+                    _parent?.SelectionService.AddSelection(this);
+                } else {
+                    _parent?.SelectionService.RemoveSelection(this);
+                }
+            }
         }
 
         public string Directory {
@@ -51,21 +75,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string Path {
             get { return _projectFile.Path; }
         }
-
-        public ImageMoniker ImageMoniker {
-            get {
-
-                switch(Status) {
-                    case ProjectStatus.Loaded:
-                    case ProjectStatus.Unloaded:
-                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
-                        return _hierarchy.GetImageMoniker();                    
-                }
-
-                return KnownMonikers.NewDocumentCollection;
-            }
-        }
-
+        
         public ProjectStatus Status {
             get {
 
@@ -76,18 +86,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return _hierarchy.IsProjectUnloaded()?ProjectStatus.Unloaded:ProjectStatus.Loaded;                
             }
         }
-
-        public bool IsSelected {
-            get { return _parent?.SelectionService.IsSelected(this) ?? false; }
-            set {
-                if(value) {
-                    _parent?.SelectionService.AddSelection(this);
-                } else {
-                    _parent?.SelectionService.RemoveSelection(this);
-                }
-            }
-        }
-
+        
         public int Open() {
             return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.E_FAIL;
         }
@@ -104,18 +103,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return _hierarchy?.UnloadProject() ?? VSConstants.E_FAIL;
         }
         
-        public void OpenFolderInFileExplorer() {
-
-            string args = $"/e, /select, \"{Path}\"";
-
-            ProcessStartInfo info = new ProcessStartInfo {
-                FileName = "explorer",
-                Arguments = args
-            };
-            Process.Start(info);
-        }
-
-        public void Bind([CanBeNull] Hierarchy hierarchy) {
+        public void BindToHierarchy([CanBeNull] Hierarchy hierarchy) {
 
             UnadviseHierarchyEvents();
 
@@ -138,10 +126,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             UnadviseHierarchyEvents();
             _parent    = null;
             _hierarchy = null;
-        }
-
-        internal void NotifyIsSelectedChanged() {
-            NotifyThisPropertyChanged(nameof(IsSelected));
         }
 
         #region IVsHierarchyEvents

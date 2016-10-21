@@ -225,7 +225,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     var projectVm = FindProjectViewModel(fullPath);
                     var hier      = SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
 
-                    projectVm?.Bind(hier);
+                    projectVm?.BindToHierarchy(hier);
 
                     UpdateCommands();
                 }));
@@ -236,7 +236,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
-            projectVm?.Bind(e.RealHierarchie);
+            projectVm?.BindToHierarchy(e.RealHierarchie);
 
             UpdateCommands();
         }
@@ -246,7 +246,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var projectVm = FindProjectViewModel(e.StubHierarchie);
 
-            projectVm?.Bind(e.StubHierarchie);
+            projectVm?.BindToHierarchy(e.StubHierarchie);
 
             UpdateCommands();
         }
@@ -256,7 +256,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var projectVm= FindProjectViewModel(e.StubHierarchie);
 
-            projectVm?.Bind(e.RealHierarchie);
+            projectVm?.BindToHierarchy(e.RealHierarchie);
 
             UpdateCommands();
         }
@@ -328,7 +328,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     return false;
                 }
 
-                return regex == null || regex.IsMatch(projectVm.Name);
+                return regex == null || regex.IsMatch(projectVm.DisplayName);
             };
             SelectionService.ClearSelection();
             NotifyThisPropertyChanged(nameof(StatusText));
@@ -342,7 +342,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void UnbindProjects() {
             foreach (var project in Projects) {
-                project.Bind(null);
+                project.BindToHierarchy(null);
             }
             UpdateCommands();
         }
