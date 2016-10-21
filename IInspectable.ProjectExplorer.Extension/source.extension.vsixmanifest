@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="IInspectable.ProjectExplorer.0dbf2108-ac5b-47a6-b12a-f69ee101235f" Version="1.1.6" Language="en-US" Publisher="Dipl. -Ing. Maximilian Hänel" />
+    <Identity Id="IInspectable.ProjectExplorer.0dbf2108-ac5b-47a6-b12a-f69ee101235f" Version="1.1.7" Language="en-US" Publisher="Dipl. -Ing. Maximilian Hänel" />
     <DisplayName>Project Explorer</DisplayName>
     <Description xml:space="preserve">Project Explorer makes ist easy to manage projects in a Solution, like adding or removing projects.</Description>
     <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>

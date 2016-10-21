@@ -157,7 +157,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
             var projectFileViewModels = new List<ProjectViewModel>();
 
-            var projectHierarchyById = GetProjectHierarchyByUniqueName();
+            var projectHierarchyById = GetProjectHierarchyByPath();
 
             foreach (var projectFile in projectFiles) {
 
@@ -191,6 +191,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
+            if (pHierarchy == null) {
+                return Guid.Empty;
+            }
             Guid projGuid;
             LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out projGuid));              
             return projGuid;
@@ -235,7 +238,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return new Hierarchy(this, result, HierarchyId.Root);
         }
         
-        Dictionary<string, Hierarchy> GetProjectHierarchyByUniqueName() {
+        Dictionary<string, Hierarchy> GetProjectHierarchyByPath() {
 
             var result = new Dictionary<string, Hierarchy>();
 
@@ -251,9 +254,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             while ((hierEnum.Next((uint)hier.Length, hier, out fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
                 var hierarchy = new Hierarchy(this, hier[0], HierarchyId.Root);
-                var path = hierarchy.GetMkDocument();
-                if(path != null) {                    
-                    result[path.ToLower()] =hierarchy;
+                var fullPath = hierarchy.FullPath;
+                if(fullPath != null) {                    
+                    result[fullPath.ToLower()] =hierarchy;
                 }
             }
 

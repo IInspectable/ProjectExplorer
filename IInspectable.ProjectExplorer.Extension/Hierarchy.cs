@@ -61,6 +61,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
+        public Guid ProjectGuid {
+           get { return _solutionService.GetProjectGuid(_vsHierarchy); }
+        }
+
         #region  Structural Properties
 
         public HierarchyId ParentItemId {
@@ -217,12 +221,31 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return GetProperty<String>(__VSHPROPID.VSHPROPID_SaveName);
             }
         }
+
+        public string FullPath {
+            get {
+                var fullPath= GetMkDocument() ?? GetCanonicalName();
+
+                if (!Path.IsPathRooted(fullPath)) {
+                    return null;
+                }
+                return fullPath;
+            }
+        }
+
         [CanBeNull]
         public string GetMkDocument() {
             var ao = _vsHierarchy as IVsProject;
             string doc=null;
             ao?.GetMkDocument(ItemId, out doc);
             return doc;
+        }
+
+        [CanBeNull]
+        public string GetCanonicalName() {
+            string cn= null;
+            var ao = _vsHierarchy?.GetCanonicalName(ItemId, out cn);
+            return cn;
         }
 
         public override string ToString() {
@@ -270,17 +293,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                 grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject,
                 pHier: _vsHierarchy,
                 docCookie: 0));
-        }
-
-        [CanBeNull]
-        public string GetFullPath() {
-            var solutionDir = _solutionService.GetSolutionDirectory();
-            if(solutionDir == null) {
-                return null;
-            }
-            // Functioniert nicht mit logischen Ordnern...
-            var fullPath = Path.Combine(solutionDir, GetUniqueNameOfProject());
-            return fullPath;
         }
 
         public Guid GetProjectGuid() {

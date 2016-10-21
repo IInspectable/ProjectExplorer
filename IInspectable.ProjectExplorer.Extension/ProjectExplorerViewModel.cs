@@ -211,10 +211,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
-            Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.GetUniqueNameOfProject()}");
+            Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.FullPath}");
 
-            var fullName = e.RealHierarchie.GetMkDocument();
-            
+            var fullPath   = e.RealHierarchie.FullPath;
+            var uniqueName = e.RealHierarchie.GetUniqueNameOfProject();
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
             // wird es auch keine Hierarchie mehr geben...
@@ -222,8 +222,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 DispatcherPriority.Background,
                 new Action(() => {
 
-                    var projectVm = FindProjectViewModel(fullName);
-                    var hier      =SolutionService.GetHierarchyByUniqueNameOfProject(fullName);
+                    var projectVm = FindProjectViewModel(fullPath);
+                    var hier      = SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
 
                     projectVm?.Bind(hier);
 
@@ -232,7 +232,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
-            Logger.Info($"{nameof(OnAfterOpenProject)}: {e.RealHierarchie.GetUniqueNameOfProject()}");
+            Logger.Info($"{nameof(OnAfterOpenProject)}: {e.RealHierarchie.FullPath}");
 
             var projectVm = FindProjectViewModel(e.RealHierarchie);
 
@@ -242,7 +242,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
-            Logger.Info($"{nameof(OnBeforeUnloadProject)}: {e.StubHierarchie?.GetUniqueNameOfProject()}");
+            Logger.Info($"{nameof(OnBeforeUnloadProject)}: {e.StubHierarchie?.FullPath}");
 
             var projectVm = FindProjectViewModel(e.StubHierarchie);
 
@@ -252,7 +252,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
-            Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.GetUniqueNameOfProject()}");
+            Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.FullPath}");
 
             var projectVm= FindProjectViewModel(e.StubHierarchie);
 
@@ -472,16 +472,18 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
 
-            string path = hierarchy.GetMkDocument();
-            var viewModel = FindProjectViewModel(path);
+            string fullPath = hierarchy.FullPath;
+            var viewModel = FindProjectViewModel(fullPath);
 
             if(viewModel != null || IsLoading) {
                 return viewModel;
             }
 
-            var file = hierarchy.GetFullPath();
+            if (fullPath == null) {
+                return null;
+            }
 
-            viewModel = _solutionService.LoadAndBind(file, hierarchy);
+            viewModel = _solutionService.LoadAndBind(fullPath, hierarchy);
             if(viewModel == null) {
                 return null;
             }
