@@ -8,9 +8,9 @@ using System.Collections.Generic;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class ProjectItemComparer: IComparer<ProjectViewModel>, IComparer {
+    sealed class ProjectItemComparer: IComparer<ProjectItemViewModel>, IComparer {
 
-        public int Compare(ProjectViewModel x, ProjectViewModel y) {
+        public int Compare(ProjectItemViewModel x, ProjectItemViewModel y) {
 
             if (x == null && y != null) {
                 return -1;
@@ -32,7 +32,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public int Compare(object x, object y) {
-            return Compare(x as ProjectViewModel, y as ProjectViewModel);
+            return Compare(x as ProjectItemViewModel, y as ProjectItemViewModel);
         }
     }
 }

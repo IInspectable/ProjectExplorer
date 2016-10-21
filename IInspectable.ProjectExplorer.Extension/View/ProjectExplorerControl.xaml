@@ -23,7 +23,7 @@
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-        <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
+        <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectItemViewModel">
             <Border BorderThickness="0">
                 <Border.ToolTip>
                     <StackPanel>
@@ -47,13 +47,22 @@
 
                     <TextBlock Grid.Column       = "1" 
                                Grid.Row          = "0" 
-                               Margin            = "5,1" 
+                               Margin            = "1" 
                                VerticalAlignment = "Center" 
                                Text              = "{Binding DisplayName}"/>
 
                 </Grid>
             </Border>
         </DataTemplate>
+
+        <HierarchicalDataTemplate x:Key="StatusSectionTemplate"
+            DataType="{x:Type extension:StatusSectionViewModel}" ItemsSource ="{Binding Children}"
+                                  ItemTemplate="{StaticResource ProjectItemTemplate}">
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" />
+                <TextBlock FontWeight="Bold" Text="{Binding Path=VisibleCount, StringFormat=' ({0})'}"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
 
     </UserControl.Resources>
 
@@ -85,25 +94,41 @@
         <Rectangle Grid.Row ="2"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
-        <!--Projects Listbox-->
-        <ui:VsListBox Grid.Row      = "3" 
-                      SelectionMode = "Extended"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling"
-                      ItemsSource   = "{Binding ProjectsView}" 
-                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"   
-                      ContextMenuOpening = "OnProjectItemContextMenuOpening"
-                      MouseDoubleClick   = "OnProjectListMouseDoubleClick">
-            <ui:VsListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ui:VsListBoxItem}">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+        <!--Projects Tree -->
+        <TreeView  Grid.Row      = "3" 
+                   ItemsSource="{Binding StatusSections}"
+                   ItemTemplate  = "{StaticResource StatusSectionTemplate}"
+                   ContextMenuOpening = "OnProjectItemContextMenuOpening"
+                   VirtualizingStackPanel.VirtualizationMode="Recycling"
+                   >
+            <TreeView.Style>
+                <Style>
+                    <Setter Property="Control.Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsLoading}"      Value="true" />
+                                <!--<Condition Binding="{Binding Path=Projects.Count}" Value="0" />-->
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Control.Visibility" Value="Collapsed" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.Style>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Visible}" Value="False">
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ui:VsListBox.ItemContainerStyle>
-        </ui:VsListBox>
+            </TreeView.ItemContainerStyle>
+
+        </TreeView>
+        
         <!--Watermark "Status Loading"-->
         <Grid Grid.Row = "3" 
               HorizontalAlignment="Center"
@@ -149,8 +174,6 @@
                        Foreground = "{DynamicResource {x:Static vsui:EnvironmentColors.SystemGrayTextBrushKey}}"
                        Text       = "No projects found" />
         </Grid>
-        <!--Status Text-->
-        <TextBlock Grid.Row="4" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
 </UserControl>

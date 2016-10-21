@@ -13,15 +13,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             base(viewModel, PackageIds.OpenInFileExplorerCommandId) {
         }
 
-        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+        protected override bool EnableOverride(ProjectItemViewModel projectItemViewModel) {
             return SelectedItems.Count<=5;
         }
 
-        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+        protected override bool VisibleOverride(ProjectItemViewModel projectItemViewModel) {
             return true;
         }
 
-        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectItemViewModel> projects) {
             foreach (var project in projects) {
 
                 string args = $"/e, /select, \"{project.Path}\"";

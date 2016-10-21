@@ -12,15 +12,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             base(viewModel, PackageIds.UnloadProjectCommandId) {
         }
 
-        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
-            return projectViewModel?.Status == ProjectStatus.Loaded;
+        protected override bool EnableOverride(ProjectItemViewModel projectItemViewModel) {
+            return projectItemViewModel?.Status == ProjectStatus.Loaded;
         }
 
-        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
-            return EnableOverride(projectViewModel);
+        protected override bool VisibleOverride(ProjectItemViewModel projectItemViewModel) {
+            return EnableOverride(projectItemViewModel);
         }
 
-        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectItemViewModel> projects) {
 
             ForeachWithWaitIndicatorAndErrorReport(projects, "Unloading", p => p.Unload());            
         }

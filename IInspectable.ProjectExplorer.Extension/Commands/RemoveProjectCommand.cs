@@ -13,16 +13,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             base(viewModel, PackageIds.RemoveProjectCommandId) {
         }
 
-        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
-            return projectViewModel.Status == ProjectStatus.Loaded ||
-                   projectViewModel.Status == ProjectStatus.Unloaded; 
+        protected override bool EnableOverride(ProjectItemViewModel projectItemViewModel) {
+            return projectItemViewModel.Status == ProjectStatus.Loaded ||
+                   projectItemViewModel.Status == ProjectStatus.Unloaded; 
         }
 
-        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
+        protected override bool VisibleOverride(ProjectItemViewModel projectItemViewModel) {
             return true;
         }
 
-        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectItemViewModel> projects) {
 
             string itemsList =  string.Join(", ", projects.Select(project => $"'{project.DisplayName}'"));
 
