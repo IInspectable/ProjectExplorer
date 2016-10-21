@@ -330,7 +330,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 return regex == null || regex.IsMatch(projectVm.Name);
             };
-
+            SelectionService.ClearSelection();
             NotifyThisPropertyChanged(nameof(StatusText));
         }
        
