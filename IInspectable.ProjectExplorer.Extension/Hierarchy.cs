@@ -144,16 +144,16 @@ namespace IInspectable.ProjectExplorer.Extension {
             if(GetProperty<bool>(__VSHPROPID.VSHPROPID_HasEnumerationSideEffects)) {
                 yield break;
             }
-
+            
             var firstChild = FirstChild;
             if (firstChild == null) {
                 yield break;
             }
-            yield return firstChild;
+            yield return firstChild.GetNestedHierarchy() ?? firstChild;
 
             var sibling = firstChild.NextSibling;
             while (sibling != null) {
-                yield return sibling;
+                yield return sibling.GetNestedHierarchy() ?? sibling;
                 sibling = sibling.NextSibling;
             }
         }
@@ -168,17 +168,17 @@ namespace IInspectable.ProjectExplorer.Extension {
             if (firstChild == null) {
                 yield break;
             }
-            yield return firstChild;
+            yield return firstChild.GetNestedHierarchy() ?? firstChild;
 
             var sibling = firstChild.NextVisibleSibling;
             while (sibling != null) {
-                yield return sibling;
+                yield return sibling.GetNestedHierarchy() ?? sibling;
                 sibling = sibling.NextSibling;
             }
         }
 
         public IEnumerable<Hierarchy> DescendantsAndSelf() {
-            yield return this;
+            yield return GetNestedHierarchy() ?? this;
             foreach (var descendant in Descendants()) {
                 yield return descendant;
             }
@@ -193,7 +193,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> VisibleDescendantsAndSelf() {            
-            yield return this;
+            yield return GetNestedHierarchy()??this;
             foreach (var descendant in VisibleDescendants()) {
                 yield return descendant;
             }
@@ -234,6 +234,26 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [CanBeNull]
+        public Hierarchy GetNestedHierarchy() {
+            var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
+            uint nestedItemId = 0;
+            IntPtr nestedHiearchyValue;
+            LogFailed(_vsHierarchy.GetNestedHierarchy(ItemId, ref nestedHierarchyGuid, out nestedHiearchyValue, out nestedItemId));
+
+            if(nestedHiearchyValue == IntPtr.Zero) {
+                return null;
+            }
+
+            var nestedHierarchy = Marshal.GetObjectForIUnknown(nestedHiearchyValue) as IVsHierarchy;
+            Marshal.Release(nestedHiearchyValue);
+            if(nestedHierarchy == null) {
+                return null;
+            }
+
+            return new Hierarchy(_solutionService, nestedHierarchy, nestedItemId);
+        }
+
+        [CanBeNull]
         public string GetMkDocument() {
             var ao = _vsHierarchy as IVsProject;
             string doc=null;
@@ -252,24 +272,34 @@ namespace IInspectable.ProjectExplorer.Extension {
             return Name;
         }
 
-        public string Dump() {
+        public string DumpAll() {
+            return DumpCore(h => h.Children());
+        }
 
+        public string DumpVisible() {
+            return DumpCore(h => h.VisibleChildren());
+        }
+
+        string DumpCore(Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel = Int32.MaxValue) {
             StringBuilder sb = new StringBuilder();
-            Dump(this, 0, sb, 10);
+            Dump(this, 0, sb, childSelector, maxLevel);
 
             return sb.ToString();
         }
 
-        static void Dump(Hierarchy hier, int level, StringBuilder sb, int maxLevel ) {
-            if(level > maxLevel) {
+        static void Dump(Hierarchy hier, int level, StringBuilder sb, Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel= Int32.MaxValue) {
+
+            if (level > maxLevel) {
                 return;
             }
+
             var indent = new String(' ', level*2);
-            sb.AppendLine($"{indent}{hier.Name}: '{hier.SaveName}'");
-            foreach(var child in hier.VisibleChildren()) {
-                Dump(child, level+1, sb, maxLevel);
+            sb.AppendLine($"{indent}{hier.Name}: '{hier.FullPath}'");
+            foreach(var child in childSelector(hier)) {
+                Dump(child, level+1, sb, childSelector, maxLevel);
             }
         }
+
 
         public ImageMoniker GetImageMoniker() {
             return _solutionService.GetImageMonikerForHierarchyItem(_vsHierarchy);

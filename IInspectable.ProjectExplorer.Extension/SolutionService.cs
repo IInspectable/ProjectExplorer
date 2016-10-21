@@ -8,7 +8,6 @@ using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using IInspectable.Utilities.IO;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -74,6 +73,13 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public IVsSolution4 VsSolution4 {
             get { return _vsSolution4; }
+        }
+
+        public Hierarchy GetRoot() {
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            var hierarchy =_vsSolution1 as IVsHierarchy;
+            var root     = new Hierarchy(this, hierarchy, HierarchyId.Root);
+            return root;
         }
 
         public ImageMoniker GetImageMonikerForFile(string filename) {
