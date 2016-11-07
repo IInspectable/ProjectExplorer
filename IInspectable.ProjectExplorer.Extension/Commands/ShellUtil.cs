@@ -10,6 +10,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class ShellUtil : IDisposable {
 
+        static readonly Logger Logger = Logger.Create<ShellUtil>();
+
         ShellUtil() {
             Shell?.EnableModeless(0);
         }
@@ -32,6 +34,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public static bool ReportUserOnFailed(int hr) {
             if (ErrorHandler.Failed(hr)) {
+
+                Logger.Warn($"{nameof(ReportUserOnFailed)}: Error code: {hr}");
                 Shell.ReportErrorInfo(hr);
                 return true;
             }
