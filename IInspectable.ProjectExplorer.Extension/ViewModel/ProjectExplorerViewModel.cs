@@ -10,7 +10,6 @@ using System.Windows.Data;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.Design;
 using System.Collections.ObjectModel;
 
@@ -33,12 +32,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly OptionService  _optionService;
         readonly OleMenuCommandService _oleMenuCommandService;
         readonly IWaitIndicator _waitIndicator;
-        readonly ObservableCollection<ProjectItemViewModel> _projects;
+        readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView _projectsView;
         readonly List<Command> _commands;
         readonly ProjectViewModelSelectionService _selectionService;
-
-        readonly ImmutableList<StatusSectionViewModel> _statusSections;
 
         [CanBeNull]
         CancellationTokenSource _loadingCancellationToken;
@@ -70,13 +67,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 { SettingsCommand           = new SettingsCommand(this)},
             };
             
-            _statusSections = new List<StatusSectionViewModel> {
-                new StatusSectionViewModel(ProjectStatus.Loaded),
-                new StatusSectionViewModel(ProjectStatus.Unloaded),
-                new StatusSectionViewModel(ProjectStatus.Closed),
-            }.ToImmutableList();
-
-            _projects      = new ObservableCollection<ProjectItemViewModel>();
+            _projects      = new ObservableCollection<ProjectViewModel>();
             _projectsView  = (ListCollectionView)CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
 
@@ -140,7 +131,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [NotNull]
-        public ObservableCollection<ProjectItemViewModel> Projects {
+        public ObservableCollection<ProjectViewModel> Projects {
             get { return _projects; }
         }
 
@@ -204,10 +195,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return _searchContext;
             }
             private set { _searchContext = value; }
-        }
-
-        public IImmutableList<StatusSectionViewModel> StatusSections {
-            get { return _statusSections; }
         }
 
         #region Event Handler
@@ -282,13 +269,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             UpdateCommands();
         }
 
-        public void OnHierarchyStatusChanged() {
-            if(IsLoading) {
-                return;
-            }
-            GroupAndSort();
-        }
-
         #endregion
 
         public void ExecuteDefaultAction() {
@@ -341,8 +321,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void ApplySearch() {
             
-            foreach(var section in StatusSections) {
-                section.Filter(SearchContext);
+            foreach(var p in Projects) {
+                p.Filter(SearchContext);
             }
 
             NotifyThisPropertyChanged(nameof(StatusText));
@@ -409,7 +389,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     Projects.Add(viewModel);
                 }
 
-                GroupAndSort();
+                ApplySearch();
 
             } catch (Exception ex) when (
                     ex is DirectoryNotFoundException || 
@@ -432,12 +412,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                 UpdateCommands();
                 NotifyAllPropertiesChanged();
                 ShellUtil.UpdateCommandUI();
-            }
-        }
-
-        void GroupAndSort() {
-            foreach(var section in StatusSections) {
-                section.Populate(Projects, SearchContext);
             }
         }
         
@@ -489,7 +463,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [CanBeNull]
-        ProjectItemViewModel FindProjectViewModel(Hierarchy hierarchy) {
+        ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
 
             string fullPath = hierarchy.FullPath;
             var viewModel = FindProjectViewModel(fullPath);
@@ -514,7 +488,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [CanBeNull]
-        ProjectItemViewModel FindProjectViewModel(string path) {
+        ProjectViewModel FindProjectViewModel(string path) {
             return _projects.FirstOrDefault(p => p.Path.ToLower() == path?.ToLower());
         }
 
@@ -552,6 +526,6 @@ namespace IInspectable.ProjectExplorer.Extension {
                     getter: () => model._suspendReload,
                     setter: value => model._suspendReload = value);
             }
-        }       
+        }
     }
 }

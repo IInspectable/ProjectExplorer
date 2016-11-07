@@ -145,14 +145,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             }            
         }
 
-        public ProjectItemViewModel LoadAndBind(string file, Hierarchy hierarchy) {
+        public ProjectViewModel LoadAndBind(string file, Hierarchy hierarchy) {
 
             var projectFile = LoadProjectFile(file);
             if(projectFile == null) {
                 return null;
             }
  
-            var vm = new ProjectItemViewModel(projectFile);
+            var vm = new ProjectViewModel(projectFile);
             if(hierarchy != null) {                
                 vm.BindToHierarchy(hierarchy);
             }
@@ -160,14 +160,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             return vm;
         }
 
-        public List<ProjectItemViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
-            var projectFileViewModels = new List<ProjectItemViewModel>();
+        public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
+            var projectFileViewModels = new List<ProjectViewModel>();
 
             var projectHierarchyById = GetProjectHierarchyByPath();
 
             foreach (var projectFile in projectFiles) {
 
-                var vm = new ProjectItemViewModel(projectFile);
+                var vm = new ProjectViewModel(projectFile);
 
                 Hierarchy hierarchy;
                 if (projectHierarchyById.TryGetValue(projectFile.Path.ToLower(), out hierarchy)) {

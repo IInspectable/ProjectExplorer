@@ -11,9 +11,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectItemViewModel: ItemViewModel, IVsHierarchyEvents {
+    class ProjectViewModel: ItemViewModel, IVsHierarchyEvents {
 
-        static readonly Logger Logger = Logger.Create<ProjectItemViewModel>();
+        static readonly Logger Logger = Logger.Create<ProjectViewModel>();
 
         [NotNull]
         readonly ProjectFile _projectFile;
@@ -25,7 +25,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         ProjectExplorerViewModel _parent;
         uint _eventCookie;
         
-        public ProjectItemViewModel(ProjectFile projectFile) {
+        public ProjectViewModel(ProjectFile projectFile) {
 
             if (projectFile == null) {
                 throw new ArgumentNullException(nameof(projectFile));
@@ -120,8 +120,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             AdviseHierarchyEvents();
 
             NotifyAllPropertiesChanged();
-
-            _parent?.OnHierarchyStatusChanged();
         }
        
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {

@@ -12,15 +12,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             : base(viewModel, PackageIds.AddProjectCommandId) {        
         }
 
-        protected override bool EnableOverride(ProjectItemViewModel projectItemViewModel) {
-            return projectItemViewModel.Status == ProjectStatus.Closed;
+        protected override bool EnableOverride(ProjectViewModel projectViewModel) {
+            return projectViewModel.Status == ProjectStatus.Closed;
         }
 
-        protected override bool VisibleOverride(ProjectItemViewModel projectItemViewModel) {
+        protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
             return true;
         }
 
-        protected override void ExecuteOverride(IReadOnlyList<ProjectItemViewModel> projects) {
+        protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
 
             if (ShellUtil.ReportUserOnFailed(ViewModel.EnsureSolution())) {
                 return;

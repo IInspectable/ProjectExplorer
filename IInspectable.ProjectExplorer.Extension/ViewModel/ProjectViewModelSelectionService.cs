@@ -11,32 +11,32 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class ProjectViewModelSelectionService {
 
-        readonly HashSet<ProjectItemViewModel> _selectedItems;
+        readonly HashSet<ProjectViewModel> _selectedItems;
 
         public ProjectViewModelSelectionService() {
-            _selectedItems = new HashSet<ProjectItemViewModel>();
+            _selectedItems = new HashSet<ProjectViewModel>();
         }
 
         public event EventHandler SelectionChanged;
 
-        public IReadOnlyList<ProjectItemViewModel> SelectedItems {
+        public IReadOnlyList<ProjectViewModel> SelectedItems {
             get { return _selectedItems.ToImmutableList(); }
         }
 
-        public void AddSelection(ProjectItemViewModel projectItemViewModel) {
-            if(IsSelected(projectItemViewModel) || projectItemViewModel==null) {
+        public void AddSelection(ProjectViewModel projectViewModel) {
+            if(IsSelected(projectViewModel) || projectViewModel==null) {
                 return;
             }
-            _selectedItems.Add(projectItemViewModel);
-            OnSelectionChanged(projectItemViewModel);
+            _selectedItems.Add(projectViewModel);
+            OnSelectionChanged(projectViewModel);
         }
 
-        public void RemoveSelection(ProjectItemViewModel projectItemViewModel) {
-            if (!IsSelected(projectItemViewModel)) {
+        public void RemoveSelection(ProjectViewModel projectViewModel) {
+            if (!IsSelected(projectViewModel)) {
                 return;
             }
-            _selectedItems.Remove(projectItemViewModel);
-            OnSelectionChanged(projectItemViewModel);
+            _selectedItems.Remove(projectViewModel);
+            OnSelectionChanged(projectViewModel);
         }
 
         public void ClearSelection() {
@@ -52,13 +52,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        internal bool IsSelected(ProjectItemViewModel viewmodel) {
+        internal bool IsSelected(ProjectViewModel viewmodel) {
             return _selectedItems.Contains(viewmodel);
         }
 
-        void OnSelectionChanged(ProjectItemViewModel projectItemViewModel) {
+        void OnSelectionChanged(ProjectViewModel projectViewModel) {
 
-            projectItemViewModel.NotifyIsSelectedChanged();
+            projectViewModel.NotifyIsSelectedChanged();
 
             SelectionChanged?.Invoke(this, EventArgs.Empty);
         }

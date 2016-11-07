@@ -22,7 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _viewModel = viewModel;        
         }
 
-        protected IReadOnlyList<ProjectItemViewModel> SelectedItems {
+        protected IReadOnlyList<ProjectViewModel> SelectedItems {
             get { return _viewModel.SelectionService.SelectedItems; }
         }
 
@@ -50,13 +50,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             ExecuteOverride(SelectedItems);
         }
 
-        protected abstract bool EnableOverride(ProjectItemViewModel projectItemViewModel);
-        protected abstract bool VisibleOverride(ProjectItemViewModel projectItemViewModel);
-        protected abstract void ExecuteOverride(IReadOnlyList<ProjectItemViewModel> projects);
+        protected abstract bool EnableOverride(ProjectViewModel projectViewModel);
+        protected abstract bool VisibleOverride(ProjectViewModel projectViewModel);
+        protected abstract void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects);
 
-        protected void ForeachWithWaitIndicatorAndErrorReport(IReadOnlyList<ProjectItemViewModel> projects,
+        protected void ForeachWithWaitIndicatorAndErrorReport(IReadOnlyList<ProjectViewModel> projects,
                                                               string verb, 
-                                                              Func<ProjectItemViewModel, int> action,
+                                                              Func<ProjectViewModel, int> action,
                                                               bool breakOnFirstError=true) {
             try {
 

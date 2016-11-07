@@ -86,11 +86,10 @@
     <Compile Include="ViewModel\ProjectExplorerViewModel.cs" />
     <Compile Include="Model\ProjectFile.cs" />
     <Compile Include="ViewModel\ProjectStatus.cs" />
-    <Compile Include="ViewModel\ProjectItemViewModel.cs" />
+    <Compile Include="ViewModel\ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectExplorerToolWindow.cs" />
     <Compile Include="Commands\ProjectExplorerCommand.cs" />
-    <Compile Include="ViewModel\StatusSectionViewModel.cs" />
     <Compile Include="View\ProjectExplorerControl.xaml.cs">
       <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>
     </Compile>
