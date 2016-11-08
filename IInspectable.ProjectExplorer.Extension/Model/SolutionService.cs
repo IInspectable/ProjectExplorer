@@ -131,7 +131,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return LogFailed(_vsSolution1.CreateSolution(
                 lpszLocation  : null, 
                 lpszName      : null, 
-                grfCreateFlags: 0));
+                grfCreateFlags: (uint)__VSCREATESOLUTIONFLAGS.CSF_TEMPORARY));
         }
 
         [CanBeNull]
