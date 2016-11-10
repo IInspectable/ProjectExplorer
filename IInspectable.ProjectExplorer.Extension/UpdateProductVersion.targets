@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProductName>Project Explorer</ProductName>
-    <ProductVersion>1.1.11</ProductVersion>
+    <ProductVersion>1.2.0</ProductVersion>
   </PropertyGroup>
   <PropertyGroup>
     <VsixmanifestFile>$(MSBuildProjectDirectory)\source.extension.vsixmanifest</VsixmanifestFile>
