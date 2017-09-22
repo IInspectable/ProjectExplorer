@@ -10,7 +10,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 *************************************************************************
 -->
 
-  <UsingTask TaskName="RegisterStub" AssemblyFile="Microsoft.VsSDK.Build.Tasks.dll" /> 
+  <UsingTask TaskName="RegisterStub" AssemblyFile="Microsoft.VisualStudio.Sdk.BuildTasks.15.0.dll" />
 
   <ItemGroup>
     <PropertyPageSchema Include="$(VSSDKTargetsPath)\ProjectItemsSchema.xml"/>
@@ -52,5 +52,5 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <RegisterStub InstallDir="$(OutDir)" AppName="$(TargetName)" StubDTEGuid="$(ShellDTEGuid)" />
   </Target>  
 
-  <Import Project="Microsoft.VsSDK.Common.targets" />
+  <Import Project="Microsoft.VisualStudio.Sdk.Common.targets" />
 </Project>

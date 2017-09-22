@@ -5,6 +5,5 @@
     <VsSDKInstall>$(VSToolsPath)\VSSDK</VsSDKInstall>
     <VsSDKIncludes>$(VsSDKInstall)\inc</VsSDKIncludes>
     <VsSDKToolsPath>$(VsSDKInstall)\bin</VsSDKToolsPath>
-    <VsixSchemaPath>$(VsSDKInstall)\schemas\VSIXManifestSchema.xsd</VsixSchemaPath>
   </PropertyGroup>
 </Project>

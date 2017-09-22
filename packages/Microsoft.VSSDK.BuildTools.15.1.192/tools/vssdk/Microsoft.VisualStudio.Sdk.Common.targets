@@ -1,5 +1,4 @@
-
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <!--
 *************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -10,74 +9,14 @@ IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
 PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 *************************************************************************
 -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <UsingTask TaskName="FindVsSDKInstallation" AssemblyFile="Microsoft.VsSDK.Build.Tasks.dll" />
-  <UsingTask TaskName="VSCTCompiler" AssemblyFile="Microsoft.VsSDK.Build.Tasks.dll" />
-  <UsingTask TaskName="CreateMenuPkgDef" AssemblyFile="Microsoft.VsSDK.Build.Tasks.dll" />
+  <PropertyGroup>
+    <VsSDKCommonAssemblyFile Condition="'$(VsSDKCommonAssemblyFile)'==''">Microsoft.VisualStudio.Sdk.BuildTasks.dll</VsSDKCommonAssemblyFile>
+    <VsSDKAssemblyFile Condition="'$(VsSDKAssemblyFile)'==''">Microsoft.VisualStudio.Sdk.BuildTasks.15.0.dll</VsSDKAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="FindVsSDKInstallation" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="VSCTCompiler" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="CreateMenuPkgDef" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
 
   <!--
     Set the general properties for this installation of the SDK

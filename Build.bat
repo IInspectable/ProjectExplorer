@@ -5,6 +5,6 @@ if "%config%" == "" (
    set config=Debug
 )
 
-"%ProgramFiles(x86)%\MSBuild\14.0\bin\msbuild" IInspectable.ProjectExplorer.sln /p:Configuration="%config%"
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe" IInspectable.ProjectExplorer.sln /p:Configuration="%config%"
 
 Pause

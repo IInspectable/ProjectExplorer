@@ -10,42 +10,42 @@ IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
 PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 *************************************************************************
 -->
+  <Import Project="Microsoft.VisualStudio.Sdk.Common.targets" />
 
-  <Import Project="Microsoft.VsSDK.Common.targets" />
-  
-  <PropertyGroup>
-    <VsSDKAssemblyFile>Microsoft.VsSDK.Build.Tasks.dll</VsSDKAssemblyFile>
-  </PropertyGroup>
+  <!-- Common tasks -->
+  <UsingTask TaskName="CalculateZipItems" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="CompareCommonBuildTaskVersion" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="CopyIfChanged" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="CreateTemplatesManifest" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="CreateVsixSourceItemFromReferences" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="CtoResourceMerger" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="DetokenizeVsixManifestSource" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="FindVsixManifest" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="GetVSTemplateItems" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="ReadReferencesFromVsixManifest" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="SplitIncludeOutputGroupsInVSIX" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="ValidateVsixParts" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="Unzip" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
+  <UsingTask TaskName="ZipItems" AssemblyFile="$(VsSDKCommonAssemblyFile)" />
 
-  <UsingTask TaskName="CtoResourceMerger" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <!-- Tasks specific to this version of Visual Studio -->
+  <UsingTask TaskName="CheckProfileSetup" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="CompareBuildTaskVersion" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="CreatePkgDef" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CopyIfChanged" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CalculateZipItems" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="GetVSTemplateItems" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="ZipItems" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="CreateZipPackage" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="Devenv" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="EnableExtension" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="EnableLoadingAllExtensions" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="FindInstalledExtension" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="UninstallExtension" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="FindVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="GetExtensionsPath" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="GetDeploymentPathFromVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CreateTemplatesManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CreateZipPackage" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="ReadReferencesFromVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="DetokenizeVsixManifestSource" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="ValidateVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="ValidateVsixParts" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="Devenv" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CheckProfileSetup" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CreateVsixSourceItemFromReferences" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="SplitIncludeOutputGroupsInVSIX" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="GetExtensionsPath" AssemblyFile="$(VsSDKAssemblyFile)" />
   <UsingTask TaskName="ReadInfoFromVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="CompareBuildTaskVersion" AssemblyFile="$(VsSDKAssemblyFile)" />
-  <UsingTask TaskName="Unzip" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="UninstallExtension" AssemblyFile="$(VsSDKAssemblyFile)" />
+  <UsingTask TaskName="ValidateVsixManifest" AssemblyFile="$(VsSDKAssemblyFile)" />
 
   <PropertyGroup>
     <IsProductComponent Condition="'$(IsProductComponent)' == ''">false</IsProductComponent>
+    <AreDependenciesSetOnPackage Condition="'$(AreDependenciesSetOnPackage)' == ''">false</AreDependenciesSetOnPackage>    
     <DeployVSTemplates Condition="'$(DeployVSTemplates)' == ''">true</DeployVSTemplates>
     <BuildDependsOn>VerifyTargetVersion;$(BuildDependsOn)</BuildDependsOn>
     <VerifyTargetVersion Condition="'$(VerifyTargetVersion)' == ''">true</VerifyTargetVersion>
@@ -71,7 +71,16 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     </FindVsixManifest>
   </Target>
 
+  <!--
+    =================================================================================
+                          Verify loaded build tasks match requested build tasks
+    =================================================================================
+    -->
   <Target Name="VerifyTargetVersion">
+    <CompareCommonBuildTaskVersion
+      TargetsAssemblyPath="$(MSBuildThisFileDirectory)$(VsSDKCommonAssemblyFile)">
+    </CompareCommonBuildTaskVersion>
+
     <CompareBuildTaskVersion
       TargetsAssemblyPath="$(MSBuildThisFileDirectory)$(VsSDKAssemblyFile)">
     </CompareBuildTaskVersion>
@@ -87,8 +96,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <BypassVsixValidation Condition="'$(BypassVsixValidation)' == ''">false</BypassVsixValidation>
   </PropertyGroup>
   <Target Name="ValidateVsixManifest" DependsOnTargets="$(ValidateVsixManifestDependsOn)">
-    <ValidateVsixManifest Condition="Exists('$(IntermediateVsixManifest)') AND '$(BypassVsixValidation)' != 'true'" ItemToValidate="$(IntermediateVsixManifest)" VsixSchemaPath="$(VsixSchemaPath)"/>
-    <ValidateVsixManifest Condition="!Exists('$(IntermediateVsixManifest)') AND Exists('@(SourceVsixManifest)') AND '$(BypassVsixValidation)' != 'true'" ItemToValidate="@(SourceVsixManifest)" VsixSchemaPath="$(VsixSchemaPath)"/>
+    <ValidateVsixManifest Condition="Exists('$(IntermediateVsixManifest)') AND '$(BypassVsixValidation)' != 'true'" ItemToValidate="$(IntermediateVsixManifest)"/>
+    <ValidateVsixManifest Condition="!Exists('$(IntermediateVsixManifest)') AND Exists('@(SourceVsixManifest)') AND '$(BypassVsixValidation)' != 'true'" ItemToValidate="@(SourceVsixManifest)"/>
   </Target>
 
   <!--
@@ -398,6 +407,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
       <SuppressFromVsix Include="Microsoft.VisualStudio.Shell.Interop.12.1.DesignTime.dll" />
       <SuppressFromVsix Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.dll" />
       <SuppressFromVsix Include="Microsoft.VisualStudio.Shell.Interop.15.0.DesignTime.dll" />
+      <SuppressFromVsix Include="Microsoft.VisualStudio.Shell.Interop.15.3.DesignTime.dll" />
       <SuppressFromVsix Include="Microsoft.VisualStudio.Text.Data.dll" />
       <SuppressFromVsix Include="Microsoft.VisualStudio.Text.Logic.dll" />
       <SuppressFromVsix Include="Microsoft.VisualStudio.Text.UI.dll" />
@@ -589,10 +599,12 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
     <CreateZipPackage
          SourceManifest="@(_VsixManifest)"
+         ComponentManifest="@(ComponentManifest)"
          Files="@(VSIXSourceItem)"
          ZipPackage="$(TargetVsixContainer)"
          CompressionLevel="$(ZipPackageCompressionLevel)"
          IsProductComponent="$(IsProductComponent)"
+         AreDependenciesSetOnPackage="$(AreDependenciesSetOnPackage)"
          ItemsToConsider="@(None)"
          InstallationRoot="$(ExtensionInstallationRoot)"
          InstallationFolder="$(ExtensionInstallationFolder)">
@@ -626,7 +638,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <GetDeploymentPathFromVsixManifest
         Condition="Exists('$(IntermediateVsixManifest)')"
         ExtensionsPath="$(ExtensionsPath)"
-        VsixManifest="$(IntermediateVsixManifest)" >
+        VsixManifest="$(IntermediateVsixManifest)"
+        RootSuffix="$(VSSDKTargetPlatformRegRootSuffix)">
       <Output TaskParameter="DeploymentPath" PropertyName="VsixDeploymentPath"/>
       <Output TaskParameter="VsixID" PropertyName="VsixID"/>
       <Output TaskParameter="VsixVersion" PropertyName="VsixVersion"/>
@@ -725,7 +738,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
       DependsOnTargets="$(CopyVsixExtensionFilesDependsOn)">
 
     <ItemGroup>
-      <CopyVsixExtensionFiles Include="@(VSIXSourceItem);@(VSIXSourceItemLocalOnly)" />
+      <CopyVsixExtensionFiles Include="@(VSIXSourceItem);@(VSIXSourceItemLocalOnly);$(IntermediateVsixManifest)" />
     </ItemGroup>
 
     <!-- The TargetPath metadata contains the whole path, not just the directory -->
