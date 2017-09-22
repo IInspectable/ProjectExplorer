@@ -63,22 +63,14 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public IVsSolution VsSolution1 {
-            get { return _vsSolution1; }
-        }
-
-        public IVsSolution2 VsSolution2 {
-            get { return _vsSolution2; }
-        }
-
-        public IVsSolution4 VsSolution4 {
-            get { return _vsSolution4; }
-        }
+        public IVsSolution  VsSolution1 => _vsSolution1;
+        public IVsSolution2 VsSolution2 => _vsSolution2;
+        public IVsSolution4 VsSolution4 => _vsSolution4;
 
         public Hierarchy GetRoot() {
             // ReSharper disable once SuspiciousTypeConversion.Global
             var hierarchy =_vsSolution1 as IVsHierarchy;
-            var root     = new Hierarchy(this, hierarchy, HierarchyId.Root);
+            var root      = new Hierarchy(this, hierarchy, HierarchyId.Root);
             return root;
         }
 
@@ -169,8 +161,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 var vm = new ProjectViewModel(projectFile);
 
-                Hierarchy hierarchy;
-                if (projectHierarchyById.TryGetValue(projectFile.Path.ToLower(), out hierarchy)) {
+                if (projectHierarchyById.TryGetValue(projectFile.Path.ToLower(), out var hierarchy)) {
                     vm.BindToHierarchy(hierarchy);
                 }
 
@@ -183,8 +174,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public int OpenProject(string path) {
 
             Guid empty = Guid.Empty;
-            Guid projId=Guid.Empty;
-            IntPtr ppProj;
+            Guid projId= Guid.Empty;
 
             return LogFailed(_vsSolution1.CreateProject(
                 rguidProjectType: ref empty,
@@ -193,33 +183,27 @@ namespace IInspectable.ProjectExplorer.Extension {
                 lpszName        : null,
                 grfCreateFlags  : (uint) __VSCREATEPROJFLAGS.CPF_OPENFILE,
                 iidProject      : ref projId,
-                ppProject       : out ppProj));
+                ppProject       : out IntPtr _));
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
             if (pHierarchy == null) {
                 return Guid.Empty;
             }
-            Guid projGuid;
-            LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out projGuid));              
+            LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out var projGuid));              
             return projGuid;
         }
 
         public bool IsSolutionOpen() {
 
-            object value;
-            LogFailed(_vsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out value));
+            LogFailed(_vsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out var value));
             return (bool) value;
         }
 
         [CanBeNull]
         public string GetSolutionDirectory() {
 
-            string solutionDirectory;
-            string solutionFile;
-            string userOptsFile;
-
-            _vsSolution1.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptsFile);
+            _vsSolution1.GetSolutionInfo(out string solutionDirectory, out string _, out string _);
 
             return solutionDirectory;
         }
@@ -227,18 +211,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         [CanBeNull]
         public string GetSolutionFile() {
 
-            string solutionDirectory;
-            string solutionFile;
-            string userOptsFile;
-
-            _vsSolution1.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptsFile);
+            _vsSolution1.GetSolutionInfo(out string _, out string solutionFile, out string _);
 
             return solutionFile;
         }
 
         public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
-            IVsHierarchy result;
-            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out result), except: VSConstants.E_FAIL) || result==null) {
+            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out var result), except: VSConstants.E_FAIL) || result==null) {
                 return null;
             } 
             return new Hierarchy(this, result, HierarchyId.Root);
@@ -249,15 +228,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             var result = new Dictionary<string, Hierarchy>();
 
             Guid ignored = Guid.Empty;
-            IEnumHierarchies hierEnum;
             var flags = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
-            if (Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out hierEnum))) {
+            if (Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out var hierEnum))) {
                 return result;
             }
 
             IVsHierarchy[] hier = new IVsHierarchy[1];
-            uint fetched;
-            while ((hierEnum.Next((uint)hier.Length, hier, out fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
+            while ((hierEnum.Next((uint)hier.Length, hier, out var fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
                 var hierarchy = new Hierarchy(this, hier[0], HierarchyId.Root);
                 var fullPath = hierarchy.FullPath;
@@ -272,6 +249,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         #region IVsSolutionEvents
 
         public event EventHandler<ProjectEventArgs> AfterOpenProject;
+
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded) {
 
             var realHierarchy = new Hierarchy(this, pHierarchy, HierarchyId.Root);
@@ -285,6 +263,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public event EventHandler<ProjectEventArgs> BeforeRemoveProject;
+
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) {
 
             if(fRemoved == 1) {
@@ -296,6 +275,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public event EventHandler<ProjectEventArgs> AfterLoadProject;
+
         int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) {
 
             var realHierarchy = new Hierarchy(this, pStubHierarchy, HierarchyId.Root);
@@ -310,6 +290,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public event EventHandler<ProjectEventArgs> BeforeUnloadProject;
+
         int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) {
             var realHierarchy = new Hierarchy(this, pStubHierarchy, HierarchyId.Root);
             var stubHierarchy = new Hierarchy(this, pRealHierarchy, HierarchyId.Root);
@@ -319,6 +300,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
 
         public event EventHandler AfterOpenSolution;
+
         int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution) {
             AfterOpenSolution?.Invoke(this, EventArgs.Empty);
             return VSConstants.S_OK;
@@ -333,6 +315,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public event EventHandler AfterCloseSolution;
+
         int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved) {
             AfterCloseSolution?.Invoke(this, EventArgs.Empty);
             return VSConstants.S_OK;

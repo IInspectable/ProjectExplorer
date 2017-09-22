@@ -7,11 +7,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public ProjectEventArgs(Hierarchy realHierarchie, Hierarchy stubHierarchie=null) {
 
-            if (realHierarchie == null) {
-                throw new ArgumentNullException(nameof(realHierarchie));
-            }
-
-            RealHierarchie = realHierarchie;
+            RealHierarchie = realHierarchie ?? throw new ArgumentNullException(nameof(realHierarchie));
             StubHierarchie = stubHierarchie;
         }
 

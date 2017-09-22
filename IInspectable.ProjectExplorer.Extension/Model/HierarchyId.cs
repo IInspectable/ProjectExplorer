@@ -18,21 +18,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         public static readonly HierarchyId Nil = new HierarchyId(VSConstants.VSITEMID_NIL);
         public static readonly HierarchyId Selection = new HierarchyId(VSConstants.VSITEMID_SELECTION);
 
-        public uint Id {
-            get { return _id; }
-        }
-
-        public bool IsNil {
-            get { return Id == Nil.Id; }
-        }
-
-        public bool IsRoot {
-            get { return Id == Root.Id; }
-        }
-
-        public bool IsSelection {
-            get { return Id == Selection.Id; }
-        }
+        public uint Id          => _id;
+        public bool IsNil       => _id == Nil.Id;
+        public bool IsRoot      => _id == Root.Id;
+        public bool IsSelection => _id == Selection.Id;
 
         public static implicit operator int(HierarchyId id) {
             return (int) id.Id;

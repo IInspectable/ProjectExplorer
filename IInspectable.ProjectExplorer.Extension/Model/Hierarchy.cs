@@ -24,66 +24,41 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public Hierarchy(SolutionService solutionService, IVsHierarchy vsHierarchy, HierarchyId itemId) {
 
-            if(solutionService == null) {
-                throw new ArgumentNullException(nameof(solutionService));
-            }
-
-            if(vsHierarchy == null) {
-                throw new ArgumentNullException(nameof(vsHierarchy));
-            }
-
-            _solutionService = solutionService;
-            _vsHierarchy = vsHierarchy;
-            _itemId = itemId;
+            _solutionService = solutionService ?? throw new ArgumentNullException(nameof(solutionService));
+            _vsHierarchy     = vsHierarchy     ?? throw new ArgumentNullException(nameof(vsHierarchy));
+            _itemId          = itemId;
         }
 
-        public HierarchyId ItemId {
-            get { return _itemId; }
-        }
+        public HierarchyId ItemId => _itemId;
+        public string Name => GetProperty<string>(__VSHPROPID.VSHPROPID_Name);
 
-        IVsSolution VsSolution1 {
-            get { return _solutionService.VsSolution1; }
-        }
-
-        IVsSolution4 VsSolution4 {
-            get { return _solutionService.VsSolution4; }
-        }
-
-        public string Name {
-            get { return GetProperty<string>(__VSHPROPID.VSHPROPID_Name); }
-        }
-
+        IVsSolution VsSolution1 => _solutionService.VsSolution1;
+        IVsSolution4 VsSolution4 => _solutionService.VsSolution4;
+        
         public string CanonicalName {
             get {
-                string cn;
-                LogFailed(_vsHierarchy.GetCanonicalName(ItemId, out cn));
+                LogFailed(_vsHierarchy.GetCanonicalName(ItemId, out var cn));
                 return cn;
             }
         }
 
-        public Guid ProjectGuid {
-           get { return _solutionService.GetProjectGuid(_vsHierarchy); }
-        }
+        public Guid ProjectGuid => _solutionService.GetProjectGuid(_vsHierarchy);
 
         #region  Structural Properties
 
-        public HierarchyId ParentItemId {
-            get { return GetProperty<int>(__VSHPROPID.VSHPROPID_Parent, HierarchyId.Nil); }
-        }
+        public HierarchyId ParentItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_Parent, HierarchyId.Nil);
 
-        public Hierarchy Parent {
-            get { return new Hierarchy(_solutionService, _vsHierarchy, ParentItemId); }
-        }
+        public Hierarchy Parent => new Hierarchy(_solutionService, _vsHierarchy, ParentItemId);
 
         public HierarchyId ParentHierarchyItemId {
             get {
-                object id = GetProperty<object>(__VSHPROPID.VSHPROPID_ParentHierarchyItemid);
+                var id = GetProperty<object>(__VSHPROPID.VSHPROPID_ParentHierarchyItemid);
 
-                if(id is int) {
-                    return (uint) (int) id;
-                }
-                if(id is uint) {
-                    return (uint) id;
+                switch(id) {
+                    case int i:
+                        return (uint) i;
+                    case uint u:
+                        return u;
                 }
 
                 return HierarchyId.Nil;
@@ -99,45 +74,27 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public bool IsNestedHierachy {
-            get { return ItemId.IsRoot && !ParentHierarchyItemId.IsNil; }
-        }
+        public bool IsNestedHierachy => ItemId.IsRoot && !ParentHierarchyItemId.IsNil;
 
-        public HierarchyId FirstChildItemId {
-            get { return GetProperty<int>(__VSHPROPID.VSHPROPID_FirstChild, HierarchyId.Nil); }
-        }
+        public HierarchyId FirstChildItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_FirstChild, HierarchyId.Nil);
 
         [CanBeNull]
-        public Hierarchy FirstChild {
-            get { return WithId(FirstChildItemId); }
-        }
-        
-        public HierarchyId FirstVisibleChildItemId {
-            get { return GetProperty<int>(__VSHPROPID.VSHPROPID_FirstVisibleChild, HierarchyId.Nil); }
-        }
+        public Hierarchy FirstChild => WithId(FirstChildItemId);
+
+        public HierarchyId FirstVisibleChildItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_FirstVisibleChild, HierarchyId.Nil);
 
         [CanBeNull]
-        public Hierarchy FirstVisibleChild {
-            get { return WithId(FirstVisibleChildItemId); }
-        }
+        public Hierarchy FirstVisibleChild => WithId(FirstVisibleChildItemId);
 
-        public HierarchyId NextSiblingItemId {
-            get { return GetProperty<int>(__VSHPROPID.VSHPROPID_NextSibling, HierarchyId.Nil); }
-        }
+        public HierarchyId NextSiblingItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_NextSibling, HierarchyId.Nil);
 
         [CanBeNull]
-        public Hierarchy NextSibling {
-            get { return WithId(NextSiblingItemId); }
-        }
+        public Hierarchy NextSibling => WithId(NextSiblingItemId);
 
-        public HierarchyId NextVisibleSiblingItemId {
-            get { return GetProperty<int>(__VSHPROPID.VSHPROPID_NextVisibleSibling, HierarchyId.Nil); }
-        }
+        public HierarchyId NextVisibleSiblingItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_NextVisibleSibling, HierarchyId.Nil);
 
         [CanBeNull]
-        public Hierarchy NextVisibleSibling {
-            get { return WithId(NextVisibleSiblingItemId); }
-        }
+        public Hierarchy NextVisibleSibling => WithId(NextVisibleSiblingItemId);
 
         public IEnumerable<Hierarchy> Children() {
 
@@ -217,10 +174,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-        public string SaveName {
-            get { return GetProperty<String>(__VSHPROPID.VSHPROPID_SaveName);
-            }
-        }
+        public string SaveName => GetProperty<String>(__VSHPROPID.VSHPROPID_SaveName);
 
         public string FullPath {
             get {
@@ -235,12 +189,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public Hierarchy GetNestedHierarchy() {
-            var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
-            uint nestedItemId;
-            IntPtr nestedHiearchyValue;
-            LogFailed(_vsHierarchy.GetNestedHierarchy(ItemId, ref nestedHierarchyGuid, out nestedHiearchyValue, out nestedItemId));
 
-            if(nestedHiearchyValue == IntPtr.Zero) {
+            var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
+            LogFailed(_vsHierarchy.GetNestedHierarchy(ItemId, ref nestedHierarchyGuid, out IntPtr nestedHiearchyValue, out uint nestedItemId));
+
+            if (nestedHiearchyValue == IntPtr.Zero) {
                 return null;
             }
 
@@ -257,15 +210,15 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string GetMkDocument() {
             // ReSharper disable once SuspiciousTypeConversion.Global
             var ao = _vsHierarchy as IVsProject;
-            string doc=null;
+            string doc = null;
             ao?.GetMkDocument(ItemId, out doc);
             return doc;
         }
 
         [CanBeNull]
         public string GetCanonicalName() {
-            string cn= null;
-            LogFailed(_vsHierarchy?.GetCanonicalName(ItemId, out cn)?? VSConstants.S_OK);
+            string cn = null;
+            LogFailed(_vsHierarchy?.GetCanonicalName(ItemId, out cn) ?? VSConstants.S_OK);
             return cn;
         }
 
@@ -282,9 +235,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         string DumpCore(Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel = Int32.MaxValue) {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             Dump(this, 0, sb, childSelector, maxLevel);
-
             return sb.ToString();
         }
 
@@ -300,8 +252,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 Dump(child, level+1, sb, childSelector, maxLevel);
             }
         }
-
-
+        
         public ImageMoniker GetImageMoniker() {
             return _solutionService.GetImageMonikerForHierarchyItem(_vsHierarchy);
         }
@@ -322,33 +273,29 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             return LogFailed(VsSolution1.CloseSolutionElement(
                 grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject,
-                pHier: _vsHierarchy,
-                docCookie: 0));
+                pHier       : _vsHierarchy,
+                docCookie   : 0));
         }
 
         public Guid GetProjectGuid() {
-            Guid projGuid;
-            LogFailed(VsSolution1.GetGuidOfProject(_vsHierarchy, out projGuid));
+            LogFailed(VsSolution1.GetGuidOfProject(_vsHierarchy, out var projGuid));
             return projGuid;
         }
 
         public string GetUniqueNameOfProject() {
-            string uniqueName;
-            LogFailed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out uniqueName));
+            LogFailed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out var uniqueName));
             return uniqueName?.ToLower();
         }
 
         public bool IsProjectUnloaded() {
 
-            object status;
-            var hr = _vsHierarchy.GetProperty(_itemId, (int) __VSHPROPID5.VSHPROPID_ProjectUnloadStatus, out status);
+            var hr = _vsHierarchy.GetProperty(_itemId, (int) __VSHPROPID5.VSHPROPID_ProjectUnloadStatus, out var _);
 
             return ErrorHandler.Succeeded(hr);
         }
        
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
-            uint cookie;
-            LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out cookie));
+            LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out uint cookie));
             return cookie;
         }
 
@@ -370,9 +317,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return null;
             }
 
-            object propValue;
-
-            LogFailed(_vsHierarchy.GetProperty(ItemId, propId, out propValue));
+            LogFailed(_vsHierarchy.GetProperty(ItemId, propId, out object propValue));
 
             return propValue;
         }
