@@ -7,23 +7,31 @@ using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.ComponentModel.Composition;
+using System.Threading;
+
+using Microsoft.VisualStudio.ComponentModelHost;
+
+using Task = System.Threading.Tasks.Task;
+using System.Threading.Tasks;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", version: 2)]
-    [ProvideToolWindow(typeof(ProjectExplorerToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
+    [ProvideToolWindow(typeof(ProjectExplorerToolWindow), 
+        Style = VsDockStyle.Tabbed, 
+        Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
-    sealed class ProjectExplorerPackage : Package {
+    [ProvideService(typeof(ProjectExplorerPackage), IsAsyncQueryable = true)]
+    sealed class ProjectExplorerPackage : AsyncPackage {
 
         readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
 
@@ -34,31 +42,66 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         ImmutableList<Command> _commands;
 
-        public ProjectExplorerPackage() {
-            AddOptionKey(OptionService.OptionKey);            
+        public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType)
+        {
+            if (toolWindowType == ProjectExplorerToolWindow.Guid) {
+                return this;
+            }
+
+            return null;
         }
-        
-        protected override void Initialize() {
+
+        protected override string GetToolWindowTitle(Type toolWindowType, int id)
+        {
+            if (toolWindowType == typeof(ProjectExplorerToolWindow))
+            {
+                return ProjectExplorerToolWindow.Title;
+            }
+
+            return base.GetToolWindowTitle(toolWindowType, id);
+        }
+
+        protected override async Task<object> InitializeToolWindowAsync(Type toolWindowType, int id, CancellationToken cancellationToken)
+        {
+            if (toolWindowType == typeof(ProjectExplorerToolWindow)) {
+
+                return new ProjectExplorerToolWindowServices(
+                    await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService,
+                    _projectExplorerViewModelProvider,
+                    #pragma warning disable VSTHRD010
+                    await GetServiceAsync(typeof(SVsWindowSearchHostFactory)) as IVsWindowSearchHostFactory
+                    #pragma warning restore VSTHRD010
+                );
+            }
+            return base.InitializeToolWindowAsync(toolWindowType, id, cancellationToken);
+        }
+
+
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            AddOptionKey(OptionService.OptionKey);           
 
             _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
 
-            var componentModel = GetGlobalService<SComponentModel, IComponentModel>();            
-            componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
+            var cmp = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
+            cmp?.DefaultCompositionService.SatisfyImportsOnce(this);
 
             RegisterCommands(new List<Command> {
                 new ProjectExplorerCommand(this),
                 new ProjectExplorerSearchCommand(this)
             });
 
-            base.Initialize();
         }
-
+        
         protected override void Dispose(bool disposing) {
             if(disposing) {
                 UnegisterCommands();
+                if (_projectExplorerViewModelProvider != null) {
+
                 ((IServiceContainer)this).RemoveService(_projectExplorerViewModelProvider.GetType(), true);
+                }
             }
             base.Dispose(disposing);
         }
@@ -85,23 +128,40 @@ namespace IInspectable.ProjectExplorer.Extension {
             _commands = null;
         }
 
-        public ProjectExplorerToolWindow GetProjectExplorerToolWindow() {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            var window = (ProjectExplorerToolWindow)FindToolWindow(typeof(ProjectExplorerToolWindow), 0, true);
-            return window;
-        }
+       
 
         public void ShowProjectExplorerWindow() {
 
-            var window = GetProjectExplorerToolWindow();
-            if (window?.Frame == null) {
-                throw new NotSupportedException("Cannot create tool window");
-            }
+            JoinableTaskFactory.RunAsync(async () =>
+            {
+                await ShowProjectExplorerWindowAsync();
+            });
 
-            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-            ErrorHandler.ThrowOnFailure(windowFrame.Show());
+        }
+
+        public void ShowProjectExplorerWindowAndActivateSearch() {
+
+            JoinableTaskFactory.RunAsync(async () =>
+            {
+                var toolwindow =await ShowProjectExplorerWindowAsync();
+
+                if(toolwindow.CanActivateSearch) {                
+                    toolwindow.ActivateSearch();
+                }
+            });
+
+        }
+
+        async Task<ProjectExplorerToolWindow> ShowProjectExplorerWindowAsync() {
+
+                ToolWindowPane window = await ShowToolWindowAsync(
+                    typeof(ProjectExplorerToolWindow),
+                    0,
+                    create: true,
+                    cancellationToken: DisposalToken);
+
+            return (ProjectExplorerToolWindow)window;
+
         }
 
         public static TService GetGlobalService<TService>() where TService : class {

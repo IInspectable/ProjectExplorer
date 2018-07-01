@@ -12,31 +12,52 @@ using Microsoft.VisualStudio.Imaging;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    [Guid("65511566-dab1-4298-b5c9-a82c4532001e")]
-    class ProjectExplorerToolWindow : ToolWindowPane, IErrorInfoService {
+    class ProjectExplorerToolWindowServices {
 
-        public ProjectExplorerToolWindow() : base(null) {
+        public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory) {
+            OleMenuCommandService   = oleMenuCommandService;
+            ViewModelProvider       = viewModelProvider;
+            WindowSearchHostFactory = windowSearchHostFactory;
+        }
+
+        public OleMenuCommandService            OleMenuCommandService   { get; }
+        public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
+        public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
+
+    }
+
+    [Guid(GuidString)]
+    class ProjectExplorerToolWindow: ToolWindowPane, IErrorInfoService {
+
+        public const  string GuidString = "f3e3f345-a607-4f4c-9742-bb6415f2b062";
+        public static Guid   Guid => new Guid(GuidString);
+        public const  string Title = "Project Explorer";
+
+        public ProjectExplorerToolWindow(ProjectExplorerToolWindowServices services): base(null) {
             // ReSharper disable VirtualMemberCallInConstructor
-  
-            var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
-            var viewModelProvider  = ProjectExplorerPackage.GetGlobalService<ProjectExplorerViewModelProvider>();
-            var windowSearchHostFactory= ProjectExplorerPackage.GetGlobalService < SVsWindowSearchHostFactory, IVsWindowSearchHostFactory>();
+
+            var menuCommandService      = services.OleMenuCommandService;
+            var viewModelProvider       = services.ViewModelProvider;
+            var windowSearchHostFactory = services.WindowSearchHostFactory;
 
             ViewModel = viewModelProvider.CreateViewModel(this, menuCommandService);
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            Content = new ProjectExplorerControl(windowSearchHostFactory, ViewModel);
-            ToolBar = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
-            Caption = "Project Explorer";
+            Content            = new ProjectExplorerControl(windowSearchHostFactory, ViewModel);
+            ToolBar            = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
+            Caption            = Title;
             BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
-            
+
             // ReSharper restore VirtualMemberCallInConstructor
         }
 
         ProjectExplorerViewModel ViewModel { get; }
-        ProjectExplorerControl ProjectExplorerControl { get { return (ProjectExplorerControl)Content; } }
+
+        ProjectExplorerControl ProjectExplorerControl {
+            get { return (ProjectExplorerControl) Content; }
+        }
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -46,21 +67,22 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             base.Dispose(disposing);
         }
-        
+
         #region IErrorInfoService
 
         InfoBarModel _errorInfoBar;
-        
+
         protected override void OnInfoBarClosed(IVsInfoBarUIElement infoBarUI, IVsInfoBar infoBar) {
             if (infoBar == _errorInfoBar) {
                 _errorInfoBar = null;
             }
+
             base.OnInfoBarClosed(infoBarUI, infoBar);
         }
 
         void IErrorInfoService.ShowErrorInfoBar(Exception ex) {
-            ((IErrorInfoService)this).RemoveErrorInfoBar();
-            
+            ((IErrorInfoService) this).RemoveErrorInfoBar();
+
             _errorInfoBar = new InfoBarModel(ex.Message, KnownMonikers.StatusError);
             AddInfoBar(_errorInfoBar);
         }
@@ -81,5 +103,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void ActivateSearch() {
             ProjectExplorerControl.ActivateSearch();
         }
+
     }
+
 }

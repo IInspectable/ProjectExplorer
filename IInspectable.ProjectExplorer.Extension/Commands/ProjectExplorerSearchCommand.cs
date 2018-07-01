@@ -10,12 +10,8 @@
         
         public override void Execute(object parameter = null) {
 
-            _package.ShowProjectExplorerWindow();
-
-            var toolwindow=_package.GetProjectExplorerToolWindow();
-            if(toolwindow.CanActivateSearch) {                
-                toolwindow.ActivateSearch();
-            }
+            _package.ShowProjectExplorerWindowAndActivateSearch();
+            
         }
     }
 }
