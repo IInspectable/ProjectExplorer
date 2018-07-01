@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.ComponentModel.Composition;
@@ -23,14 +22,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [ProvideMenuResource("Menus.ctmenu", version: 2)]
+    [ProvideMenuResource("Menus.ctmenu", version: 1)]
     [ProvideToolWindow(typeof(ProjectExplorerToolWindow), 
         Style = VsDockStyle.Tabbed, 
         Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
-    [ProvideService(typeof(ProjectExplorerPackage), IsAsyncQueryable = true)]
     sealed class ProjectExplorerPackage : AsyncPackage {
 
         readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
