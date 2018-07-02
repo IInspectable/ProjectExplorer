@@ -1,6 +1,7 @@
 ﻿#region Using Directives
 
 using System;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 
@@ -14,15 +15,23 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerToolWindowServices {
 
-        public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory) {
+        [ImportingConstructor]
+        public ProjectExplorerToolWindowServices(OptionService optionService) {
+            OptionService = optionService;
+
+        }
+
+        public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService) {
             OleMenuCommandService   = oleMenuCommandService;
             ViewModelProvider       = viewModelProvider;
             WindowSearchHostFactory = windowSearchHostFactory;
+            OptionService           = optionService;
         }
 
         public OleMenuCommandService            OleMenuCommandService   { get; }
         public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
         public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
+        public OptionService                    OptionService           { get; }
 
     }
 
