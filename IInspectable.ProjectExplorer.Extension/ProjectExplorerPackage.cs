@@ -68,11 +68,14 @@ namespace IInspectable.ProjectExplorer.Extension {
                     oleMenuCommandService  : await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService,
                     viewModelProvider      : svs.ExplorerViewModelProvider,
                     windowSearchHostFactory: await GetServiceAsync(typeof(SVsWindowSearchHostFactory)) as IVsWindowSearchHostFactory,
-                    optionService          : svs.OptionService
+                    optionService          : svs.OptionService,
+                    waitIndicator          : svs.WaitIndicator
                 );
                 #pragma warning restore VSTHRD010
             }
         }
+
+        public IWaitIndicator WaitIndicator => _services.WaitIndicator;
 
         public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType) {
             if (toolWindowType == ProjectExplorerToolWindow.Guid) {
@@ -171,8 +174,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void OnLoadOptions(string key, Stream stream) {
+            // TODO Wenn der Explorer geöffnet wurde, nachdem eine Solutuon geladen wurde, haben wir noch keinen OptionService...
             if (OptionService.OptionKey == key) {
-                _services.OptionService.LoadOptions(stream);
+                _services.OptionService?.LoadOptions(stream);
             }
 
             base.OnLoadOptions(key, stream);
@@ -180,12 +184,11 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected override void OnSaveOptions(string key, Stream stream) {
             if (OptionService.OptionKey == key) {
-                _services.OptionService.SaveOptions(stream);
+                _services.OptionService?.SaveOptions(stream);
             }
 
             base.OnSaveOptions(key, stream);
         }
-
 
         class MefServices {
 
@@ -195,10 +198,14 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             [Import]
             ProjectExplorerViewModelProvider _projectExplorerViewModelProvider;
+
+            [Import]
+            IWaitIndicator _waitIndicator;
             #pragma warning restore 0649
 
             public ProjectExplorerViewModelProvider ExplorerViewModelProvider => _projectExplorerViewModelProvider;
             public OptionService                    OptionService             => _optionService;
+            public IWaitIndicator                   WaitIndicator             => _waitIndicator;
 
         }
     }
