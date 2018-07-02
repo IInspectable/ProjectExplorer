@@ -2,23 +2,20 @@
 
 using System;
 
+using Microsoft.VisualStudio.Shell;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class RefreshCommand: Command {
 
-
         readonly ProjectExplorerViewModel _viewModel;
 
         public RefreshCommand(ProjectExplorerViewModel viewModel)
             : base(PackageIds.RefreshCommandId) {
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
         }
 
         public override void UpdateState() {
@@ -26,8 +23,11 @@ namespace IInspectable.ProjectExplorer.Extension {
             Visible = !_viewModel.IsLoading;
         }
 
-        public override async void Execute(object parameter=null) {
-            await _viewModel.ReloadProjects();
+        public override void Execute(object parameter = null) {
+
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await _viewModel.ReloadProjectsAsync(); });
         }
+
     }
+
 }

@@ -8,11 +8,14 @@ using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+
 using JetBrains.Annotations;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Task = System.Threading.Tasks.Task;
 
 #endregion
@@ -24,35 +27,41 @@ namespace IInspectable.ProjectExplorer.Extension {
         public static TInterface GetService<TService, TInterface>(this IServiceProvider sp) where TInterface : class {
             return sp.GetService(typeof(TService)) as TInterface;
         }
+
     }
 
     [Export]
     class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
-        readonly IVsSolution  _vsSolution1;
-        readonly IVsSolution2 _vsSolution2;
-        readonly IVsSolution4 _vsSolution4;
-        readonly IVsImageService2 _vsImageService2;
-        static readonly Logger Logger = Logger.Create<SolutionService>();
+        readonly        IVsSolution      _vsSolution1;
+        readonly        IVsSolution2     _vsSolution2;
+        readonly        IVsSolution4     _vsSolution4;
+        readonly        IVsImageService2 _vsImageService2;
+        static readonly Logger           Logger = Logger.Create<SolutionService>();
 
         uint _solutionEvents1Cookie;
         uint _solutionEvents4Cookie;
-        
-        [ImportingConstructor]
-        public SolutionService([Import(typeof(SVsServiceProvider))]IServiceProvider serviceProvider) {
 
-          _vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
-          _vsSolution2 = serviceProvider.GetService<SVsSolution, IVsSolution2>();
-          _vsSolution4 = serviceProvider.GetService<SVsSolution, IVsSolution4>();
-          
-          _vsImageService2 = serviceProvider.GetService<SVsImageService, IVsImageService2>();
-          
-          _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
-          _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);           
+        [ImportingConstructor]
+        public SolutionService([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) {
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            _vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
+            _vsSolution2 = serviceProvider.GetService<SVsSolution, IVsSolution2>();
+            _vsSolution4 = serviceProvider.GetService<SVsSolution, IVsSolution4>();
+
+            _vsImageService2 = serviceProvider.GetService<SVsImageService, IVsImageService2>();
+
+            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
+            _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);
         }
 
         public void Dispose() {
-            if(_solutionEvents1Cookie != 0) {
+            
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_solutionEvents1Cookie != 0) {
                 _vsSolution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
                 _solutionEvents1Cookie = 0;
             }
@@ -68,25 +77,28 @@ namespace IInspectable.ProjectExplorer.Extension {
         public IVsSolution4 VsSolution4 => _vsSolution4;
 
         public Hierarchy GetRoot() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // ReSharper disable once SuspiciousTypeConversion.Global
-            var hierarchy =_vsSolution1 as IVsHierarchy;
+            var hierarchy = _vsSolution1 as IVsHierarchy;
             var root      = new Hierarchy(this, hierarchy, HierarchyId.Root);
             return root;
         }
 
         public ImageMoniker GetImageMonikerForFile(string filename) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _vsImageService2.GetImageMonikerForFile(filename);
         }
 
         public ImageMoniker GetImageMonikerForHierarchyItem(IVsHierarchy hierarchy) {
-            return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint)VSConstants.VSITEMID.Root, (int)__VSHIERARCHYIMAGEASPECT.HIA_Icon);
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint) VSConstants.VSITEMID.Root, (int) __VSHIERARCHYIMAGEASPECT.HIA_Icon);
         }
 
         public Task<List<ProjectFile>> GetProjectFilesAsync(string path, CancellationToken cancellationToken) {
-            
+
             var task = Task.Run(() => {
 
-                var patterns = new[] { "*.csproj"};//, "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
+                var patterns = new[] {"*.csproj"}; //, "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
 
                 var projectFiles = new List<ProjectFile>();
 
@@ -95,19 +107,19 @@ namespace IInspectable.ProjectExplorer.Extension {
                     return projectFiles;
                 }
 
-                foreach(var pattern in patterns) {
+                foreach (var pattern in patterns) {
                     foreach (var file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)) {
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        var projectFile=LoadProjectFile(file);
+                        var projectFile = LoadProjectFile(file);
 
                         if (projectFile != null) {
                             projectFiles.Add(projectFile);
                         }
                     }
                 }
-                
+
                 return projectFiles;
             }, cancellationToken);
 
@@ -115,15 +127,15 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public int EnsureSolution() {
-
-            if(IsSolutionOpen()) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (IsSolutionOpen()) {
                 return VSConstants.S_OK;
             }
 
             return LogFailed(_vsSolution1.CreateSolution(
-                lpszLocation  : null, 
-                lpszName      : null, 
-                grfCreateFlags: (uint)__VSCREATESOLUTIONFLAGS.CSF_TEMPORARY));
+                                 lpszLocation: null,
+                                 lpszName: null,
+                                 grfCreateFlags: (uint) __VSCREATESOLUTIONFLAGS.CSF_TEMPORARY));
         }
 
         [CanBeNull]
@@ -131,21 +143,21 @@ namespace IInspectable.ProjectExplorer.Extension {
             try {
                 return ProjectFile.FromFile(file);
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 Logger.Error(ex, $"Fehler beim Laden der Projektdatei '{file}'");
                 return null;
-            }            
+            }
         }
 
         public ProjectViewModel LoadAndBind(string file, Hierarchy hierarchy) {
 
             var projectFile = LoadProjectFile(file);
-            if(projectFile == null) {
+            if (projectFile == null) {
                 return null;
             }
- 
+
             var vm = new ProjectViewModel(projectFile);
-            if(hierarchy != null) {                
+            if (hierarchy != null) {
                 vm.BindToHierarchy(hierarchy);
             }
 
@@ -172,29 +184,35 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public int OpenProject(string path) {
+            
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            Guid empty = Guid.Empty;
-            Guid projId= Guid.Empty;
+            Guid empty  = Guid.Empty;
+            Guid projId = Guid.Empty;
 
             return LogFailed(_vsSolution1.CreateProject(
-                rguidProjectType: ref empty,
-                lpszMoniker     : path,
-                lpszLocation    : null,
-                lpszName        : null,
-                grfCreateFlags  : (uint) __VSCREATEPROJFLAGS.CPF_OPENFILE,
-                iidProject      : ref projId,
-                ppProject       : out IntPtr _));
+                                 rguidProjectType: ref empty,
+                                 lpszMoniker: path,
+                                 lpszLocation: null,
+                                 lpszName: null,
+                                 grfCreateFlags: (uint) __VSCREATEPROJFLAGS.CPF_OPENFILE,
+                                 iidProject: ref projId,
+                                 ppProject: out IntPtr _));
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (pHierarchy == null) {
                 return Guid.Empty;
             }
-            LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out var projGuid));              
+
+            LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out var projGuid));
             return projGuid;
         }
 
         public bool IsSolutionOpen() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             LogFailed(_vsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out var value));
             return (bool) value;
@@ -202,6 +220,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public string GetSolutionDirectory() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             _vsSolution1.GetSolutionInfo(out string solutionDirectory, out string _, out string _);
 
@@ -210,6 +229,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public string GetSolutionFile() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             _vsSolution1.GetSolutionInfo(out string _, out string solutionFile, out string _);
 
@@ -217,29 +237,33 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
-            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out var result), except: VSConstants.E_FAIL) || result==null) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out var result), except: VSConstants.E_FAIL) || result == null) {
                 return null;
-            } 
+            }
+
             return new Hierarchy(this, result, HierarchyId.Root);
         }
-        
+
         Dictionary<string, Hierarchy> GetProjectHierarchyByPath() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             var result = new Dictionary<string, Hierarchy>();
 
             Guid ignored = Guid.Empty;
-            var flags = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
-            if (Failed(_vsSolution1.GetProjectEnum((uint)flags, ref ignored, out var hierEnum))) {
+            var  flags   = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
+            if (Failed(_vsSolution1.GetProjectEnum((uint) flags, ref ignored, out var hierEnum))) {
                 return result;
             }
 
             IVsHierarchy[] hier = new IVsHierarchy[1];
-            while ((hierEnum.Next((uint)hier.Length, hier, out var fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
+            while ((hierEnum.Next((uint) hier.Length, hier, out var fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
                 var hierarchy = new Hierarchy(this, hier[0], HierarchyId.Root);
-                var fullPath = hierarchy.FullPath;
-                if(fullPath != null) {                    
-                    result[fullPath.ToLower()] =hierarchy;
+                var fullPath  = hierarchy.FullPath;
+                if (fullPath != null) {
+                    result[fullPath.ToLower()] = hierarchy;
                 }
             }
 
@@ -266,7 +290,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) {
 
-            if(fRemoved == 1) {
+            if (fRemoved == 1) {
                 var realHierarchy = new Hierarchy(this, pHierarchy, HierarchyId.Root);
                 BeforeRemoveProject?.Invoke(this, new ProjectEventArgs(realHierarchy));
             }
@@ -297,7 +321,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             BeforeUnloadProject?.Invoke(this, new ProjectEventArgs(realHierarchy, stubHierarchy));
             return VSConstants.S_OK;
         }
-
 
         public event EventHandler AfterOpenSolution;
 
@@ -341,20 +364,23 @@ namespace IInspectable.ProjectExplorer.Extension {
             return VSConstants.S_OK;
         }
 
-        #endregion    
+        #endregion
 
-        bool Failed(int hr, int except= VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
+        bool Failed(int hr, int except = VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
             // ReSharper disable once ExplicitCallerInfoArgument Ist hier gewünscht
             return ErrorHandler.Failed(LogFailed(hr, except, callerMemberName));
         }
 
         int LogFailed(int hr, int except = VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
             hr = hr == except ? VSConstants.S_OK : hr;
-            if( ErrorHandler.Failed(hr)) {
-                var ex=Marshal.GetExceptionForHR(hr);
+            if (ErrorHandler.Failed(hr)) {
+                var ex = Marshal.GetExceptionForHR(hr);
                 Logger.Error($"{callerMemberName} failed with code 0x{hr:X}: '{ex.Message}'");
             }
+
             return hr;
         }
+
     }
+
 }

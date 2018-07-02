@@ -2,6 +2,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -10,7 +11,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace IInspectable.ProjectExplorer.Extension {
 
     [Export(typeof(IWaitIndicator))]
-    sealed class VisualStudioWaitIndicator : IWaitIndicator {
+    sealed class VisualStudioWaitIndicator: IWaitIndicator {
 
         readonly SVsServiceProvider _serviceProvider;
 
@@ -20,16 +21,15 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public WaitIndicatorResult Wait(string title, string message, bool allowCancel, Action<IWaitContext> action) {
-            using(var waitContext = StartWait(title, message, allowCancel)) {
+            using (var waitContext = StartWait(title, message, allowCancel)) {
                 try {
                     action(waitContext);
 
                     return WaitIndicatorResult.Completed;
-                } catch(OperationCanceledException) {
+                } catch (OperationCanceledException) {
                     return WaitIndicatorResult.Canceled;
-                } catch(AggregateException e) {
-                    var operationCanceledException = e.InnerExceptions[0] as OperationCanceledException;
-                    if(operationCanceledException != null) {
+                } catch (AggregateException e) {
+                    if (e.InnerExceptions[0] is OperationCanceledException _) {
                         return WaitIndicatorResult.Canceled;
                     } else {
                         throw;
@@ -39,9 +39,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         VisualStudioWaitContext StartWait(string title, string message, bool allowCancel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             var dialogFactory = (IVsThreadedWaitDialogFactory) _serviceProvider.GetService(typeof(SVsThreadedWaitDialogFactory));
-            //Contract.ThrowIfNull(dialogFactory);
 
             return new VisualStudioWaitContext(dialogFactory, title, message, allowCancel);
         }
@@ -49,5 +49,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         IWaitContext IWaitIndicator.StartWait(string title, string message, bool allowCancel) {
             return StartWait(title, message, allowCancel);
         }
+
     }
+
 }
