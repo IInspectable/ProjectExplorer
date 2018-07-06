@@ -58,23 +58,23 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             async Task<ProjectExplorerToolWindowServices> GetProjectExplorerToolWindowServicesAsync() {
 
-                var cmp = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-                var svs = new MefServices();
-                cmp?.DefaultCompositionService.SatisfyImportsOnce(svs);
+                var oleMenuCommandService   = (OleMenuCommandService) await GetServiceAsync(typeof(IMenuCommandService)).ConfigureAwait(true);
+                var windowSearchHostFactory = (IVsWindowSearchHostFactory) await GetServiceAsync(typeof(SVsWindowSearchHostFactory)).ConfigureAwait(true);
+                var componentModel          = (IComponentModel) await GetServiceAsync(typeof(SComponentModel)).ConfigureAwait(true);
+                var mefServices             = componentModel.GetService<MefServices>();
 
-                #pragma warning disable VSTHRD010
                 return new ProjectExplorerToolWindowServices(
-                    oleMenuCommandService  : await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService,
-                    viewModelProvider      : svs.ExplorerViewModelProvider,
-                    windowSearchHostFactory: await GetServiceAsync(typeof(SVsWindowSearchHostFactory)) as IVsWindowSearchHostFactory,
-                    optionService          : svs.OptionService,
-                    waitIndicator          : svs.WaitIndicator
+                    oleMenuCommandService: oleMenuCommandService,
+                    viewModelProvider: mefServices.ExplorerViewModelProvider,
+                    windowSearchHostFactory: windowSearchHostFactory,
+                    optionService: mefServices.OptionService,
+                    waitIndicator: mefServices.WaitIndicator
                 );
-                #pragma warning restore VSTHRD010
             }
         }
-
+        
         public IWaitIndicator WaitIndicator => _services.WaitIndicator;
 
         public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType) {
@@ -190,6 +190,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             base.OnSaveOptions(key, stream);
         }
 
+        [Export]
         class MefServices {
 
             #pragma warning disable 0649

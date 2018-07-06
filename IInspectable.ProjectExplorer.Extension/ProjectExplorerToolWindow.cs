@@ -1,11 +1,8 @@
 ﻿#region Using Directives
 
 using System;
-using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-
-using IInspectable.ProjectExplorer.Extension;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -16,13 +13,6 @@ using Microsoft.VisualStudio.Imaging;
 namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerToolWindowServices {
-
-        [ImportingConstructor]
-        public ProjectExplorerToolWindowServices(OptionService optionService, IWaitIndicator waitIndicator) {
-            OptionService = optionService;
-            WaitIndicator = waitIndicator;
-
-        }
 
         public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
             OleMenuCommandService   = oleMenuCommandService;
