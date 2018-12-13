@@ -46,7 +46,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IInspectable.ProjectExplorer.Extension</RootNamespace>
-    <AssemblyName>IInspectable.ProjectExplorer.Extension.2017</AssemblyName>
+    <AssemblyName>IInspectable.ProjectExplorer.Extension</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
