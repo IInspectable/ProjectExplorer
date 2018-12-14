@@ -11,21 +11,23 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.ComponentModel.Composition;
+using System.Threading;
+
+using Task = System.Threading.Tasks.Task;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading =true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", version: 2)]
     [ProvideToolWindow(typeof(ProjectExplorerToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
-    sealed class ProjectExplorerPackage : Package {
 
-        readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
+    [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
+    sealed class ProjectExplorerPackage : AsyncPackage {
+
+      //  readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
 
         [Import]
         OptionService _optionService;
@@ -37,12 +39,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ProjectExplorerPackage() {
             AddOptionKey(OptionService.OptionKey);            
         }
-        
-        protected override void Initialize() {
 
-            _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress) {
+            await base.InitializeAsync(cancellationToken, progress).ConfigureAwait(false);
 
-            var componentModel = GetGlobalService<SComponentModel, IComponentModel>();            
+
+            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
 
             ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
@@ -51,9 +55,24 @@ namespace IInspectable.ProjectExplorer.Extension {
                 new ProjectExplorerCommand(this),
                 new ProjectExplorerSearchCommand(this)
             });
-
-            base.Initialize();
         }
+
+        //protected override void Initialize() {
+
+        //    _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
+
+        //    var componentModel = GetGlobalService<SComponentModel, IComponentModel>();            
+        //    componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+
+        //    ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
+
+        //    RegisterCommands(new List<Command> {
+        //        new ProjectExplorerCommand(this),
+        //        new ProjectExplorerSearchCommand(this)
+        //    });
+
+        //    base.Initialize();
+        //}
 
         protected override void Dispose(bool disposing) {
             if(disposing) {
