@@ -114,7 +114,7 @@
               priority = "0x0100"
               type     = "Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WINDOW_NAVIGATION" />
-        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>CommandWellOnly</CommandFlag>
         <Strings>
           <ButtonText>Activate Project Explorer Search</ButtonText>
         </Strings>
