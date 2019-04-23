@@ -82,10 +82,18 @@ namespace IInspectable.ProjectExplorer.Extension {
             SearchHost?.Activate();
         }
 
+        public void ActivateIfIsKeyboardFocusWithin() {
+            if (SearchHost.IsEnabled &&
+                (IsKeyboardFocusWithin || Keyboard.FocusedElement == null)) {
+                ActivateSearch();
+            }
+        }
+
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (string.IsNullOrEmpty(e.PropertyName) ||
                e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
                 UpdateSearchEnabled();
+                ActivateIfIsKeyboardFocusWithin();
             }
         }
 
