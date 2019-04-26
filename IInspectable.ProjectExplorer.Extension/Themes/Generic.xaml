@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension.2017;component/UI/Styles/VSListBoxItem.xaml"/>
-        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension.2017;component/UI/Styles/VSListBox.xaml"/>
-        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension.2017;component/UI/Styles/VSButton.xaml"/>
+        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSListBoxItem.xaml"/>
+        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSListBox.xaml"/>
+        <ResourceDictionary Source="/IInspectable.ProjectExplorer.Extension;component/UI/Styles/VSButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
