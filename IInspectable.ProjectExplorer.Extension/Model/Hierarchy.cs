@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using JetBrains.Annotations;
 
+using Microsoft.VisualStudio.Shell;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -37,6 +39,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         
         public string CanonicalName {
             get {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 LogFailed(_vsHierarchy.GetCanonicalName(ItemId, out var cn));
                 return cn;
             }
@@ -189,6 +192,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public Hierarchy GetNestedHierarchy() {
+            
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
             LogFailed(_vsHierarchy.GetNestedHierarchy(ItemId, ref nestedHierarchyGuid, out IntPtr nestedHiearchyValue, out uint nestedItemId));
@@ -208,6 +213,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public string GetMkDocument() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // ReSharper disable once SuspiciousTypeConversion.Global
             var ao = _vsHierarchy as IVsProject;
             string doc = null;
@@ -217,6 +223,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public string GetCanonicalName() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             string cn = null;
             LogFailed(_vsHierarchy?.GetCanonicalName(ItemId, out cn) ?? VSConstants.S_OK);
             return cn;
@@ -258,19 +265,19 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public int UnloadProject() {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             Guid projectGuid = GetProjectGuid();
             return LogFailed(VsSolution4.UnloadProject(ref projectGuid, (uint) _VSProjectUnloadStatus.UNLOADSTATUS_UnloadedByUser));
         }
 
         public int ReloadProject() {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             Guid projectGuid = GetProjectGuid();
             return LogFailed(VsSolution4.ReloadProject(ref projectGuid));
         }
 
         public int CloseProject() {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             return LogFailed(VsSolution1.CloseSolutionElement(
                 grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject,
                 pHier       : _vsHierarchy,
@@ -278,32 +285,36 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public Guid GetProjectGuid() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             LogFailed(VsSolution1.GetGuidOfProject(_vsHierarchy, out var projGuid));
             return projGuid;
         }
 
         public string GetUniqueNameOfProject() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             LogFailed(VsSolution1.GetUniqueNameOfProject(_vsHierarchy, out var uniqueName));
             return uniqueName?.ToLower();
         }
 
         public bool IsProjectUnloaded() {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             var hr = _vsHierarchy.GetProperty(_itemId, (int) __VSHPROPID5.VSHPROPID_ProjectUnloadStatus, out var _);
 
             return ErrorHandler.Succeeded(hr);
         }
        
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out uint cookie));
             return cookie;
         }
 
         public int UnadviseHierarchyEvents(uint cookie) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return LogFailed(_vsHierarchy.UnadviseHierarchyEvents(cookie));
         }
         
-        protected T GetProperty<T>(__VSHPROPID propId, T defaultValue=default(T)) {
+        protected T GetProperty<T>(__VSHPROPID propId, T defaultValue=default) {
             var value= GetPropertyCore((int)propId);
             if(value == null) {
                 return defaultValue;
@@ -312,7 +323,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
         
         protected object GetPropertyCore(int propId) {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             if(propId == (int) __VSHPROPID.VSHPROPID_NIL) {
                 return null;
             }

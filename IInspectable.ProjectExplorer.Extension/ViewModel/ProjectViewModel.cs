@@ -123,10 +123,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
        
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {
-            if(parent == null) {
-                throw new ArgumentNullException(nameof(parent));
-            }
-            _parent = parent; 
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent)); 
         }
 
         public void Dispose() {

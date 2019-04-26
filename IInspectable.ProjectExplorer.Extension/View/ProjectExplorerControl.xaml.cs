@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Util = Microsoft.Internal.VisualStudio.PlatformUI.Utilities;
 
@@ -14,10 +15,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     partial class ProjectExplorerControl : UserControl, IVsWindowSearch, IDisposable {
 
-        readonly Guid _searchCategory = new Guid("65511566-dab1-4298-b5c9-a82c4532001e");
-
         public ProjectExplorerControl(IVsWindowSearchHostFactory windowSearchHostFactory, ProjectExplorerViewModel viewModel) {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             DataContext = viewModel;
 
             InitializeComponent();
@@ -72,10 +71,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         #region IVsWindowSearch
 
         public bool CanActivateSearch {
-            get { return SearchHost.IsVisible && SearchHost.IsEnabled; }
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return SearchHost.IsVisible && SearchHost.IsEnabled;
+            }
         }
 
         public void ActivateSearch() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!CanActivateSearch) {
                 return;
             }
@@ -98,6 +101,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void UpdateSearchEnabled() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             SearchHost.IsEnabled = !ViewModel.IsLoading && ViewModel.Projects.Count > 0;
         }
 
@@ -134,9 +138,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { return true; }
         }
 
-        public Guid Category {
-            get { return _searchCategory; }
-        }
+        public Guid Category { get; } = new Guid("65511566-dab1-4298-b5c9-a82c4532001e");
 
         public IVsEnumWindowSearchFilters SearchFiltersEnum {
             get { return null; }

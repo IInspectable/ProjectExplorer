@@ -1,21 +1,21 @@
 ﻿namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectExplorerSearchCommand : Command {
+    class ProjectExplorerSearchCommand: Command {
 
         readonly ProjectExplorerPackage _package;
 
-        public ProjectExplorerSearchCommand(ProjectExplorerPackage package) : base(PackageIds.ProjectExplorerSearchCommandId) {
+        public ProjectExplorerSearchCommand(ProjectExplorerPackage package): base(PackageIds.ProjectExplorerSearchCommandId) {
             _package = package;
         }
-        
+
         public override void Execute(object parameter = null) {
 
-            _package.ShowProjectExplorerWindow();
-
-            var toolwindow=_package.GetProjectExplorerToolWindow();
-            if(toolwindow.CanActivateSearch) {                
-                toolwindow.ActivateSearch();
+            using (_package.WaitIndicator.StartWait("Show Project Explorer", "", false)) {
+                _package.ShowProjectExplorerWindowAndActivateSearch();
             }
+
         }
+
     }
+
 }

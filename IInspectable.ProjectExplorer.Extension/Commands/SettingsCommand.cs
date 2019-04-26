@@ -1,33 +1,33 @@
 #region Using Directives
 
 using System;
+
+using Microsoft.VisualStudio.Shell;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
-    sealed class SettingsCommand : Command {
+
+    sealed class SettingsCommand: Command {
 
         readonly ProjectExplorerViewModel _viewModel;
-        bool _executing;
+        bool                              _executing;
 
         public SettingsCommand(ProjectExplorerViewModel viewModel)
             : base(PackageIds.SettingsCommandId) {
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _executing = false;
         }
 
         public bool Executing {
             get { return _executing; }
             set {
-                if(value == _executing) {
+                if (value == _executing) {
                     return;
                 }
+
                 _executing = value;
                 UpdateState();
             }
@@ -37,15 +37,15 @@ namespace IInspectable.ProjectExplorer.Extension {
             Enabled = !Executing && !_viewModel.IsLoading;
         }
 
-        public override async void Execute(object parameter=null) {
+        public override void Execute(object parameter = null) {
 
-            if(!CanExecute(parameter)) {
+            if (!CanExecute(parameter)) {
                 return;
             }
 
             Executing = true;
             try {
-                
+
                 var dlg = new CommonOpenFileDialog {
                     Title                     = "Select Folder",
                     InitialDirectory          = _viewModel.ProjectsRoot,
@@ -65,13 +65,17 @@ namespace IInspectable.ProjectExplorer.Extension {
                     result = dlg.ShowDialog();
                 }
 
-                if(result == CommonFileDialogResult.Ok) {
-                    await _viewModel.SetProjectsRoot(dlg.FileName);
+                if (result == CommonFileDialogResult.Ok) {
+
                 }
+
+                ThreadHelper.JoinableTaskFactory.RunAsync(async () => await _viewModel.SetProjectsRootAsync(dlg.FileName));
 
             } finally {
                 Executing = false;
             }
         }
+
     }
+
 }

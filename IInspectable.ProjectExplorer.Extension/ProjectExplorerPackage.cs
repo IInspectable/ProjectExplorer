@@ -6,79 +6,107 @@ using System.Collections.Immutable;
 using System.IO;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using System.ComponentModel.Composition;
 using System.Threading;
 
+using Microsoft.VisualStudio.ComponentModelHost;
+
 using Task = System.Threading.Tasks.Task;
+
+using System.Threading.Tasks;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading =true)]
+    
+
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [ProvideMenuResource("Menus.ctmenu", version: 2)]
-    [ProvideToolWindow(typeof(ProjectExplorerToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
-
+    [ProvideMenuResource("Menus.ctmenu", version: 1)]
+    [ProvideToolWindow(typeof(ProjectExplorerToolWindow),
+        Style  = VsDockStyle.Tabbed,
+        Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
     [Guid(PackageGuids.ProjectExplorerWindowPackageGuidString)]
-    sealed class ProjectExplorerPackage : AsyncPackage {
+    sealed class ProjectExplorerPackage: AsyncPackage {
 
-      //  readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
+        readonly Logger _logger = Logger.Create<ProjectExplorerPackage>();
 
-        [Import]
-        OptionService _optionService;
-        [Import]
-        ProjectExplorerViewModelProvider _projectExplorerViewModelProvider;
-
-        ImmutableList<Command> _commands;
+        ImmutableList<Command>            _commands;
+        ProjectExplorerToolWindowServices _services;
 
         public ProjectExplorerPackage() {
-            AddOptionKey(OptionService.OptionKey);            
+            AddOptionKey(OptionService.OptionKey);
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress) {
-            await base.InitializeAsync(cancellationToken, progress).ConfigureAwait(false);
 
+            _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
 
-            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
+            _services = await GetProjectExplorerToolWindowServicesAsync();
 
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
-
-            ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
 
             RegisterCommands(new List<Command> {
                 new ProjectExplorerCommand(this),
                 new ProjectExplorerSearchCommand(this)
             });
+
+            async Task<ProjectExplorerToolWindowServices> GetProjectExplorerToolWindowServicesAsync() {
+
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+                var oleMenuCommandService   = (OleMenuCommandService) await GetServiceAsync(typeof(IMenuCommandService)).ConfigureAwait(true);
+                var windowSearchHostFactory = (IVsWindowSearchHostFactory) await GetServiceAsync(typeof(SVsWindowSearchHostFactory)).ConfigureAwait(true);
+                var componentModel          = (IComponentModel) await GetServiceAsync(typeof(SComponentModel)).ConfigureAwait(true);
+                var mefServices             = componentModel.GetService<MefServices>();
+
+                return new ProjectExplorerToolWindowServices(
+                    oleMenuCommandService: oleMenuCommandService,
+                    viewModelProvider: mefServices.ExplorerViewModelProvider,
+                    windowSearchHostFactory: windowSearchHostFactory,
+                    optionService: mefServices.OptionService,
+                    waitIndicator: mefServices.WaitIndicator
+                );
+            }
+        }
+        
+        public IWaitIndicator WaitIndicator => _services.WaitIndicator;
+
+        public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType) {
+            if (toolWindowType == ProjectExplorerToolWindow.Guid) {
+                return this;
+            }
+
+            return null;
         }
 
-        //protected override void Initialize() {
+        protected override string GetToolWindowTitle(Type toolWindowType, int id) {
+            if (toolWindowType == typeof(ProjectExplorerToolWindow)) {
+                return ProjectExplorerToolWindow.Title;
+            }
 
-        //    _logger.Info($"{nameof(ProjectExplorerPackage)}.{nameof(Initialize)}");
+            return base.GetToolWindowTitle(toolWindowType, id);
+        }
 
-        //    var componentModel = GetGlobalService<SComponentModel, IComponentModel>();            
-        //    componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+        protected override Task<object> InitializeToolWindowAsync(Type toolWindowType, int id, CancellationToken cancellationToken) {
+            if (toolWindowType == typeof(ProjectExplorerToolWindow)) {
 
-        //    ((IServiceContainer)this).AddService(_projectExplorerViewModelProvider.GetType(), _projectExplorerViewModelProvider, promote: true);
+                return Task.FromResult((object) _services);
+            }
 
-        //    RegisterCommands(new List<Command> {
-        //        new ProjectExplorerCommand(this),
-        //        new ProjectExplorerSearchCommand(this)
-        //    });
-
-        //    base.Initialize();
-        //}
+            return base.InitializeToolWindowAsync(toolWindowType, id, cancellationToken);
+        }
 
         protected override void Dispose(bool disposing) {
-            if(disposing) {
+            if (disposing) {
                 UnegisterCommands();
-                ((IServiceContainer)this).RemoveService(_projectExplorerViewModelProvider.GetType(), true);
             }
+
             base.Dispose(disposing);
         }
 
@@ -86,41 +114,55 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
-            foreach(var command in commands) {
+            foreach (var command in commands) {
                 command.Register(commandService);
             }
+
             _commands = commands.ToImmutableList();
         }
 
         void UnegisterCommands() {
 
-            if(_commands == null) {
+            if (_commands == null) {
                 return;
             }
+
             var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             foreach (var command in _commands) {
                 command.Unregister(commandService);
             }
-            _commands = null;
-        }
 
-        public ProjectExplorerToolWindow GetProjectExplorerToolWindow() {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            var window = (ProjectExplorerToolWindow)FindToolWindow(typeof(ProjectExplorerToolWindow), 0, true);
-            return window;
+            _commands = null;
         }
 
         public void ShowProjectExplorerWindow() {
 
-            var window = GetProjectExplorerToolWindow();
-            if (window?.Frame == null) {
-                throw new NotSupportedException("Cannot create tool window");
-            }
+            JoinableTaskFactory.RunAsync(async () => { await ShowProjectExplorerWindowAsync(); });
 
-            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-            ErrorHandler.ThrowOnFailure(windowFrame.Show());
+        }
+
+        public void ShowProjectExplorerWindowAndActivateSearch() {
+
+            JoinableTaskFactory.RunAsync(async () => {
+                var toolwindow = await ShowProjectExplorerWindowAsync();
+
+                if (toolwindow.CanActivateSearch) {
+                    toolwindow.ActivateSearch();
+                }
+            });
+
+        }
+
+        async Task<ProjectExplorerToolWindow> ShowProjectExplorerWindowAsync() {
+
+            ToolWindowPane window = await ShowToolWindowAsync(
+                toolWindowType   : typeof(ProjectExplorerToolWindow),
+                id               : 0,
+                create           : true,
+                cancellationToken: DisposalToken);
+
+            return (ProjectExplorerToolWindow) window;
+
         }
 
         public static TService GetGlobalService<TService>() where TService : class {
@@ -132,17 +174,41 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void OnLoadOptions(string key, Stream stream) {
-            if(OptionService.OptionKey == key) {
-                _optionService.LoadOptions(stream);
+            // TODO Wenn der Explorer geöffnet wurde, nachdem eine Solutuon geladen wurde, haben wir noch keinen OptionService...
+            if (OptionService.OptionKey == key) {
+                _services.OptionService?.LoadOptions(stream);
             }
+
             base.OnLoadOptions(key, stream);
         }
 
         protected override void OnSaveOptions(string key, Stream stream) {
             if (OptionService.OptionKey == key) {
-                _optionService.SaveOptions(stream);
+                _services.OptionService?.SaveOptions(stream);
             }
+
             base.OnSaveOptions(key, stream);
         }
+
+        [Export]
+        class MefServices {
+
+            #pragma warning disable 0649
+            [Import]
+            OptionService _optionService;
+
+            [Import]
+            ProjectExplorerViewModelProvider _projectExplorerViewModelProvider;
+
+            [Import]
+            IWaitIndicator _waitIndicator;
+            #pragma warning restore 0649
+
+            public ProjectExplorerViewModelProvider ExplorerViewModelProvider => _projectExplorerViewModelProvider;
+            public OptionService                    OptionService             => _optionService;
+            public IWaitIndicator                   WaitIndicator             => _waitIndicator;
+
+        }
     }
+
 }

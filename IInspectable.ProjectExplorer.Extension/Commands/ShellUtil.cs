@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
@@ -13,6 +14,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         static readonly Logger Logger = Logger.Create<ShellUtil>();
 
         ShellUtil() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Shell?.EnableModeless(0);
         }
 
@@ -25,6 +27,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void Dispose() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Shell?.EnableModeless(1);
         }
 
@@ -33,6 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public static bool ReportUserOnFailed(int hr) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (ErrorHandler.Failed(hr)) {
 
                 Logger.Warn($"{nameof(ReportUserOnFailed)}: Error code: {hr}");
@@ -43,13 +47,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public static void UpdateCommandUI(bool immediateUpdate=true) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Shell.UpdateCommandUI(fImmediateUpdate: immediateUpdate?1:0);
         }
 
         public static bool ConfirmOkCancel(string text) {
-            
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Guid unused=Guid.Empty;
-            int result;
 
             Shell.ShowMessageBox(
                 dwCompRole     : 0, 
@@ -62,7 +67,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 msgdefbtn      : OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, 
                 msgicon        : OLEMSGICON.OLEMSGICON_WARNING, 
                 fSysAlert      : 0, 
-                pnResult       : out result);
+                pnResult: out var result);
 
             
             return result == 1;

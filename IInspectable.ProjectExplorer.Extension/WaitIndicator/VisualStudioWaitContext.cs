@@ -2,22 +2,24 @@
 
 using System.Runtime.InteropServices;
 using System.Threading;
+
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed partial class VisualStudioWaitContext : IWaitContext {
+    sealed partial class VisualStudioWaitContext: IWaitContext {
 
         const int DelayToShowDialogSecs = 1;
 
-        readonly IVsThreadedWaitDialog3 _dialog;
+        readonly IVsThreadedWaitDialog3  _dialog;
         readonly CancellationTokenSource _cancellationTokenSource;
-        readonly string _title;
+        readonly string                  _title;
 
         string _message;
-        bool _allowCancel;
+        bool   _allowCancel;
 
         public VisualStudioWaitContext(IVsThreadedWaitDialogFactory dialogFactory,
                                        string title,
@@ -31,8 +33,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         IVsThreadedWaitDialog3 CreateDialog(IVsThreadedWaitDialogFactory dialogFactory) {
-            IVsThreadedWaitDialog2 dialog2;
-            Marshal.ThrowExceptionForHR(dialogFactory.CreateInstance(out dialog2));
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            Marshal.ThrowExceptionForHR(dialogFactory.CreateInstance(out var dialog2));
 
             var dialog3 = (IVsThreadedWaitDialog3) dialog2;
 
@@ -79,7 +83,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void UpdateDialog() {
-            bool hasCancelled;
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             _dialog.UpdateProgress(
                 szUpdatedWaitMessage: _message,
                 szProgressText      : null,
@@ -87,21 +93,23 @@ namespace IInspectable.ProjectExplorer.Extension {
                 iCurrentStep        : 0,
                 iTotalSteps         : 0,
                 fDisableCancel      : !_allowCancel,
-                pfCanceled          : out hasCancelled);
+                pfCanceled          : out _);
         }
 
         public void UpdateProgress() {
         }
 
         public void Dispose() {
-            int canceled;
-            _dialog.EndWaitDialog(out canceled);
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _dialog.EndWaitDialog(out _);
         }
 
         void OnCanceled() {
-            if(_allowCancel) {
+            if (_allowCancel) {
                 _cancellationTokenSource.Cancel();
             }
         }
+
     }
+
 }
