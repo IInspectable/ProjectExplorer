@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProductName>IInspectable Utilities</ProductName>
-    <ProductVersion>1.3.8</ProductVersion>
+    <ProductVersion>1.4.3</ProductVersion>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyInfoFile>$(MSBuildProjectDirectory)\ThisAssembly.generated.cs</AssemblyInfoFile>
