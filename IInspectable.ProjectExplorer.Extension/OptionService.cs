@@ -32,7 +32,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string ProjectsRoot {
             get {
                 if (String.IsNullOrWhiteSpace(_projectsRoot)) {
-                    return SolutionService.GetSolutionDirectory();
+                    
+                    var solutionDir=SolutionService.GetSolutionDirectory();
+                    if (String.IsNullOrEmpty(solutionDir)) {
+                        return solutionDir;
+                    }
+
+                    return Directory.GetParent(solutionDir)?.FullName;
                 }
                 return _projectsRoot;
 
