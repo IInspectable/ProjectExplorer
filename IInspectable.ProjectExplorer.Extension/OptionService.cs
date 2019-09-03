@@ -32,18 +32,27 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string ProjectsRoot {
             get {
                 if (String.IsNullOrWhiteSpace(_projectsRoot)) {
-                    
-                    var solutionDir=SolutionService.GetSolutionDirectory();
+
+                    var solutionDir = SolutionService.GetSolutionDirectory();
                     if (String.IsNullOrEmpty(solutionDir)) {
                         return solutionDir;
                     }
 
-                    return Directory.GetParent(solutionDir)?.FullName;
+                    // Wenn die Solution bereits gespeichert wurde, dann ist sie per se unsere Wurzel
+                    // Andernfalls gehen wir zum übergeordneten Verzeichnis.
+                    var solutionFile = SolutionService.GetSolutionFile();
+                    if (File.Exists(solutionFile) || !Directory.Exists(solutionDir)) {
+                        return solutionDir;
+                    }
+
+                    var dirInfo = new DirectoryInfo(solutionDir);
+                    return dirInfo.Parent?.FullName;
                 }
+
                 return _projectsRoot;
 
             }
-            set { _projectsRoot = value; }
+            set => _projectsRoot = value;
         }
 
         public void LoadOptions(Stream stream) {
