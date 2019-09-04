@@ -4,6 +4,8 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using Microsoft.Internal.VisualStudio.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -121,13 +123,24 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name,         (uint) VSSEARCHSTARTTYPE.SST_DELAYED);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name,      (uint) VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name,            false);
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)2000);
-            // TODO Shortcut Key anzeigen
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name,         (uint) 2000);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name,         GetWatermark());
+        }
+
+        static string GetWatermark() {
+
+            var watermarkText = "Search Project Explorer";
+
+            var keyBinding = KeyBindingHelper.GetGlobalKeyBinding(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerSearchCommandId);
+            if (!String.IsNullOrEmpty(keyBinding)) {
+                watermarkText += $" ({keyBinding})";
+            }
+
+            return watermarkText;
         }
 
         public bool OnNavigationKeyDown(uint dwNavigationKey, uint dwModifiers) {
