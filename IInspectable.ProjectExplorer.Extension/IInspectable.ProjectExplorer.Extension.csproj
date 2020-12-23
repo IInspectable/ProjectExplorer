@@ -100,7 +100,6 @@
     <Compile Include="ViewModel\SearchContext.cs" />
     <Compile Include="ViewModel\ItemViewModel.cs" />
     <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
-    <Compile Include="ViewModel\ProjectItemComparer.cs" />
     <Compile Include="ProjectSearchTask.cs" />
     <Compile Include="ViewModel\ProjectViewModelSelectionService.cs" />
     <Compile Include="Model\SolutionService.cs" />

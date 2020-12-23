@@ -69,9 +69,12 @@ namespace IInspectable.ProjectExplorer.Extension {
                 {SettingsCommand           = new SettingsCommand(this)},
             };
 
-            _projects                = new ObservableCollection<ProjectViewModel>();
-            _projectsView            = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
-            _projectsView.CustomSort = new ProjectItemComparer();
+            _projects                   = new ObservableCollection<ProjectViewModel>();
+            _projectsView               = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
+            _projectsView.IsLiveSorting = true;
+            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.Status),      ListSortDirection.Descending));
+            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.DisplayName), ListSortDirection.Ascending));
+            _projectsView.LiveSortingProperties.Add(nameof(ProjectViewModel.Status));
 
             _selectionService = new ProjectViewModelSelectionService(_projects);
 
