@@ -93,8 +93,10 @@
     <Compile Include="IErrorInfoService.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerConfig.cs" />
-    <Compile Include="Model\ProjectSynchronizerService.cs" />
+    <Compile Include="Model\HResult.cs" />
+    <Compile Include="Model\ProjectService.cs" />
     <Compile Include="Model\ProjectFileService.cs" />
+    <Compile Include="Model\StringExtensions.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="Model\ProjectEventArgs.cs" />
     <Compile Include="ViewModel\SearchContext.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectExplorerToolWindow.cs" />
     <Compile Include="Commands\ProjectExplorerCommand.cs" />
+    <Compile Include="ViewModel\StateSaver.cs" />
     <Compile Include="View\ProjectExplorerControl.xaml.cs">
       <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>
     </Compile>

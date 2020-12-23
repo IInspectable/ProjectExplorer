@@ -28,21 +28,30 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ImmutableList<ProjectViewModel> SelectedItems => _selectedItems.ToImmutableList();
 
         public void AddSelection(ProjectViewModel projectViewModel) {
-            if (IsSelected(projectViewModel) || projectViewModel == null) {
+            if (projectViewModel == null) {
                 return;
             }
 
-            _selectedItems.Add(projectViewModel);
-            OnSelectionChanged(projectViewModel);
+            if (_selectedItems.Add(projectViewModel)) {
+                projectViewModel.NotifyIsSelectedChanged();
+                NotifySelectionChanged();
+            }
+
         }
 
         public void RemoveSelection(ProjectViewModel projectViewModel) {
-            if (!IsSelected(projectViewModel)) {
-                return;
+            if (_selectedItems.Remove(projectViewModel)) {
+                projectViewModel.NotifyIsSelectedChanged();
+                NotifySelectionChanged();
+            }
+        }
+
+        public void RemoveSelection(IEnumerable<ProjectViewModel> projectViewModels) {
+
+            foreach (var projectViewModel in projectViewModels) {
+                RemoveSelection(projectViewModel);
             }
 
-            _selectedItems.Remove(projectViewModel);
-            OnSelectionChanged(projectViewModel);
         }
 
         public void ClearSelection() {
@@ -55,23 +64,31 @@ namespace IInspectable.ProjectExplorer.Extension {
                 projectViewModel.NotifyIsSelectedChanged();
             }
 
-            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            NotifySelectionChanged();
         }
 
         internal bool IsSelected(ProjectViewModel viewmodel) {
             return _selectedItems.Contains(viewmodel);
         }
 
-        void OnSelectionChanged(ProjectViewModel projectViewModel) {
+        void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            switch (e.Action) {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Move:
+                    RemoveSelection(e.OldItems.OfType<ProjectViewModel>());
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ClearSelection();
+                    break;
+            }
 
-            projectViewModel.NotifyIsSelectedChanged();
-
-            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            // ReSharper disable once UnusedVariable
-            var removed = _selectedItems.RemoveWhere(vm => !_projects.Contains(vm));
+        void NotifySelectionChanged() {
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
     }

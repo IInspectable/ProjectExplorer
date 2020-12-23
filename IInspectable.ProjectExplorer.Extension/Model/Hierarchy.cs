@@ -188,6 +188,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
+        public string Caption  => GetProperty<String>(__VSHPROPID.VSHPROPID_Caption);
         public string SaveName => GetProperty<String>(__VSHPROPID.VSHPROPID_SaveName);
 
         public string FullPath {

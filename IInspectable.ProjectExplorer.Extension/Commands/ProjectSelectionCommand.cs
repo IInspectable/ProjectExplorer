@@ -46,7 +46,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected void ForeachWithWaitIndicatorAndErrorReport(IReadOnlyList<ProjectViewModel> projects,
                                                               string verb, 
-                                                              Func<ProjectViewModel, int> action,
+                                                              Func<ProjectViewModel, HResult> action,
                                                               bool breakOnFirstError=true) {
             try {
 
@@ -64,7 +64,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                             indicator.AllowCancel = false;
                         }
 
-                        if (ShellUtil.ReportUserOnFailed(action(project)) && breakOnFirstError) {
+                        if (ShellUtil.ReportUserOnFailed(action(project).Value) && breakOnFirstError) {
                             break;
                         }
                     }

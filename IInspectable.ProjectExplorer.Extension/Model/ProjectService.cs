@@ -17,18 +17,17 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectSynchronizerService: IVsHierarchyEvents {
+    class ProjectService: IVsHierarchyEvents {
 
-        static readonly Logger Logger = Logger.Create<ProjectSynchronizerService>();
+        static readonly Logger Logger = Logger.Create<ProjectService>();
 
         readonly SolutionService                        _solutionService;
         readonly ObservableCollection<ProjectViewModel> _projects;
-
-        readonly Dictionary<string, HierarchyData> _projectHierarchyData;
+        readonly Dictionary<string, HierarchyData>      _projectHierarchyData;
 
         IObserver<EventArgs> _updateRequestQueue;
 
-        public ProjectSynchronizerService(SolutionService solutionService, ObservableCollection<ProjectViewModel> projects) {
+        public ProjectService(SolutionService solutionService, ObservableCollection<ProjectViewModel> projects) {
 
             _projectHierarchyData = new Dictionary<string, HierarchyData>();
             _solutionService      = solutionService;
@@ -36,15 +35,36 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             WireEvents();
 
-            Observable.Create<EventArgs>(
-                           observer => {
-                               _updateRequestQueue = observer;
-                               return () => _updateRequestQueue = null;
-                           })
-                      .Throttle(TimeSpan.FromMilliseconds(200))
+            Observable.Create<EventArgs>(SubscribeUpdateRequests)
+                      .Throttle(TimeSpan.FromMilliseconds(100))
                       .ObserveOn(SynchronizationContext.Current)
                       .Subscribe(_ => UpdateState());
 
+            Action SubscribeUpdateRequests(IObserver<EventArgs> observer) {
+                _updateRequestQueue = observer;
+                return () => _updateRequestQueue = null;
+            }
+        }
+
+        public event EventHandler<EventArgs> ProjectStateChanged;
+
+        public HResult OpenProject(ProjectViewModel viewModel) {
+            return _solutionService.OpenProject(viewModel.Path);
+        }
+
+        public HResult CloseProject(ProjectViewModel viewModel) {
+            var hierarchy = HierarchyFromViewModel(viewModel);
+            return hierarchy?.CloseProject() ?? HResults.Failed;
+        }
+
+        public HResult ReloadProject(ProjectViewModel viewModel) {
+            var hierarchy = HierarchyFromViewModel(viewModel);
+            return hierarchy?.ReloadProject() ?? HResults.Failed;
+        }
+
+        public HResult UnloadProject(ProjectViewModel viewModel) {
+            var hierarchy = HierarchyFromViewModel(viewModel);
+            return hierarchy?.UnloadProject() ?? HResults.Failed;
         }
 
         public void Dispose() {
@@ -53,7 +73,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         [CanBeNull]
-        public Hierarchy HierarchyFromViewModel(ProjectViewModel model) {
+        Hierarchy HierarchyFromViewModel(ProjectViewModel model) {
 
             if (model == null) {
                 return null;
@@ -83,23 +103,34 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             RebuildHierarchyData();
 
+            var stateChanged = false;
+
             foreach (var project in _projects) {
                 var hierarchy = HierarchyFromViewModel(project);
-                SyncProject(hierarchy, project);
+                stateChanged |= SyncProjectState(hierarchy, project);
+            }
+
+            if (stateChanged) {
+                ProjectStateChanged?.Invoke(this, EventArgs.Empty);
             }
 
         }
 
-        static void SyncProject(Hierarchy hierarchy, ProjectViewModel project) {
+        static bool SyncProjectState(Hierarchy hierarchy, ProjectViewModel project) {
+
+            var status       = ProjectStatus.Closed;
+            var imageMoniker = KnownMonikers.AddDocument;
+            var caption      = "";
 
             if (hierarchy != null) {
-                project.Status       = hierarchy.IsProjectUnloaded() ? ProjectStatus.Unloaded : ProjectStatus.Loaded;
-                project.ImageMoniker = hierarchy.GetImageMoniker();
+                status       = hierarchy.IsProjectUnloaded() ? ProjectStatus.Unloaded : ProjectStatus.Loaded;
+                imageMoniker = hierarchy.GetImageMoniker();
+                caption      = hierarchy.Caption;
 
-            } else {
-                project.Status       = ProjectStatus.Closed;
-                project.ImageMoniker = KnownMonikers.NewDocumentCollection;
             }
+
+            return project.SetState(status, imageMoniker, caption);
+
         }
 
         void RebuildHierarchyData() {

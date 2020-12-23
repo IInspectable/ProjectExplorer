@@ -2,7 +2,7 @@ using Microsoft.VisualStudio;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    struct HierarchyId {
+    readonly struct HierarchyId {
 
         readonly uint _id;
 
