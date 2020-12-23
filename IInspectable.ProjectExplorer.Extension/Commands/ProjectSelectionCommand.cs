@@ -15,24 +15,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         protected ProjectSelectionCommand(ProjectExplorerViewModel viewModel, int commandId, Guid? menuGroupOrDefault = null) : 
             base(commandId, menuGroupOrDefault) {
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;        
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));        
         }
 
-        protected IReadOnlyList<ProjectViewModel> SelectedItems {
-            get { return _viewModel.SelectionService.SelectedItems; }
-        }
+        protected IReadOnlyList<ProjectViewModel> SelectedItems => _viewModel.SelectionService.SelectedItems;
 
-        public ProjectExplorerViewModel ViewModel {
-            get { return _viewModel; }
-        }
+        public ProjectExplorerViewModel ViewModel => _viewModel;
 
-        protected IWaitIndicator WaitIndicator {
-            get { return _viewModel.WaitIndicator; }
-        }
+        protected IWaitIndicator WaitIndicator => _viewModel.WaitIndicator;
 
         public sealed override void UpdateState() {
             Enabled = SelectedItems.Any() && SelectedItems.All(EnableOverride);

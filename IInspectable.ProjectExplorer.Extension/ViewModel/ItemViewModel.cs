@@ -10,7 +10,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _visible = true;
         }
         public abstract string DisplayName { get; }
-        public abstract ImageMoniker ImageMoniker { get; }
+        public abstract ImageMoniker ImageMoniker { get; set;}
         public abstract bool IsSelected { get; set; }
 
         public bool Visible {

@@ -29,27 +29,23 @@ namespace IInspectable.ProjectExplorer.Extension {
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler CanExecuteChanged;
 
-        public Guid MenuGroup {
-            get { return _command.CommandID.Guid; }
-        }
+        public Guid MenuGroup => _command.CommandID.Guid;
 
-        public int CommandId {
-            get { return _command.CommandID.ID; }
-        }
+        public int CommandId => _command.CommandID.ID;
 
         public bool Enabled {
-            get { return _command.Enabled; }
-            set { _command.Enabled = value; }
+            get => _command.Enabled;
+            set => _command.Enabled = value;
         }
 
         public bool Supported {
-            get { return _command.Supported ; }
-            set { _command.Supported = value; }
+            get => _command.Supported;
+            set => _command.Supported = value;
         }
         
         public bool Visible {
-            get { return _command.Visible; }
-            set { _command.Visible = value; }
+            get => _command.Visible;
+            set => _command.Visible = value;
         }
 
         public void Register(OleMenuCommandService commandService) {

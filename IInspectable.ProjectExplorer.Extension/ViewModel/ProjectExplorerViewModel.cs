@@ -26,15 +26,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
-        readonly IErrorInfoService                      _errorInfoService;
-        readonly SolutionService                        _solutionService;
-        readonly OptionService                          _optionService;
-        readonly OleMenuCommandService                  _oleMenuCommandService;
-        readonly IWaitIndicator                         _waitIndicator;
-        readonly ObservableCollection<ProjectViewModel> _projects;
-        readonly ListCollectionView                     _projectsView;
-        readonly List<Command>                          _commands;
-        readonly ProjectViewModelSelectionService       _selectionService;
+        readonly         IErrorInfoService                      _errorInfoService;
+        readonly         SolutionService                        _solutionService;
+        readonly         OptionService                          _optionService;
+        readonly         OleMenuCommandService                  _oleMenuCommandService;
+        readonly         IWaitIndicator                         _waitIndicator;
+        readonly         ObservableCollection<ProjectViewModel> _projects;
+        readonly         ListCollectionView                     _projectsView;
+        readonly         List<Command>                          _commands;
+        readonly         ProjectViewModelSelectionService       _selectionService;
+        readonly         ProjectSynchronizerService                          _projectSynchronizerService;
+        private readonly ProjectFileService                     _projectFileService;
 
         [CanBeNull]
         CancellationTokenSource _loadingCancellationToken;
@@ -71,6 +73,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             _projectsView            = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
 
+            _projectSynchronizerService      = new ProjectSynchronizerService(_solutionService, _projects);
+            _projectFileService = new ProjectFileService();
+
             WireEvents();
             RegisterCommands();
             UpdateCommands();
@@ -104,6 +109,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             UnwireEvents();
             UnregisterCommands();
             ClearProjects();
+            _projectSynchronizerService.Dispose();
         }
 
         public RefreshCommand            RefreshCommand            { get; }
@@ -116,33 +122,21 @@ namespace IInspectable.ProjectExplorer.Extension {
         public SettingsCommand           SettingsCommand           { get; }
 
         [NotNull]
-        internal SolutionService SolutionService {
-            get { return _solutionService; }
-        }
+        internal SolutionService SolutionService => _solutionService;
 
         [NotNull]
-        public ProjectViewModelSelectionService SelectionService {
-            get { return _selectionService; }
-        }
+        public ProjectViewModelSelectionService SelectionService => _selectionService;
 
         [NotNull]
-        public IWaitIndicator WaitIndicator {
-            get { return _waitIndicator; }
-        }
+        public IWaitIndicator WaitIndicator => _waitIndicator;
 
         [NotNull]
-        public ObservableCollection<ProjectViewModel> Projects {
-            get { return _projects; }
-        }
+        public ObservableCollection<ProjectViewModel> Projects => _projects;
 
         [NotNull]
-        public ListCollectionView ProjectsView {
-            get { return _projectsView; }
-        }
+        public ListCollectionView ProjectsView => _projectsView;
 
-        public string ProjectsRoot {
-            get { return _optionService.ProjectsRoot; }
-        }
+        public string ProjectsRoot => _optionService.ProjectsRoot;
 
         public string ProjectsRootLabel {
             get {
@@ -170,12 +164,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public bool IsSolutionOpen {
-            get { return _solutionService.IsSolutionOpen(); }
-        }
+        public bool IsSolutionOpen => _solutionService.IsSolutionOpen();
 
         public bool IsLoading {
-            get { return _isLoading; }
+            get => _isLoading;
             private set {
                 if (value == _isLoading) {
                     return;
@@ -195,7 +187,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 return _searchContext;
             }
-            private set { _searchContext = value; }
+            private set => _searchContext = value;
         }
 
         #region Event Handler
@@ -216,23 +208,17 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void OnAfterCloseSolution(object sender, EventArgs e) {
             Logger.Info($"{nameof(OnAfterCloseSolution)}");
-            UnbindProjects();
+            UpdateCommands();
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.FullPath}");
 
-            var fullPath   = e.RealHierarchie.FullPath;
-            var uniqueName = e.RealHierarchie.GetUniqueNameOfProject();
             // Wir können an dieser Stelle nicht unterscheiden, ob das Projekt nur entladen
             // oder entfernt wurde => Wir verzögern das Update. Wenn das Projekt entfernt wurde
             // wird es auch keine Hierarchie mehr geben...
             ThreadHelper.JoinableTaskFactory.RunAsync(async () => {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var projectVm = FindProjectViewModel(fullPath);
-                var hier      = SolutionService.GetHierarchyByUniqueNameOfProject(uniqueName);
-
-                projectVm?.BindToHierarchy(hier);
 
                 UpdateCommands();
             });
@@ -242,19 +228,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnAfterOpenProject)}: {e.RealHierarchie.FullPath}");
 
-            var projectVm = FindProjectViewModel(e.RealHierarchie);
-
-            projectVm?.BindToHierarchy(e.RealHierarchie);
-
             UpdateCommands();
         }
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnBeforeUnloadProject)}: {e.StubHierarchie?.FullPath}");
-
-            var projectVm = FindProjectViewModel(e.StubHierarchie);
-
-            projectVm?.BindToHierarchy(e.StubHierarchie);
 
             UpdateCommands();
         }
@@ -262,14 +240,29 @@ namespace IInspectable.ProjectExplorer.Extension {
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
             Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.FullPath}");
 
-            var projectVm = FindProjectViewModel(e.StubHierarchie);
-
-            projectVm?.BindToHierarchy(e.RealHierarchie);
-
             UpdateCommands();
         }
 
         #endregion
+
+        public int OpenProject(ProjectViewModel viewModel) {
+            return SolutionService.OpenProject(viewModel.Path);
+        }
+
+        public int CloseProject(ProjectViewModel viewModel) {
+            var hierarchy = _projectSynchronizerService.HierarchyFromViewModel(viewModel);
+            return hierarchy?.CloseProject() ?? VSConstants.S_OK;
+        }
+
+        public int ReloadProject(ProjectViewModel viewModel) {
+            var hierarchy = _projectSynchronizerService.HierarchyFromViewModel(viewModel);
+            return hierarchy?.ReloadProject() ?? VSConstants.E_FAIL;
+        }
+
+        public int UnloadProject(ProjectViewModel viewModel) {
+            var hierarchy = _projectSynchronizerService.HierarchyFromViewModel(viewModel);
+            return hierarchy?.UnloadProject() ?? VSConstants.E_FAIL;
+        }
 
         public void ExecuteDefaultAction() {
 
@@ -334,21 +327,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             NotifyThisPropertyChanged(nameof(StatusText));
         }
 
-        public void UnbindProjects() {
-            foreach (var project in Projects) {
-                project.BindToHierarchy(null);
-            }
-
-            UpdateCommands();
-        }
-
         public void ClearProjects(bool clearSearch = true) {
 
             CancelReloadProjects();
-
-            foreach (var project in Projects) {
-                project.Dispose();
-            }
 
             Projects.Clear();
 
@@ -379,15 +360,10 @@ namespace IInspectable.ProjectExplorer.Extension {
                 ClearProjects(clearSearch: false);
 
                 _loadingCancellationToken = new CancellationTokenSource();
-                var projectFiles = await _solutionService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
-
-                var projectViewModels = _solutionService.BindToHierarchy(projectFiles);
-
-                foreach (var viewModel in projectViewModels) {
+                var projectFiles = await _projectFileService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
+                
+                foreach (var viewModel in projectFiles.Select(pf => new ProjectViewModel(pf))) {
                     viewModel.SetParent(this);
-                }
-
-                foreach (var viewModel in projectViewModels) {
                     Projects.Add(viewModel);
                 }
 
@@ -461,36 +437,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             foreach (var command in _commands) {
                 command.UpdateState();
             }
-        }
-
-        [CanBeNull]
-        ProjectViewModel FindProjectViewModel(Hierarchy hierarchy) {
-
-            string fullPath  = hierarchy.FullPath;
-            var    viewModel = FindProjectViewModel(fullPath);
-
-            if (viewModel != null || IsLoading) {
-                return viewModel;
-            }
-
-            if (fullPath == null) {
-                return null;
-            }
-
-            viewModel = _solutionService.LoadAndBind(fullPath, hierarchy);
-            if (viewModel == null) {
-                return null;
-            }
-
-            viewModel.SetParent(this);
-            Projects.Add(viewModel);
-
-            return viewModel;
-        }
-
-        [CanBeNull]
-        ProjectViewModel FindProjectViewModel(string path) {
-            return _projects.FirstOrDefault(p => p.Path.ToLower() == path?.ToLower());
         }
 
         sealed class StateSaver<T>: IDisposable {

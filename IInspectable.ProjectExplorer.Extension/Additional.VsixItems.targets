@@ -12,6 +12,7 @@
       <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'NLog'" />    
       <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.WindowsAPICodePack.Core'" />    
       <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.WindowsAPICodePack.Shell'" />    
+      <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'System.Reactive'" />    
 
 
       <VSIXSourceItem Include="@(AdditionalNugetItem)" />

@@ -88,10 +88,13 @@
     <Compile Include="Commands\ShellUtil.cs" />
     <Compile Include="Commands\UnloadProjectCommand.cs" />
     <Compile Include="Model\Hierarchy.cs" />
+    <Compile Include="Model\HierarchyData.cs" />
     <Compile Include="Model\HierarchyId.cs" />
     <Compile Include="IErrorInfoService.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerConfig.cs" />
+    <Compile Include="Model\ProjectSynchronizerService.cs" />
+    <Compile Include="Model\ProjectFileService.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="Model\ProjectEventArgs.cs" />
     <Compile Include="ViewModel\SearchContext.cs" />
@@ -243,6 +246,9 @@
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.5.6</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reactive">
+      <Version>5.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,9 +6,11 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using JetBrains.Annotations;
 
 using Microsoft.VisualStudio.Shell;
@@ -20,9 +22,10 @@ namespace IInspectable.ProjectExplorer.Extension {
     class Hierarchy {
 
         static readonly Logger Logger = Logger.Create<Hierarchy>();
+
         readonly SolutionService _solutionService;
-        readonly IVsHierarchy _vsHierarchy;
-        readonly HierarchyId _itemId;
+        readonly IVsHierarchy    _vsHierarchy;
+        readonly HierarchyId     _itemId;
 
         public Hierarchy(SolutionService solutionService, IVsHierarchy vsHierarchy, HierarchyId itemId) {
 
@@ -32,11 +35,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public HierarchyId ItemId => _itemId;
-        public string Name => GetProperty<string>(__VSHPROPID.VSHPROPID_Name);
+        public string      Name   => GetProperty<string>(__VSHPROPID.VSHPROPID_Name);
 
-        IVsSolution VsSolution1 => _solutionService.VsSolution1;
+        IVsSolution  VsSolution1 => _solutionService.VsSolution1;
         IVsSolution4 VsSolution4 => _solutionService.VsSolution4;
-        
+
         public string CanonicalName {
             get {
                 ThreadHelper.ThrowIfNotOnUIThread();
@@ -47,7 +50,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public Guid ProjectGuid => _solutionService.GetProjectGuid(_vsHierarchy);
 
-        #region  Structural Properties
+        #region Structural Properties
 
         public HierarchyId ParentItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_Parent, HierarchyId.Nil);
 
@@ -57,7 +60,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             get {
                 var id = GetProperty<object>(__VSHPROPID.VSHPROPID_ParentHierarchyItemid);
 
-                switch(id) {
+                switch (id) {
                     case int i:
                         return (uint) i;
                     case uint u:
@@ -72,7 +75,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             get {
                 var parentHierarchy = GetProperty<IVsHierarchy>(__VSHPROPID.VSHPROPID_ParentHierarchy);
 
-                return parentHierarchy == null ? null
+                return parentHierarchy == null
+                    ? null
                     : new Hierarchy(_solutionService, parentHierarchy, VSConstants.VSITEMID_ROOT);
             }
         }
@@ -101,19 +105,21 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public IEnumerable<Hierarchy> Children() {
 
-            if(GetProperty<bool>(__VSHPROPID.VSHPROPID_HasEnumerationSideEffects)) {
+            if (GetProperty<bool>(__VSHPROPID.VSHPROPID_HasEnumerationSideEffects)) {
                 yield break;
             }
-            
+
             var firstChild = FirstChild;
             if (firstChild == null) {
                 yield break;
             }
+
             yield return firstChild.GetNestedHierarchy() ?? firstChild;
 
             var sibling = firstChild.NextSibling;
             while (sibling != null) {
                 yield return sibling.GetNestedHierarchy() ?? sibling;
+
                 sibling = sibling.NextSibling;
             }
         }
@@ -128,32 +134,36 @@ namespace IInspectable.ProjectExplorer.Extension {
             if (firstChild == null) {
                 yield break;
             }
+
             yield return firstChild.GetNestedHierarchy() ?? firstChild;
 
             var sibling = firstChild.NextVisibleSibling;
             while (sibling != null) {
                 yield return sibling.GetNestedHierarchy() ?? sibling;
+
                 sibling = sibling.NextSibling;
             }
         }
 
         public IEnumerable<Hierarchy> DescendantsAndSelf() {
             yield return GetNestedHierarchy() ?? this;
+
             foreach (var descendant in Descendants()) {
                 yield return descendant;
             }
         }
 
         public IEnumerable<Hierarchy> Descendants() {
-            foreach(var child in Children()) {
-                foreach(var descendant in child.DescendantsAndSelf()) {
+            foreach (var child in Children()) {
+                foreach (var descendant in child.DescendantsAndSelf()) {
                     yield return descendant;
                 }
             }
         }
 
-        public IEnumerable<Hierarchy> VisibleDescendantsAndSelf() {            
-            yield return GetNestedHierarchy()??this;
+        public IEnumerable<Hierarchy> VisibleDescendantsAndSelf() {
+            yield return GetNestedHierarchy() ?? this;
+
             foreach (var descendant in VisibleDescendants()) {
                 yield return descendant;
             }
@@ -169,9 +179,10 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         Hierarchy WithId(HierarchyId hierarchyId) {
-            if(hierarchyId.IsNil) {
+            if (hierarchyId.IsNil) {
                 return null;
             }
+
             return new Hierarchy(_solutionService, _vsHierarchy, hierarchyId);
         }
 
@@ -181,18 +192,19 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public string FullPath {
             get {
-                var fullPath= GetMkDocument() ?? GetCanonicalName();
+                var fullPath = GetMkDocument() ?? GetCanonicalName();
 
                 if (!Path.IsPathRooted(fullPath)) {
                     return null;
                 }
+
                 return fullPath;
             }
         }
 
         [CanBeNull]
         public Hierarchy GetNestedHierarchy() {
-            
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var nestedHierarchyGuid = typeof(IVsHierarchy).GUID;
@@ -204,7 +216,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             var nestedHierarchy = Marshal.GetObjectForIUnknown(nestedHiearchyValue) as IVsHierarchy;
             Marshal.Release(nestedHiearchyValue);
-            if(nestedHierarchy == null) {
+            if (nestedHierarchy == null) {
                 return null;
             }
 
@@ -215,7 +227,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string GetMkDocument() {
             ThreadHelper.ThrowIfNotOnUIThread();
             // ReSharper disable once SuspiciousTypeConversion.Global
-            var ao = _vsHierarchy as IVsProject;
+            var    ao  = _vsHierarchy as IVsProject;
             string doc = null;
             ao?.GetMkDocument(ItemId, out doc);
             return doc;
@@ -247,19 +259,19 @@ namespace IInspectable.ProjectExplorer.Extension {
             return sb.ToString();
         }
 
-        static void Dump(Hierarchy hier, int level, StringBuilder sb, Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel= Int32.MaxValue) {
+        static void Dump(Hierarchy hier, int level, StringBuilder sb, Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel = Int32.MaxValue) {
 
             if (level > maxLevel) {
                 return;
             }
 
-            var indent = new String(' ', level*2);
+            var indent = new String(' ', level * 2);
             sb.AppendLine($"{indent}{hier.Name}: '{hier.FullPath}'");
-            foreach(var child in childSelector(hier)) {
-                Dump(child, level+1, sb, childSelector, maxLevel);
+            foreach (var child in childSelector(hier)) {
+                Dump(child, level + 1, sb, childSelector, maxLevel);
             }
         }
-        
+
         public ImageMoniker GetImageMoniker() {
             return _solutionService.GetImageMonikerForHierarchyItem(_vsHierarchy);
         }
@@ -279,9 +291,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         public int CloseProject() {
             ThreadHelper.ThrowIfNotOnUIThread();
             return LogFailed(VsSolution1.CloseSolutionElement(
-                grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject,
-                pHier       : _vsHierarchy,
-                docCookie   : 0));
+                                 grfCloseOpts: (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_SLNSAVEOPT_MASK | (uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_DeleteProject,
+                                 pHier: _vsHierarchy,
+                                 docCookie: 0));
         }
 
         public Guid GetProjectGuid() {
@@ -302,7 +314,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             return ErrorHandler.Succeeded(hr);
         }
-       
+
         public uint AdviseHierarchyEvents(IVsHierarchyEvents eventSink) {
             ThreadHelper.ThrowIfNotOnUIThread();
             LogFailed(_vsHierarchy.AdviseHierarchyEvents(eventSink, out uint cookie));
@@ -313,18 +325,19 @@ namespace IInspectable.ProjectExplorer.Extension {
             ThreadHelper.ThrowIfNotOnUIThread();
             return LogFailed(_vsHierarchy.UnadviseHierarchyEvents(cookie));
         }
-        
-        protected T GetProperty<T>(__VSHPROPID propId, T defaultValue=default) {
-            var value= GetPropertyCore((int)propId);
-            if(value == null) {
+
+        protected T GetProperty<T>(__VSHPROPID propId, T defaultValue = default) {
+            var value = GetPropertyCore((int) propId);
+            if (value == null) {
                 return defaultValue;
             }
-            return (T)value;
+
+            return (T) value;
         }
-        
+
         protected object GetPropertyCore(int propId) {
             ThreadHelper.ThrowIfNotOnUIThread();
-            if(propId == (int) __VSHPROPID.VSHPROPID_NIL) {
+            if (propId == (int) __VSHPROPID.VSHPROPID_NIL) {
                 return null;
             }
 
@@ -338,7 +351,10 @@ namespace IInspectable.ProjectExplorer.Extension {
                 var ex = Marshal.GetExceptionForHR(hr);
                 Logger.Warn($"{callerMemberName} failed with code 0x{hr:X}: '{ex.Message}'");
             }
+
             return hr;
         }
+
     }
+
 }

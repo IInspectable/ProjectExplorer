@@ -29,7 +29,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 } catch (OperationCanceledException) {
                     return WaitIndicatorResult.Canceled;
                 } catch (AggregateException e) {
-                    if (e.InnerExceptions[0] is OperationCanceledException _) {
+                    if (e.InnerExceptions[0] is OperationCanceledException) {
                         return WaitIndicatorResult.Canceled;
                     } else {
                         throw;
