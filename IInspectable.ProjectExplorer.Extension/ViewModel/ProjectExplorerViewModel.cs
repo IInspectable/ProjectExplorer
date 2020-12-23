@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 using JetBrains.Annotations;
 
@@ -35,7 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly         ListCollectionView                     _projectsView;
         readonly         List<Command>                          _commands;
         readonly         ProjectViewModelSelectionService       _selectionService;
-        readonly         ProjectSynchronizerService                          _projectSynchronizerService;
+        readonly         ProjectSynchronizerService             _projectSynchronizerService;
         private readonly ProjectFileService                     _projectFileService;
 
         [CanBeNull]
@@ -56,7 +57,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             _optionService         = optionService;
             _oleMenuCommandService = oleMenuCommandService;
             _waitIndicator         = waitIndicator;
-            _selectionService      = new ProjectViewModelSelectionService();
 
             _commands = new List<Command> {
                 {RefreshCommand            = new RefreshCommand(this)},
@@ -73,8 +73,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             _projectsView            = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
             _projectsView.CustomSort = new ProjectItemComparer();
 
-            _projectSynchronizerService      = new ProjectSynchronizerService(_solutionService, _projects);
-            _projectFileService = new ProjectFileService();
+            _selectionService = new ProjectViewModelSelectionService(_projects);
+
+            _projectSynchronizerService = new ProjectSynchronizerService(_solutionService, _projects);
+            _projectFileService         = new ProjectFileService();
 
             WireEvents();
             RegisterCommands();
@@ -93,6 +95,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.AfterOpenProject    += OnAfterOpenProject;
             _solutionService.BeforeRemoveProject += OnBeforeRemoveProject;
             _selectionService.SelectionChanged   += OnSelectionChanged;
+
         }
 
         void UnwireEvents() {
@@ -103,6 +106,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _solutionService.AfterOpenProject    -= OnAfterOpenProject;
             _solutionService.BeforeRemoveProject -= OnBeforeRemoveProject;
             _selectionService.SelectionChanged   -= OnSelectionChanged;
+
         }
 
         public void Dispose() {
@@ -361,7 +365,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 _loadingCancellationToken = new CancellationTokenSource();
                 var projectFiles = await _projectFileService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
-                
+
                 foreach (var viewModel in projectFiles.Select(pf => new ProjectViewModel(pf))) {
                     viewModel.SetParent(this);
                     Projects.Add(viewModel);
