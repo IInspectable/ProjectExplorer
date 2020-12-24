@@ -73,7 +73,7 @@
                 <imaging:CrispImage HorizontalAlignment = "Center"
                                     VerticalAlignment   = "Center"
                                     Margin  = "2"
-                                    Moniker = "{x:Static catalog:KnownMonikers.DocumentsFolder}"   
+                                    Moniker = "{x:Static catalog:KnownMonikers.SearchFolderClosed}"   
                                     Width   = "24" 
                                     Height  = "24"/>
             </ui:VsButton.Glyph>
@@ -86,7 +86,8 @@
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
         <!--Projects Listbox-->
-        <ui:VsListBox Grid.Row      = "3" 
+        <ui:VsListBox x:Name="ProjectsControl"
+                        Grid.Row      = "3" 
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
