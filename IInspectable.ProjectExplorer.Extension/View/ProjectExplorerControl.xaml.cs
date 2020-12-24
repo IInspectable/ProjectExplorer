@@ -42,10 +42,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
         }
 
-        void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            ViewModel.ExecuteDefaultAction();
-        }
-
         void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {
             // TODO Tastaturfall berücksichtigen (-1, -1)
             var source = e.OriginalSource as FrameworkElement;

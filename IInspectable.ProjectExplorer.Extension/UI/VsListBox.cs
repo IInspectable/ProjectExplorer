@@ -2,6 +2,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 #endregion
 
@@ -54,6 +55,13 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
             }
 
             SelectedIndex = nextSelectedIndex;
+
+            ScrollIntoView(SelectedItem);
+
+            var listBoxItem = ItemContainerGenerator.ContainerFromItem(SelectedItem) as ListBoxItem;
+
+            listBoxItem?.Focus();
+
             return true;
 
         }

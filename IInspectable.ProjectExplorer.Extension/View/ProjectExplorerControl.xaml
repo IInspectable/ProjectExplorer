@@ -25,6 +25,11 @@
 
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
             <Border BorderThickness="0">
+                
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Parent.ExceuteDefaultCommand}" />
+                </Border.InputBindings>
+                
                 <Border.ToolTip>
                     <StackPanel>
                         <TextBlock Text="{Binding DisplayName}"/>
@@ -92,16 +97,15 @@
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
                       ItemTemplate  = "{StaticResource ProjectItemTemplate}"   
-                      ContextMenuOpening = "OnProjectItemContextMenuOpening"
-                      MouseDoubleClick   = "OnProjectListMouseDoubleClick">
+                      ContextMenuOpening = "OnProjectItemContextMenuOpening">
+
+            <ui:VsListBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding ExceuteDefaultCommand}" />
+            </ui:VsListBox.InputBindings>
+
             <ui:VsListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ui:VsListBoxItem}">
                     <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Visible}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
                 </Style>
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>

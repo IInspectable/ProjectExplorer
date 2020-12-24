@@ -66,17 +66,23 @@ namespace IInspectable.ProjectExplorer.Extension {
                 {UnloadProjectCommand      = new UnloadProjectCommand(this)},
                 {LoadProjectCommand        = new LoadProjectCommand(this)},
                 {SettingsCommand           = new SettingsCommand(this)},
+                {ExceuteDefaultCommand     = new ExceuteDefaultCommand(this)},
             };
 
-            _projects                   = new ObservableCollection<ProjectViewModel>();
-            _projectsView               = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
+            // View
+            _projects     = new ObservableCollection<ProjectViewModel>();
+            _projectsView = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
+            // Sortierung
             _projectsView.IsLiveSorting = true;
             _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.Status),      ListSortDirection.Descending));
             _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.DisplayName), ListSortDirection.Ascending));
             _projectsView.LiveSortingProperties.Add(nameof(ProjectViewModel.Status));
+            // Filter
+            _projectsView.IsLiveFiltering = true;
+            _projectsView.LiveFilteringProperties.Add(nameof(ProjectViewModel.Visible));
+            _projectsView.Filter = vm => (vm as ProjectViewModel)?.Visible == true;
 
-            _selectionService = new ProjectViewModelSelectionService(_projects);
-
+            _selectionService   = new ProjectViewModelSelectionService(_projects);
             _projectService     = new ProjectService(_solutionService, _projects);
             _projectFileService = new ProjectFileService();
 
@@ -118,6 +124,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public UnloadProjectCommand      UnloadProjectCommand      { get; }
         public LoadProjectCommand        LoadProjectCommand        { get; }
         public SettingsCommand           SettingsCommand           { get; }
+        public ExceuteDefaultCommand     ExceuteDefaultCommand     { get; }
 
         [NotNull]
         internal SolutionService SolutionService => _solutionService;
@@ -201,33 +208,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         #endregion
 
         public ProjectService ProjectService => _projectService;
-
-        public void ExecuteDefaultAction() {
-
-            var selectedProject = SelectionService.SelectedItems.LastOrDefault();
-            if (selectedProject == null) {
-                return;
-            }
-
-            Command command = null;
-            switch (selectedProject.Status) {
-                case ProjectStatus.Closed:
-                    command = AddProjectCommand;
-                    break;
-                case ProjectStatus.Unloaded:
-                    command = LoadProjectCommand;
-                    break;
-                case ProjectStatus.Loaded:
-                    command = UnloadProjectCommand;
-                    break;
-            }
-
-            if (command?.CanExecute() == false) {
-                return;
-            }
-
-            command?.Execute();
-        }
 
         public int EnsureSolution() {
 

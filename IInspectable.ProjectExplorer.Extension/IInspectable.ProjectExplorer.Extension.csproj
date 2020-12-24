@@ -77,6 +77,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\ExceuteDefaultCommand.cs" />
     <Compile Include="Commands\LoadProjectCommand.cs" />
     <Compile Include="Commands\OpenInFileExplorerCommand.cs" />
     <Compile Include="Commands\AddProjectCommand.cs" />

@@ -236,6 +236,7 @@
       <IDSymbol name="SettingsCommandId"              value="0x0107"/>
       <IDSymbol name="OpenInFileExplorerCommandId"    value="0x0108"/>
       <IDSymbol name="CancelRefreshCommandId"         value="0x0109"/>
+      <IDSymbol name="ExecuteDefaultCommandId"        value="0x010A"/>
       
       <!--Groups-->
       <IDSymbol name="ToolbarGroup"        value="0x1050"/>
