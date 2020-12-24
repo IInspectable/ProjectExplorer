@@ -35,9 +35,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         IVsWindowSearchHost SearchHost { get; }
 
-        ProjectExplorerViewModel ViewModel {
-            get { return DataContext as ProjectExplorerViewModel; }
-        }
+        ProjectExplorerViewModel ViewModel => DataContext as ProjectExplorerViewModel;
 
         public void Dispose() {
             ViewModel.PropertyChanged                    -= OnViewModelPropertyChanged;
@@ -158,64 +156,21 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             switch (navigationKey) {
                 case __VSSEARCHNAVIGATIONKEY.SNK_DOWN:
-                    return Navigate(up: false);
+                    return ProjectsControl.Navigate(up: false);
                 case __VSSEARCHNAVIGATIONKEY.SNK_UP:
-                    return Navigate(up: true);
+                    return ProjectsControl.Navigate(up: true);
             }
 
             return false;
         }
 
-        bool Navigate(bool up) {
-
-            if (ProjectsControl.Items.Count == 0) {
-                return false;
-            }
-
-            var nextSelectedIndex = ProjectsControl.SelectedIndex;
-
-            if (up) {
-                // keine Selektion
-                if (nextSelectedIndex < 0) {
-                    nextSelectedIndex = ProjectsControl.Items.Count;
-                }
-
-                nextSelectedIndex -= 1;
-
-                if (nextSelectedIndex < 0) {
-                    nextSelectedIndex = ProjectsControl.Items.Count - 1;
-                }
-            } else {
-                // keine Selektion
-                if (nextSelectedIndex < 0) {
-                    nextSelectedIndex = -1;
-                }
-
-                nextSelectedIndex += 1;
-
-                if (nextSelectedIndex >= ProjectsControl.Items.Count) {
-                    nextSelectedIndex = 0;
-                }
-            }
-
-            ProjectsControl.SelectedIndex = nextSelectedIndex;
-            return true;
-
-        }
-
-        public bool SearchEnabled {
-            get { return true; }
-        }
+        public bool SearchEnabled => true;
 
         public Guid Category { get; } = new Guid("65511566-dab1-4298-b5c9-a82c4532001e");
 
-        public IVsEnumWindowSearchFilters SearchFiltersEnum {
-            get { return null; }
-        }
+        public IVsEnumWindowSearchFilters SearchFiltersEnum => null;
 
-        public IVsEnumWindowSearchOptions SearchOptionsEnum {
-            get { return null; }
-        }
+        public IVsEnumWindowSearchOptions SearchOptionsEnum => null;
 
         #endregion
 
