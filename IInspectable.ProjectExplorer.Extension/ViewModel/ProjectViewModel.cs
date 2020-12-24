@@ -76,6 +76,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 _displayName = displayName.NullIfEmpty();
 
                 NotifyThisPropertyChanged(nameof(DisplayName));
+                NotifyThisPropertyChanged(nameof(DisplayContent));
             }
 
             if (stateChanged) {
@@ -90,6 +91,20 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             if (!Visible && IsSelected) {
                 IsSelected = false;
+            }
+
+            NotifyThisPropertyChanged(nameof(DisplayContent));
+        }
+
+        public object DisplayContent {
+            get {
+
+                var searchContext = _parent?.SearchContext;
+
+                return _parent?.TextBlockBuilderService.ToTextBlock(
+                    part: DisplayName,
+                    searchPattern: searchContext?.Regex,
+                    hasMatch: out _) ?? (object) DisplayName;
             }
         }
 

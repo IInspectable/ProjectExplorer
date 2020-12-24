@@ -97,9 +97,11 @@
     <Compile Include="Model\HResult.cs" />
     <Compile Include="Model\ProjectService.cs" />
     <Compile Include="Model\ProjectFileService.cs" />
-    <Compile Include="Model\StringExtensions.cs" />
+    <Compile Include="Util\RegexUtil.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="Model\ProjectEventArgs.cs" />
+    <Compile Include="UI\TextBlockBuilderService.cs" />
     <Compile Include="ViewModel\SearchContext.cs" />
     <Compile Include="ViewModel\ItemViewModel.cs" />
     <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
@@ -254,6 +256,7 @@
       <Version>5.0.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="UpdateProductVersion.targets" />

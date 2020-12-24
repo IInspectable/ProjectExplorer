@@ -50,11 +50,16 @@
                                         Height      = "16"
                                         HorizontalAlignment="Right"/>
 
-                    <TextBlock Grid.Column       = "1" 
+                    <ContentControl  Grid.Column       = "1" 
+                                     Grid.Row          = "0" 
+                                     Margin            = "5,1" 
+                                     VerticalAlignment = "Center" 
+                                     Content="{Binding DisplayContent}"/>
+                    <!--<TextBlock Grid.Column       = "1" 
                                Grid.Row          = "0" 
                                Margin            = "5,1" 
                                VerticalAlignment = "Center" 
-                               Text              = "{Binding DisplayName}"/>
+                               Text              = "{Binding DisplayName}"/>-->
 
                 </Grid>
             </Border>

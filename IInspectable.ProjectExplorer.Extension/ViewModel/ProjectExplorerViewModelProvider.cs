@@ -20,11 +20,21 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [Import]
         readonly IWaitIndicator _waitIndicator;
+        
+        [Import]
+        readonly TextBlockBuilderService _textBlockBuilderService;
+
         #pragma warning restore
 
         public ProjectExplorerViewModel CreateViewModel(IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
 
-            return new ProjectExplorerViewModel(errorInfoService, _solutionService, _optionService, oleMenuCommandService, _waitIndicator);
+            return new ProjectExplorerViewModel(
+                errorInfoService, 
+                _solutionService, 
+                _optionService, 
+                oleMenuCommandService, 
+                _waitIndicator,
+                _textBlockBuilderService);
         }
 
     }

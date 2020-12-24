@@ -31,6 +31,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly OptionService                          _optionService;
         readonly OleMenuCommandService                  _oleMenuCommandService;
         readonly IWaitIndicator                         _waitIndicator;
+        readonly TextBlockBuilderService                _textBlockBuilderService;
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly ListCollectionView                     _projectsView;
         readonly List<Command>                          _commands;
@@ -50,12 +51,15 @@ namespace IInspectable.ProjectExplorer.Extension {
                                           SolutionService solutionService,
                                           OptionService optionService,
                                           OleMenuCommandService oleMenuCommandService,
-                                          IWaitIndicator waitIndicator) {
-            _errorInfoService      = errorInfoService;
-            _solutionService       = solutionService;
-            _optionService         = optionService;
-            _oleMenuCommandService = oleMenuCommandService;
-            _waitIndicator         = waitIndicator;
+                                          IWaitIndicator waitIndicator,
+                                          TextBlockBuilderService textBlockBuilderService) {
+
+            _errorInfoService        = errorInfoService;
+            _solutionService         = solutionService;
+            _optionService           = optionService;
+            _oleMenuCommandService   = oleMenuCommandService;
+            _waitIndicator           = waitIndicator;
+            _textBlockBuilderService = textBlockBuilderService;
 
             _commands = new List<Command> {
                 {RefreshCommand            = new RefreshCommand(this)},
@@ -128,6 +132,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [NotNull]
         internal SolutionService SolutionService => _solutionService;
+
+        [NotNull]
+        internal TextBlockBuilderService TextBlockBuilderService => _textBlockBuilderService;
 
         [NotNull]
         public ProjectViewModelSelectionService SelectionService => _selectionService;

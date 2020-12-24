@@ -165,6 +165,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         }
 
+        public static IServiceProvider ServiceProvider => GetGlobalService<IServiceProvider, IServiceProvider>();
+
         public static TService GetGlobalService<TService>() where TService : class {
             return GetGlobalService(typeof(TService)) as TService;
         }
