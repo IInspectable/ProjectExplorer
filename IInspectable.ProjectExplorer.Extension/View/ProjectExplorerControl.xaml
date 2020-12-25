@@ -24,7 +24,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
-            <Border BorderThickness="0">
+            <Border BorderThickness="0" >
                 
                 <Border.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Parent.ExceuteDefaultCommand}" />
@@ -50,17 +50,11 @@
                                         Height      = "16"
                                         HorizontalAlignment="Right"/>
 
-                    <ContentControl  Grid.Column       = "1" 
-                                     Grid.Row          = "0" 
-                                     Margin            = "5,1" 
-                                     VerticalAlignment = "Center" 
-                                     Content="{Binding DisplayContent}"/>
-                    <!--<TextBlock Grid.Column       = "1" 
-                               Grid.Row          = "0" 
-                               Margin            = "5,1" 
-                               VerticalAlignment = "Center" 
-                               Text              = "{Binding DisplayName}"/>-->
-
+                    <ContentControl Grid.Column        = "1"
+                                    Grid.Row           = "0"
+                                    Margin             = "5,1"
+                                    VerticalAlignment  = "Center"
+                                    Content            = "{Binding DisplayContent}"/>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -101,8 +95,7 @@
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
-                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"   
-                      ContextMenuOpening = "OnProjectItemContextMenuOpening">
+                      ItemTemplate  = "{StaticResource ProjectItemTemplate}">
 
             <ui:VsListBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding ExceuteDefaultCommand}" />
@@ -111,6 +104,7 @@
             <ui:VsListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ui:VsListBoxItem}">
                     <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                    <EventSetter Event="ContextMenuOpening" Handler="OnProjectItemContextMenuOpening"/>
                 </Style>
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>

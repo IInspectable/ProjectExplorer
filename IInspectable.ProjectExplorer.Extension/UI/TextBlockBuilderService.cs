@@ -50,8 +50,11 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return null;
             }
 
-            var runInfos  = ToRunInfo(parts, searchPattern, out hasMatch);
-            var textBlock = new TextBlock {TextWrapping = TextWrapping.Wrap};
+            var runInfos = ToRunInfo(parts, searchPattern, out hasMatch);
+            var textBlock = new TextBlock {
+                TextWrapping      = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center
+            };
 
             var highlightedSpanBrush = hasMatch ? GetHighlightedSpanBrush() : Brushes.Transparent;
             foreach (var runInfo in runInfos) {

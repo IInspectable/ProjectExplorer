@@ -56,16 +56,31 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnProjectItemContextMenuOpening(object sender, ContextMenuEventArgs e) {
-            // TODO Tastaturfall berücksichtigen (-1, -1)
-            var source = e.OriginalSource as FrameworkElement;
+
+            var source = FindAncestor(e.OriginalSource);
             if (source == null) {
                 return;
             }
 
             var ptScreen = source.PointToScreen(new Point(e.CursorLeft, e.CursorTop));
+
+            // Tastaturfall
+            if (e.CursorLeft < 0 && e.CursorTop < 0) {
+                ptScreen.X += source.ActualWidth  / 2;
+                ptScreen.Y += source.ActualHeight / 2;
+            }
+
             ViewModel.ShowProjectItemContextMenu((int) ptScreen.X, (int) ptScreen.Y);
 
             e.Handled = true;
+
+            FrameworkElement FindAncestor(object element) {
+                while (element is FrameworkContentElement) {
+                    element = ((FrameworkContentElement) element).Parent;
+                }
+
+                return element as FrameworkElement;
+            }
         }
 
         #region IVsWindowSearch
