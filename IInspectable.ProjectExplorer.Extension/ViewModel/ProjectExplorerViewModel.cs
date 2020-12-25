@@ -149,7 +149,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ListCollectionView ProjectsView => _projectsView;
 
         public string ProjectsRoot      => _optionService.ProjectsRoot;
-        public string ProjectsRootLabel => _optionService.ProjectsRoot.NullIfEmpty() ?? "Select Folder...";
+        public string ProjectsRootLabel => _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folder…";
         public bool   IsSolutionOpen    => _solutionService.IsSolutionOpen();
 
         public string StatusText {
