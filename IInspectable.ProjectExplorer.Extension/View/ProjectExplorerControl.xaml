@@ -64,36 +64,55 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+       
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+          
+            <Label Grid.Column="0"
+                   VerticalContentAlignment="Center"
+                   Margin="2,0,0,2" 
+                   Content="Look in"/>
 
-        <Grid Grid.Row="0" x:Name="SearchControlHost"/>
-        <!--Select Folder Button-->
-        <ui:VsButton Grid.Row="1" Command="{Binding SettingsCommand}"
-                     ContextMenuOpening="OnSettingsContextMenuOpening"
-                     ToolTip="Choose Search Folder">
-            <ui:VsButton.Glyph>
-                <imaging:CrispImage HorizontalAlignment = "Center"
-                                    VerticalAlignment   = "Center"
-                                    Margin  = "2"
-                                    Moniker = "{x:Static catalog:KnownMonikers.SearchFolderClosed}"   
-                                    Width   = "24" 
-                                    Height  = "24"/>
-            </ui:VsButton.Glyph>
-            <TextBlock Padding="3"
-                       VerticalAlignment="Center" 
-                       Text="{Binding ProjectsRootLabel}" TextWrapping="Wrap"/>
-        </ui:VsButton>
+            <TextBox Grid.Column="1" 
+                     VerticalContentAlignment="Center"
+                     Height="26"
+                     Margin="8,0,8,0"
+                     Text="{Binding ProjectsRootLabel, Mode=OneWay}"
+                     IsReadOnly="True" IsEnabled="False"/>
+
+            <vsui:DialogButton Grid.Column="2" 
+                    Margin="0,2,2,2" 
+                    MinHeight="26" 
+                    MinWidth="25" 
+                    Content="..."
+                    ToolTip="Choose Search Folder"
+                    Command="{Binding SettingsCommand}"/>
+
+        </Grid>
+
         <!--Separator-->
-        <Rectangle Grid.Row ="2"  
+        <!--<Rectangle Grid.Row ="1"  
+                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>-->
+
+        <Grid Grid.Row="2" x:Name="SearchControlHost"/>
+
+        <!--Separator-->
+        <Rectangle Grid.Row ="3"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
         <!--Projects Listbox-->
         <ui:VsListBox x:Name="ProjectsControl"
-                        Grid.Row      = "3" 
+                        Grid.Row      = "4" 
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ItemsSource   = "{Binding ProjectsView}" 
@@ -111,7 +130,7 @@
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>
         <!--Watermark "Status Loading"-->
-        <Grid Grid.Row = "3" 
+        <Grid Grid.Row = "4" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center"
               Visibility         ="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -134,7 +153,7 @@
                        Text       = "Loading projects..." />
         </Grid>
         <!--Watermark "No projects found"-->
-        <Grid Grid.Row = "3" 
+        <Grid Grid.Row = "4" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center">
             <Grid.Style>
@@ -156,7 +175,7 @@
                        Text       = "No projects found" />
         </Grid>
         <!--Status Text-->
-        <TextBlock Grid.Row="4" Margin="2" Text="{Binding StatusText}"/>
+        <TextBlock Grid.Row="5" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
 </UserControl>
