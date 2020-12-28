@@ -122,9 +122,10 @@
 
         <!--Projects Listbox-->
         <ui:VsListBox x:Name="ProjectsControl"
-                        Grid.Row      = "4" 
+                      Grid.Row      = "4" 
                       SelectionMode = "Extended"
                       VirtualizingStackPanel.VirtualizationMode="Standard"
+                      VirtualizingStackPanel.IsVirtualizing="False"
                       ItemsSource   = "{Binding ProjectsView}" 
                       ItemTemplate  = "{StaticResource ProjectItemTemplate}">
 
