@@ -360,7 +360,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                 command.UpdateState();
             }
 
-            ShellUtil.UpdateCommandUI();
+            ShellUtil.UpdateCommandUI(immediateUpdate: false);
         }
 
         static class Capture {

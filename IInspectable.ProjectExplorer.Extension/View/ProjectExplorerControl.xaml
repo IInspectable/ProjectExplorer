@@ -55,9 +55,8 @@
                                     Grid.Column        = "1"
                                     Grid.Row           = "0"
                                     Margin             = "5,1"
-                                    
                                     VerticalAlignment  = "Center"
-                                   Content            = "{Binding DisplayContent}"/>
+                                    Content            = "{Binding DisplayContent}"/>
 
                 </Grid>
             </Border>
@@ -124,8 +123,8 @@
         <ui:VsListBox x:Name="ProjectsControl"
                       Grid.Row      = "4" 
                       SelectionMode = "Extended"
-                      VirtualizingStackPanel.VirtualizationMode="Standard"
-                      VirtualizingStackPanel.IsVirtualizing="False"
+                      VirtualizingStackPanel.VirtualizationMode = "Recycling"
+                      VirtualizingStackPanel.IsVirtualizing = "True"
                       ItemsSource   = "{Binding ProjectsView}" 
                       ItemTemplate  = "{StaticResource ProjectItemTemplate}">
 

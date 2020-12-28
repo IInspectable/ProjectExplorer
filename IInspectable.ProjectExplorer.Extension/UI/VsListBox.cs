@@ -1,5 +1,6 @@
 #region Using Directives
 
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,7 +9,7 @@ using System.Windows.Input;
 
 namespace IInspectable.ProjectExplorer.Extension.UI {
 
-    public class VsListBox : ListBox {
+    public class VsListBox: ListBox {
 
         static VsListBox() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(VsListBox), new FrameworkPropertyMetadata(typeof(VsListBox)));
@@ -20,6 +21,18 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
 
         protected override bool IsItemItsOwnContainerOverride(object item) {
             return item is VsListBoxItem;
+        }
+
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e) {
+
+            foreach (var item in e.AddedItems.OfType<ProjectViewModel>()) {
+                item.IsSelected = true;
+            }
+
+            foreach (var item in e.RemovedItems.OfType<ProjectViewModel>()) {
+                item.IsSelected = false;
+            }
+            base.OnSelectionChanged(e);
         }
 
         public bool Navigate(bool up) {
@@ -65,5 +78,7 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
             return true;
 
         }
+
     }
+
 }
