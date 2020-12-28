@@ -4,25 +4,25 @@
                     xmlns:local   = "clr-namespace:IInspectable.ProjectExplorer.Extension.UI">
 
 
-    <SolidColorBrush x:Key="Button.Static.Border"          Color="Transparent"/>
-    <SolidColorBrush x:Key="Button.Static.Background"      Color="Transparent"/>
-    <SolidColorBrush x:Key="Button.Static.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextActiveColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Static.GlyphBackground" Color="Transparent"/>
+    <SolidColorBrush x:Key="Button.Static.Border"        Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Static.Background"    Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Static.Foreground"    Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonTextColorKey}}"/>
 
-    <SolidColorBrush x:Key="Button.MouseOver.Border"          Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
-    <SolidColorBrush x:Key="Button.MouseOver.Background"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
-    <SolidColorBrush x:Key="Button.MouseOver.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextHoverColorKey}}"/>
-    <SolidColorBrush x:Key="Button.MouseOver.GlyphBackground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Default.Border"       Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderDefaultColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Default.Background"   Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonDefaultColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Default.Foreground"   Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonDefaultTextColorKey}}"/>
 
-    <SolidColorBrush x:Key="Button.Pressed.Border"          Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseDownBackgroundBeginColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Pressed.Background"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseDownBackgroundBeginColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Pressed.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextMouseDownColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Pressed.GlyphBackground" Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarMouseDownBackgroundBeginColorKey}}"/>
+    <SolidColorBrush x:Key="Button.MouseOver.Border"     Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderHoverColorKey}}"/>
+    <SolidColorBrush x:Key="Button.MouseOver.Background" Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonHoverColorKey}}"/>
+    <SolidColorBrush x:Key="Button.MouseOver.Foreground" Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonHoverTextColorKey}}"/>
 
-    <SolidColorBrush x:Key="Button.Disabled.Border"          Color="Transparent"/>
-    <SolidColorBrush x:Key="Button.Disabled.Background"      Color="Transparent"/>
-    <SolidColorBrush x:Key="Button.Disabled.Foreground"      Color="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarTextInactiveColorKey}}"/>
-    <SolidColorBrush x:Key="Button.Disabled.GlyphBackground" Color="Transparent"/>
+    <SolidColorBrush x:Key="Button.Pressed.Border"       Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderPressedColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Pressed.Background"   Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonPressedColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Pressed.Foreground"   Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonPressedTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="Button.Disabled.Border"      Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderDisabledColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Disabled.Background"  Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonDisabledColorKey}}"/>
+    <SolidColorBrush x:Key="Button.Disabled.Foreground"  Color="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonDisabledTextColorKey}}"/>
     
     <Style TargetType="{x:Type local:VsButton}">
         <Setter Property="Cursor" Value="Hand"/>
@@ -31,31 +31,49 @@
         <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
         <Setter Property="Foreground"  Value="{StaticResource Button.Static.Foreground}"/>
         
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        <Setter Property="VerticalContentAlignment"   Value="Center"/>
-        <Setter Property="Padding" Value="1"/>
+        <Setter Property="BorderThickness"            Value = "1"/>
+        <Setter Property="HorizontalContentAlignment" Value = "Center"/>
+        <Setter Property="VerticalContentAlignment"   Value = "Center"/>
+        <Setter Property="Padding"                    Value = "1"/>
         <Setter Property="Template">
             <Setter.Value>
+
                 <ControlTemplate TargetType="{x:Type local:VsButton}">
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Border Grid.Column="0" x:Name="GlyphBd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
-                            <ContentPresenter  x:Name="glyphContentPresenter" Content="{TemplateBinding Glyph}"/>
-                        </Border>
-                        <Border Grid.Column="1" x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
-                            <ContentPresenter x:Name="contentPresenter"  Focusable="False"  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Border>
-                    </Grid>
+                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <ContentPresenter
+                                Grid.Column="0"
+                                x:Name="glyphContentPresenter"
+                                Content="{TemplateBinding Glyph}" />
+
+                            <ContentPresenter
+                                Grid.Column="1"
+                                x:Name="contentPresenter"
+                                Focusable="False"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                Margin="{TemplateBinding Padding}"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                        </Grid>
+
+                    </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsDefaulted" Value="true">
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Button.Default.Border}"/>
+                            <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Button.Default.Background}"/>
+                            
+                            <Setter Property="TextElement.Foreground" Value="{StaticResource Button.Default.Foreground}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
                             
@@ -63,9 +81,7 @@
                             <Setter Property="Background"  TargetName="Bd" Value="{StaticResource Button.MouseOver.Background}"/>
                             
                             <Setter Property="TextElement.Foreground" Value="{StaticResource Button.MouseOver.Foreground}"/>
-                            
-                            <Setter Property="BorderBrush" TargetName="GlyphBd" Value="{StaticResource Button.MouseOver.GlyphBackground}"/>
-                            <Setter Property="Background"  TargetName="GlyphBd" Value="{StaticResource Button.MouseOver.GlyphBackground}"/>
+               
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             
@@ -74,8 +90,6 @@
                            
                             <Setter Property="TextElement.Foreground" Value="{StaticResource Button.Pressed.Foreground}"/>
 
-                            <Setter Property="BorderBrush" TargetName="GlyphBd" Value="{StaticResource Button.Pressed.GlyphBackground}"/>
-                            <Setter Property="Background"  TargetName="GlyphBd" Value="{StaticResource Button.Pressed.GlyphBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             
@@ -84,8 +98,6 @@
 
                             <Setter Property="TextElement.Foreground"  Value="{StaticResource Button.Disabled.Foreground}"/>
 
-                            <Setter Property="BorderBrush" TargetName="GlyphBd" Value="{StaticResource Button.Disabled.GlyphBackground}"/>
-                            <Setter Property="Background"  TargetName="GlyphBd" Value="{StaticResource Button.Disabled.GlyphBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -90,11 +90,12 @@
                      Text="{Binding ProjectsRootLabel, Mode=OneWay}"
                      IsReadOnly="True" IsEnabled="False"/>
 
-            <vsui:DialogButton Grid.Column="2" 
+            <ui:VsButton Grid.Column="2" 
                     Margin="0,2,2,2" 
                     MinHeight="26" 
-                    MinWidth="25" 
-                    Content="..."
+                    MinWidth="24" 
+                    Padding="0,0,0,0"
+                    Content="…"
                     ToolTip="Choose Search Folder"
                     Command="{Binding SettingsCommand}"/>
 
