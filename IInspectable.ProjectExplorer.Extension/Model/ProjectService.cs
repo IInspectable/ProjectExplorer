@@ -10,7 +10,7 @@ using System.Threading;
 using JetBrains.Annotations;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
@@ -119,7 +119,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         static bool SyncProjectState(Hierarchy hierarchy, ProjectViewModel project) {
 
             var status       = ProjectStatus.Closed;
-            var imageMoniker = KnownMonikers.AddDocument;
+            var imageMoniker = (ImageMoniker?) null;
             var caption      = "";
 
             if (hierarchy != null) {

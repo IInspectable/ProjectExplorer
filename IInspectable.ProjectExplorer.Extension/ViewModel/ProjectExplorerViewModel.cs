@@ -47,7 +47,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         bool          _isLoading;
         SearchContext _searchContext;
 
-        internal ProjectExplorerViewModel(IErrorInfoService errorInfoService,
+        internal ProjectExplorerViewModel(ProjectExplorerPackage package, 
+                                          IErrorInfoService errorInfoService,
                                           SolutionService solutionService,
                                           OptionService optionService,
                                           OleMenuCommandService oleMenuCommandService,
@@ -88,7 +89,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             _selectionService   = new ProjectViewModelSelectionService(_projects);
             _projectService     = new ProjectService(_solutionService, _projects);
-            _projectFileService = new ProjectFileService();
+            _projectFileService = new ProjectFileService(package);
 
             WireEvents();
             RegisterCommands();

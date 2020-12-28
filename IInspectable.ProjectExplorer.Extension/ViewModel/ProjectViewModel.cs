@@ -19,7 +19,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         ProjectExplorerViewModel _parent;
 
         ProjectStatus _status;
-        ImageMoniker  _imageMoniker;
+        ImageMoniker?  _imageMoniker;
         string        _displayName;
 
         public ProjectViewModel(ProjectFile projectFile) {
@@ -52,10 +52,10 @@ namespace IInspectable.ProjectExplorer.Extension {
         public          string        Directory    => System.IO.Path.GetDirectoryName(_projectFile.Path);
         public          string        Path         => _projectFile.Path;
         public          ProjectStatus Status       => _status;
-        public override ImageMoniker  ImageMoniker => _imageMoniker;
+        public override ImageMoniker  ImageMoniker => _imageMoniker??_projectFile.ImageMoniker;
         public override string        DisplayName  => _displayName.NullIfEmpty() ?? _projectFile.Name;
 
-        public bool SetState(ProjectStatus status, ImageMoniker imageMoniker, string displayName) {
+        public bool SetState(ProjectStatus status, ImageMoniker? imageMoniker, string displayName) {
 
             var stateChanged = false;
 

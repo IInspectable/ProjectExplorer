@@ -14,6 +14,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return value;
         }
 
+        [ContractAnnotation("null=>true")]
         public static bool IsNullOrEmpty([CanBeNull] this string value) {
             return String.IsNullOrEmpty(value);
         }

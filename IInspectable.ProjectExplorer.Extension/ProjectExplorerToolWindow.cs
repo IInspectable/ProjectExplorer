@@ -14,7 +14,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerToolWindowServices {
 
-        public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
+        public ProjectExplorerToolWindowServices(ProjectExplorerPackage package, OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
+            Package                 = package;
             OleMenuCommandService   = oleMenuCommandService;
             ViewModelProvider       = viewModelProvider;
             WindowSearchHostFactory = windowSearchHostFactory;
@@ -22,6 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             WaitIndicator           = waitIndicator;
         }
 
+        public ProjectExplorerPackage           Package                 { get; }
         public OleMenuCommandService            OleMenuCommandService   { get; }
         public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
         public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
@@ -44,7 +46,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             var viewModelProvider       = services.ViewModelProvider;
             var windowSearchHostFactory = services.WindowSearchHostFactory;
 
-            ViewModel = viewModelProvider.CreateViewModel(this, menuCommandService);
+            ViewModel = viewModelProvider.CreateViewModel(services.Package, this, menuCommandService);
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on

@@ -26,15 +26,16 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #pragma warning restore
 
-        public ProjectExplorerViewModel CreateViewModel(IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
+        public ProjectExplorerViewModel CreateViewModel(ProjectExplorerPackage package, IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
 
             return new ProjectExplorerViewModel(
-                errorInfoService, 
-                _solutionService, 
-                _optionService, 
-                oleMenuCommandService, 
-                _waitIndicator,
-                _textBlockBuilderService);
+                package: package,
+                errorInfoService: errorInfoService,
+                solutionService: _solutionService,
+                optionService: _optionService,
+                oleMenuCommandService: oleMenuCommandService,
+                waitIndicator: _waitIndicator,
+                textBlockBuilderService: _textBlockBuilderService);
         }
 
     }

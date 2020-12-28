@@ -43,20 +43,29 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <imaging:CrispImage Grid.Column = "0" 
+                    <imaging:CrispImage x:Name="Glyph"
+                                        Grid.Column = "0" 
                                         Grid.Row    = "0"
                                         Moniker     = "{Binding ImageMoniker}"
                                         Width       = "16" 
                                         Height      = "16"
                                         HorizontalAlignment="Right"/>
 
-                    <ContentControl Grid.Column        = "1"
+                    <ContentControl x:Name="DisplayContent"
+                                    Grid.Column        = "1"
                                     Grid.Row           = "0"
                                     Margin             = "5,1"
+                                    
                                     VerticalAlignment  = "Center"
-                                    Content            = "{Binding DisplayContent}"/>
+                                   Content            = "{Binding DisplayContent}"/>
+
                 </Grid>
             </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Closed">
+                    <Setter Property="Grayscale" TargetName="Glyph" Value="true" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
     </UserControl.Resources>
