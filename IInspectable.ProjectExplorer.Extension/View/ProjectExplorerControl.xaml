@@ -124,7 +124,7 @@
         <ui:VsListBox x:Name="ProjectsControl"
                         Grid.Row      = "4" 
                       SelectionMode = "Extended"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      VirtualizingStackPanel.VirtualizationMode="Standard"
                       ItemsSource   = "{Binding ProjectsView}" 
                       ItemTemplate  = "{StaticResource ProjectItemTemplate}">
 
