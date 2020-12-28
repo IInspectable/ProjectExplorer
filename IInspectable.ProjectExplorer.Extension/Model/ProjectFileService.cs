@@ -93,6 +93,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         ImmutableList<string> ProjectExtensionCandidates() {
             return ImmutableList.Create(
                 "csproj",
+                "fsproj",
                 "rptproj",
                 "shproj",
                 "vcproj",
