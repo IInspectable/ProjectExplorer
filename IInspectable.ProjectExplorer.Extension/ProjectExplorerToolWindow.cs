@@ -56,6 +56,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             Caption            = Title;
             BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
 
+            ViewModel.RequestBringSelectionIntoView += (o, e) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
             // ReSharper restore VirtualMemberCallInConstructor
         }
 

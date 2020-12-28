@@ -72,11 +72,16 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
             ScrollIntoView(SelectedItem);
 
             var listBoxItem = ItemContainerGenerator.ContainerFromItem(SelectedItem) as ListBoxItem;
-
+            
             listBoxItem?.Focus();
 
             return true;
 
+        }
+
+        public void BringSelectionIntoView() {
+            var listBoxItem = ItemContainerGenerator.ContainerFromItem(SelectedItem) as ListBoxItem;
+            listBoxItem?.BringIntoView();
         }
 
     }

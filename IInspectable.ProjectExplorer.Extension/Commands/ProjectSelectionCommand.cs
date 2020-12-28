@@ -38,6 +38,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             ExecuteOverride(SelectedItems);
+
+            ViewModel.BringSelectionIntoView();
         }
 
         protected abstract bool EnableOverride(ProjectViewModel projectViewModel);

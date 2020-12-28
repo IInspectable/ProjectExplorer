@@ -363,6 +363,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             ShellUtil.UpdateCommandUI(immediateUpdate: false);
         }
 
+        public event EventHandler<EventArgs> RequestBringSelectionIntoView;
+       
+        public void BringSelectionIntoView() {
+            RequestBringSelectionIntoView?.Invoke(this, EventArgs.Empty);
+        }
+
         static class Capture {
 
             public static IDisposable ProjectsRoot(ProjectExplorerViewModel model) {
