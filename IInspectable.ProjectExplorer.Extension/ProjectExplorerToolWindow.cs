@@ -14,7 +14,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     class ProjectExplorerToolWindowServices {
 
-        public ProjectExplorerToolWindowServices(OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
+        public ProjectExplorerToolWindowServices(ProjectExplorerPackage package, OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
+            Package                 = package;
             OleMenuCommandService   = oleMenuCommandService;
             ViewModelProvider       = viewModelProvider;
             WindowSearchHostFactory = windowSearchHostFactory;
@@ -22,6 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             WaitIndicator           = waitIndicator;
         }
 
+        public ProjectExplorerPackage           Package                 { get; }
         public OleMenuCommandService            OleMenuCommandService   { get; }
         public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
         public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
@@ -34,7 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension {
     class ProjectExplorerToolWindow: ToolWindowPane, IErrorInfoService {
 
         public const  string GuidString = "f3e3f345-a607-4f4c-9742-bb6415f2b062";
-        public static Guid   Guid => new Guid(GuidString);
+        public static Guid   Guid => new(GuidString);
         public const  string Title = "Project Explorer";
 
         public ProjectExplorerToolWindow(ProjectExplorerToolWindowServices services): base(null) {
@@ -44,7 +46,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             var viewModelProvider       = services.ViewModelProvider;
             var windowSearchHostFactory = services.WindowSearchHostFactory;
 
-            ViewModel = viewModelProvider.CreateViewModel(this, menuCommandService);
+            ViewModel = viewModelProvider.CreateViewModel(services.Package, this, menuCommandService);
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
@@ -54,14 +56,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             Caption            = Title;
             BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
 
+            ViewModel.RequestBringSelectionIntoView += (_, _) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
             // ReSharper restore VirtualMemberCallInConstructor
         }
 
         ProjectExplorerViewModel ViewModel { get; }
 
-        ProjectExplorerControl ProjectExplorerControl {
-            get { return (ProjectExplorerControl) Content; }
-        }
+        ProjectExplorerControl ProjectExplorerControl => (ProjectExplorerControl) Content;
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -100,9 +101,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-        public bool CanActivateSearch {
-            get { return ProjectExplorerControl.CanActivateSearch; }
-        }
+        public bool CanActivateSearch => ProjectExplorerControl.CanActivateSearch;
 
         public void ActivateSearch() {
             ProjectExplorerControl.ActivateSearch();

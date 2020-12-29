@@ -24,11 +24,17 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <DataTemplate x:Key="ProjectItemTemplate" DataType="extension:ProjectViewModel">
-            <Border BorderThickness="0">
+            <Border BorderThickness="0" >
+
+                <Border.InputBindings>
+                    <!-- ReSharper disable once Xaml.PossibleNullReferenceException -->
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Parent.ExceuteDefaultCommand}" />
+                </Border.InputBindings>
+
                 <Border.ToolTip>
                     <StackPanel>
                         <TextBlock Text="{Binding DisplayName}"/>
-                        <TextBlock Text="{Binding Directory}"/>
+                        <TextBlock Text="{Binding Path}"/>
                     </StackPanel>
                 </Border.ToolTip>
                 <Grid Margin="0,0">
@@ -38,21 +44,28 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <imaging:CrispImage Grid.Column = "0" 
+                    <imaging:CrispImage x:Name="Glyph"
+                                        Grid.Column = "0" 
                                         Grid.Row    = "0"
                                         Moniker     = "{Binding ImageMoniker}"
                                         Width       = "16" 
                                         Height      = "16"
                                         HorizontalAlignment="Right"/>
 
-                    <TextBlock Grid.Column       = "1" 
-                               Grid.Row          = "0" 
-                               Margin            = "5,1" 
-                               VerticalAlignment = "Center" 
-                               Text              = "{Binding DisplayName}"/>
+                    <ContentControl x:Name="DisplayContent"
+                                    Grid.Column        = "1"
+                                    Grid.Row           = "0"
+                                    Margin             = "5,1"
+                                    VerticalAlignment  = "Center"
+                                    Content            = "{Binding DisplayContent}"/>
 
                 </Grid>
             </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Closed">
+                    <Setter Property="Grayscale" TargetName="Glyph" Value="true" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
     </UserControl.Resources>
@@ -60,52 +73,76 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+       
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+          
+            <Label Grid.Column="0"
+                   VerticalContentAlignment="Center"
+                   Margin="2,0,0,2" 
+                   Content="Look in"/>
 
-        <Grid Grid.Row="0" x:Name="SearchControlHost"/>
-        <!--Select Folder Button-->
-        <ui:VsButton Grid.Row="1" Command="{Binding SettingsCommand}"  ContextMenuOpening="OnSettingsContextMenuOpening" ToolTip="Settings">
-            <ui:VsButton.Glyph>
-                <imaging:CrispImage HorizontalAlignment = "Center"
-                                    VerticalAlignment   = "Center"
-                                    Margin  = "2"
-                                    Moniker = "{x:Static catalog:KnownMonikers.DocumentsFolder}"   
-                                    Width   = "24" 
-                                    Height  = "24"/>
-            </ui:VsButton.Glyph>
-            <TextBlock Padding="3"
-                       VerticalAlignment="Center" 
-                       Text="{Binding ProjectsRootLabel}" TextWrapping="Wrap"/>
-        </ui:VsButton>
+            <TextBox Grid.Column="1" 
+                     VerticalContentAlignment="Center"
+                     Height="26"
+                     Margin="8,0,8,0"
+                     Text="{Binding ProjectsRootLabel, Mode=OneWay}"
+                     IsReadOnly="True" IsEnabled="False"/>
+
+            <ui:VsButton Grid.Column="2" 
+                    Margin="0,2,2,2" 
+                    MinHeight="26" 
+                    MinWidth="24" 
+                    Padding="0,0,0,0"
+                    Content="…"
+                    ToolTip="Choose Search Folder"
+                    Command="{Binding SettingsCommand}"/>
+
+        </Grid>
+
         <!--Separator-->
-        <Rectangle Grid.Row ="2"  
+        <!--<Rectangle Grid.Row ="1"  
+                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>-->
+
+        <Grid Grid.Row="2" x:Name="SearchControlHost"/>
+
+        <!--Separator-->
+        <Rectangle Grid.Row ="3"  
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.CommandBarGradientBeginBrushKey}}"/>
 
         <!--Projects Listbox-->
-        <ui:VsListBox Grid.Row      = "3" 
+        <ui:VsListBox x:Name="ProjectsControl"
+                      Grid.Row      = "4" 
                       SelectionMode = "Extended"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      VirtualizingStackPanel.VirtualizationMode = "Recycling"
+                      VirtualizingStackPanel.IsVirtualizing = "True"
                       ItemsSource   = "{Binding ProjectsView}" 
-                      ItemTemplate  = "{StaticResource ProjectItemTemplate}"   
-                      ContextMenuOpening = "OnProjectItemContextMenuOpening"
-                      MouseDoubleClick   = "OnProjectListMouseDoubleClick">
+                      ItemTemplate  = "{StaticResource ProjectItemTemplate}">
+
+            <ui:VsListBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding ExceuteDefaultCommand}" />
+            </ui:VsListBox.InputBindings>
+
             <ui:VsListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ui:VsListBoxItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Visible}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
+                    <EventSetter Event="ContextMenuOpening" Handler="OnProjectItemContextMenuOpening"/>
                 </Style>
             </ui:VsListBox.ItemContainerStyle>
         </ui:VsListBox>
         <!--Watermark "Status Loading"-->
-        <Grid Grid.Row = "3" 
+        <Grid Grid.Row = "4" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center"
               Visibility         ="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -128,7 +165,7 @@
                        Text       = "Loading projects..." />
         </Grid>
         <!--Watermark "No projects found"-->
-        <Grid Grid.Row = "3" 
+        <Grid Grid.Row = "4" 
               HorizontalAlignment="Center"
               VerticalAlignment  ="Center">
             <Grid.Style>
@@ -150,7 +187,7 @@
                        Text       = "No projects found" />
         </Grid>
         <!--Status Text-->
-        <TextBlock Grid.Row="4" Margin="2" Text="{Binding StatusText}"/>
+        <TextBlock Grid.Row="5" Margin="2" Text="{Binding StatusText}"/>
     </Grid>
 
 </UserControl>

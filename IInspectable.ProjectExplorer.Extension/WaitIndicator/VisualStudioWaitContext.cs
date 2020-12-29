@@ -43,31 +43,25 @@ namespace IInspectable.ProjectExplorer.Extension {
             var callback = new Callback(this);
 
             dialog3.StartWaitDialogWithCallback(
-                szWaitCaption     : _title,
-                szWaitMessage     : _message,
-                szProgressText    : null,
-                varStatusBmpAnim  : null,
-                szStatusBarText   : null,
-                fIsCancelable     : _allowCancel,
+                szWaitCaption: _title,
+                szWaitMessage: _message,
+                szProgressText: null,
+                varStatusBmpAnim: null,
+                szStatusBarText: null,
+                fIsCancelable: _allowCancel,
                 iDelayToShowDialog: DelayToShowDialogSecs,
-                fShowProgress     : false,
-                iTotalSteps       : 0,
-                iCurrentStep      : 0,
-                pCallback         : callback);
+                fShowProgress: false,
+                iTotalSteps: 0,
+                iCurrentStep: 0,
+                pCallback: callback);
 
             return dialog3;
         }
 
-        public CancellationToken CancellationToken {
-            get {
-                return _allowCancel
-                    ? _cancellationTokenSource.Token
-                    : CancellationToken.None;
-            }
-        }
+        public CancellationToken CancellationToken => _allowCancel ? _cancellationTokenSource.Token : CancellationToken.None;
 
         public string Message {
-            get { return _message; }
+            get => _message;
             set {
                 _message = value;
                 UpdateDialog();
@@ -75,7 +69,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public bool AllowCancel {
-            get { return _allowCancel; }
+            get => _allowCancel;
             set {
                 _allowCancel = value;
                 UpdateDialog();

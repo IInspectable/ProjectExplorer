@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 
 #endregion
@@ -13,30 +15,44 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         readonly HashSet<ProjectViewModel> _selectedItems;
 
-        public ProjectViewModelSelectionService() {
-            _selectedItems = new HashSet<ProjectViewModel>();
+        public ProjectViewModelSelectionService(ObservableCollection<ProjectViewModel> projects) {
+            if (projects == null) {
+                throw new ArgumentNullException(nameof(projects));
+            }
+
+            _selectedItems             =  new HashSet<ProjectViewModel>();
+            projects.CollectionChanged += OnProjectCollectionChanged;
         }
 
         public event EventHandler SelectionChanged;
 
-        public IReadOnlyList<ProjectViewModel> SelectedItems {
-            get { return _selectedItems.ToImmutableList(); }
-        }
+        public ImmutableList<ProjectViewModel> SelectedItems => _selectedItems.ToImmutableList();
 
         public void AddSelection(ProjectViewModel projectViewModel) {
-            if(IsSelected(projectViewModel) || projectViewModel==null) {
+            if (projectViewModel == null) {
                 return;
             }
-            _selectedItems.Add(projectViewModel);
-            OnSelectionChanged(projectViewModel);
+
+            if (_selectedItems.Add(projectViewModel)) {
+                projectViewModel.NotifyIsSelectedChanged();
+                NotifySelectionChanged();
+            }
+
         }
 
         public void RemoveSelection(ProjectViewModel projectViewModel) {
-            if (!IsSelected(projectViewModel)) {
-                return;
+            if (_selectedItems.Remove(projectViewModel)) {
+                projectViewModel.NotifyIsSelectedChanged();
+                NotifySelectionChanged();
             }
-            _selectedItems.Remove(projectViewModel);
-            OnSelectionChanged(projectViewModel);
+        }
+
+        public void RemoveSelection(IEnumerable<ProjectViewModel> projectViewModels) {
+
+            foreach (var projectViewModel in projectViewModels) {
+                RemoveSelection(projectViewModel);
+            }
+
         }
 
         public void ClearSelection() {
@@ -45,23 +61,37 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             _selectedItems.Clear();
 
-            foreach(var projectViewModel in projectViewModels) {
+            foreach (var projectViewModel in projectViewModels) {
                 projectViewModel.NotifyIsSelectedChanged();
             }
 
-            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            NotifySelectionChanged();
         }
 
         internal bool IsSelected(ProjectViewModel viewmodel) {
             return _selectedItems.Contains(viewmodel);
         }
 
-        void OnSelectionChanged(ProjectViewModel projectViewModel) {
+        void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            switch (e.Action) {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Move:
+                    RemoveSelection(e.OldItems.OfType<ProjectViewModel>());
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ClearSelection();
+                    break;
+            }
 
-            projectViewModel.NotifyIsSelectedChanged();
+        }
 
+        void NotifySelectionChanged() {
             SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
+
     }
 
 }

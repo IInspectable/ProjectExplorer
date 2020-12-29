@@ -4,16 +4,19 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using Microsoft.Internal.VisualStudio.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Util = Microsoft.Internal.VisualStudio.PlatformUI.Utilities;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    partial class ProjectExplorerControl : UserControl, IVsWindowSearch, IDisposable {
+    partial class ProjectExplorerControl: UserControl, IVsWindowSearch, IDisposable {
 
         public ProjectExplorerControl(IVsWindowSearchHostFactory windowSearchHostFactory, ProjectExplorerViewModel viewModel) {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -21,7 +24,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             InitializeComponent();
 
-            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+            ViewModel.PropertyChanged                    += OnViewModelPropertyChanged;
             ViewModel.SolutionService.AfterCloseSolution += OnAfterCloseSolution;
 
             SearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
@@ -31,41 +34,40 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         IVsWindowSearchHost SearchHost { get; }
-        ProjectExplorerViewModel ViewModel { get { return DataContext as ProjectExplorerViewModel; } }
+
+        ProjectExplorerViewModel ViewModel => DataContext as ProjectExplorerViewModel;
 
         public void Dispose() {
-            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            ViewModel.PropertyChanged                    -= OnViewModelPropertyChanged;
             ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
         }
 
-        void OnProjectListMouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            ViewModel.ExecuteDefaultAction();
-        }
-
-        void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {
-            // TODO Tastaturfall berücksichtigen (-1, -1)
-            var source = e.OriginalSource as FrameworkElement;
-            if(source == null) {
-                return;
-            }
-
-            var ptScreen=source.PointToScreen(new Point(e.CursorLeft, e.CursorTop));
-            ViewModel.ShowSettingsButtonContextMenu((int)ptScreen.X, (int)ptScreen.Y);
-
-            e.Handled = true;
-        }
-
         void OnProjectItemContextMenuOpening(object sender, ContextMenuEventArgs e) {
-            // TODO Tastaturfall berücksichtigen (-1, -1)
-            var source = e.OriginalSource as FrameworkElement;
+
+            var source = FindAncestor(e.OriginalSource);
             if (source == null) {
                 return;
             }
 
             var ptScreen = source.PointToScreen(new Point(e.CursorLeft, e.CursorTop));
-            ViewModel.ShowProjectItemContextMenu((int)ptScreen.X, (int)ptScreen.Y);
+
+            // Tastaturfall
+            if (e.CursorLeft < 0 && e.CursorTop < 0) {
+                ptScreen.X += source.ActualWidth  / 2;
+                ptScreen.Y += source.ActualHeight / 2;
+            }
+
+            ViewModel.ShowProjectItemContextMenu((int) ptScreen.X, (int) ptScreen.Y);
 
             e.Handled = true;
+
+            FrameworkElement FindAncestor(object element) {
+                while (element is FrameworkContentElement frameworkContentElement) {
+                    element = frameworkContentElement.Parent;
+                }
+
+                return element as FrameworkElement;
+            }
         }
 
         #region IVsWindowSearch
@@ -82,6 +84,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             if (!CanActivateSearch) {
                 return;
             }
+
             SearchHost?.Activate();
         }
 
@@ -94,7 +97,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (string.IsNullOrEmpty(e.PropertyName) ||
-               e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
+                e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
                 UpdateSearchEnabled();
                 ActivateIfIsKeyboardFocusWithin();
             }
@@ -121,33 +124,54 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name, (uint)VSSEARCHSTARTTYPE.SST_DELAYED);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name, (uint)VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name, false);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchStartTypeProperty.Name,         (uint) VSSEARCHSTARTTYPE.SST_DELAYED);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchProgressTypeProperty.Name,      (uint) VSSEARCHPROGRESSTYPE.SPT_INDETERMINATE);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchUseMRUProperty.Name,            false);
             Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchPopupAutoDropdownProperty.Name, false);
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name, (uint)2000);
-            // TODO Shortcut Key anzeigen
-            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name, "Search Project Explorer");
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.ControlMaxWidthProperty.Name,         (uint) 2000);
+            Util.SetValue(pSearchSettings, SearchSettingsDataSource.SearchWatermarkProperty.Name,         GetWatermark());
+        }
+
+        static string GetWatermark() {
+
+            var watermarkText = "Search Project Explorer";
+
+            var keyBinding = KeyBindingHelper.GetGlobalKeyBinding(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerSearchCommandId);
+            if (!String.IsNullOrEmpty(keyBinding)) {
+                watermarkText += $" ({keyBinding})";
+            }
+
+            return watermarkText;
         }
 
         public bool OnNavigationKeyDown(uint dwNavigationKey, uint dwModifiers) {
+            var modifier      = (__VSUIACCELMODIFIERS) dwModifiers;
+            var navigationKey = (__VSSEARCHNAVIGATIONKEY) dwNavigationKey;
+
+            if (modifier != __VSUIACCELMODIFIERS.VSAM_NONE) {
+                return false;
+            }
+
+            switch (navigationKey) {
+                case __VSSEARCHNAVIGATIONKEY.SNK_DOWN:
+                    return ProjectsControl.Navigate(up: false);
+                case __VSSEARCHNAVIGATIONKEY.SNK_UP:
+                    return ProjectsControl.Navigate(up: true);
+            }
+
             return false;
         }
-        
-        public bool SearchEnabled {
-            get { return true; }
-        }
 
-        public Guid Category { get; } = new Guid("65511566-dab1-4298-b5c9-a82c4532001e");
+        public bool SearchEnabled => true;
 
-        public IVsEnumWindowSearchFilters SearchFiltersEnum {
-            get { return null; }
-        }
+        public Guid Category { get; } = new("65511566-dab1-4298-b5c9-a82c4532001e");
 
-        public IVsEnumWindowSearchOptions SearchOptionsEnum {
-            get { return null; }
-        }
+        public IVsEnumWindowSearchFilters SearchFiltersEnum => null;
+
+        public IVsEnumWindowSearchOptions SearchOptionsEnum => null;
 
         #endregion
+
     }
+
 }

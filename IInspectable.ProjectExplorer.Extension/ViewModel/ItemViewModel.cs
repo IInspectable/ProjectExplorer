@@ -2,23 +2,25 @@ using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    abstract class ItemViewModel : ViewModelBase {
+    abstract class ItemViewModel: ViewModelBase {
 
         bool _visible;
 
         protected ItemViewModel() {
             _visible = true;
         }
-        public abstract string DisplayName { get; }
+
+        public abstract string       DisplayName  { get; }
         public abstract ImageMoniker ImageMoniker { get; }
-        public abstract bool IsSelected { get; set; }
+        public abstract bool         IsSelected   { get; set; }
 
         public bool Visible {
-            get { return _visible; }
+            get => _visible;
             set {
-                if(value == _visible) {
+                if (value == _visible) {
                     return;
                 }
+
                 _visible = value;
                 NotifyPropertyChanged();
             }
@@ -29,6 +31,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         internal void NotifyIsSelectedChanged() {
             NotifyThisPropertyChanged(nameof(IsSelected));
         }
+
     }
 
 }

@@ -1,13 +1,10 @@
 #region Using Directives
 
 using System;
-using System.IO;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -15,8 +12,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
-using Task = System.Threading.Tasks.Task;
+// ReSharper disable ConvertToAutoProperty
 
 #endregion
 
@@ -58,7 +54,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void Dispose() {
-            
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (_solutionEvents1Cookie != 0) {
@@ -94,38 +90,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint) VSConstants.VSITEMID.Root, (int) __VSHIERARCHYIMAGEASPECT.HIA_Icon);
         }
 
-        public Task<List<ProjectFile>> GetProjectFilesAsync(string path, CancellationToken cancellationToken) {
-
-            var task = Task.Run(() => {
-
-                var patterns = new[] {"*.csproj"}; //, "*.vbproj", "*.vcxproj", "*.jsproj", "*.fsproj" };
-
-                var projectFiles = new List<ProjectFile>();
-
-                if (String.IsNullOrWhiteSpace(path)) {
-                    Logger.Warn($"{nameof(GetProjectFilesAsync)}: path is null or empty");
-                    return projectFiles;
-                }
-
-                foreach (var pattern in patterns) {
-                    foreach (var file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)) {
-
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        var projectFile = LoadProjectFile(file);
-
-                        if (projectFile != null) {
-                            projectFiles.Add(projectFile);
-                        }
-                    }
-                }
-
-                return projectFiles;
-            }, cancellationToken);
-
-            return task;
-        }
-
         public int EnsureSolution() {
             ThreadHelper.ThrowIfNotOnUIThread();
             if (IsSolutionOpen()) {
@@ -138,53 +102,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                                  grfCreateFlags: (uint) __VSCREATESOLUTIONFLAGS.CSF_TEMPORARY));
         }
 
-        [CanBeNull]
-        ProjectFile LoadProjectFile(string file) {
-            try {
-                return ProjectFile.FromFile(file);
-
-            } catch (Exception ex) {
-                Logger.Error(ex, $"Fehler beim Laden der Projektdatei '{file}'");
-                return null;
-            }
-        }
-
-        public ProjectViewModel LoadAndBind(string file, Hierarchy hierarchy) {
-
-            var projectFile = LoadProjectFile(file);
-            if (projectFile == null) {
-                return null;
-            }
-
-            var vm = new ProjectViewModel(projectFile);
-            if (hierarchy != null) {
-                vm.BindToHierarchy(hierarchy);
-            }
-
-            return vm;
-        }
-
-        public List<ProjectViewModel> BindToHierarchy(List<ProjectFile> projectFiles) {
-            var projectFileViewModels = new List<ProjectViewModel>();
-
-            var projectHierarchyById = GetProjectHierarchyByPath();
-
-            foreach (var projectFile in projectFiles) {
-
-                var vm = new ProjectViewModel(projectFile);
-
-                if (projectHierarchyById.TryGetValue(projectFile.Path.ToLower(), out var hierarchy)) {
-                    vm.BindToHierarchy(hierarchy);
-                }
-
-                projectFileViewModels.Add(vm);
-            }
-
-            return projectFileViewModels;
-        }
-
         public int OpenProject(string path) {
-            
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             Guid empty  = Guid.Empty;
@@ -246,28 +165,22 @@ namespace IInspectable.ProjectExplorer.Extension {
             return new Hierarchy(this, result, HierarchyId.Root);
         }
 
-        Dictionary<string, Hierarchy> GetProjectHierarchyByPath() {
+        public IEnumerable<Hierarchy> EnumerateHierarchy() {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var result = new Dictionary<string, Hierarchy>();
-
             Guid ignored = Guid.Empty;
-            var  flags   = __VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION | __VSENUMPROJFLAGS.EPF_UNLOADEDINSOLUTION;
+            var  flags   =  __VSENUMPROJFLAGS.EPF_ALLPROJECTS;
             if (Failed(_vsSolution1.GetProjectEnum((uint) flags, ref ignored, out var hierEnum))) {
-                return result;
+                yield break;
             }
 
             IVsHierarchy[] hier = new IVsHierarchy[1];
             while ((hierEnum.Next((uint) hier.Length, hier, out var fetched) == VSConstants.S_OK) && (fetched == hier.Length)) {
 
                 var hierarchy = new Hierarchy(this, hier[0], HierarchyId.Root);
-                var fullPath  = hierarchy.FullPath;
-                if (fullPath != null) {
-                    result[fullPath.ToLower()] = hierarchy;
-                }
-            }
 
-            return result;
+                yield return hierarchy;
+            }
         }
 
         #region IVsSolutionEvents

@@ -25,8 +25,8 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
         /// </summary>
         /// <value>The Glyph.</value>
         public object Glyph {
-            get { return GetValue(GlyphProperty); }
-            set { SetValue(GlyphProperty, value); }
+            get => GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
         }
 
         #endregion

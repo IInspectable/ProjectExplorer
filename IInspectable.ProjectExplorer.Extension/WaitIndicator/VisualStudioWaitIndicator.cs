@@ -21,21 +21,21 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public WaitIndicatorResult Wait(string title, string message, bool allowCancel, Action<IWaitContext> action) {
-            using (var waitContext = StartWait(title, message, allowCancel)) {
-                try {
-                    action(waitContext);
+            using var waitContext = StartWait(title, message, allowCancel);
+            try {
+                action(waitContext);
 
-                    return WaitIndicatorResult.Completed;
-                } catch (OperationCanceledException) {
+                return WaitIndicatorResult.Completed;
+            } catch (OperationCanceledException) {
+                return WaitIndicatorResult.Canceled;
+            } catch (AggregateException e) {
+                if (e.InnerExceptions[0] is OperationCanceledException) {
                     return WaitIndicatorResult.Canceled;
-                } catch (AggregateException e) {
-                    if (e.InnerExceptions[0] is OperationCanceledException _) {
-                        return WaitIndicatorResult.Canceled;
-                    } else {
-                        throw;
-                    }
                 }
+
+                throw;
             }
+
         }
 
         VisualStudioWaitContext StartWait(string title, string message, bool allowCancel) {

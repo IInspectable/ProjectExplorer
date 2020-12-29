@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Task = System.Threading.Tasks.Task;
 
 using System.Threading.Tasks;
+// ReSharper disable ConvertToAutoProperty
 
 #endregion
 
@@ -66,11 +67,12 @@ namespace IInspectable.ProjectExplorer.Extension {
                 var mefServices             = componentModel.GetService<MefServices>();
 
                 return new ProjectExplorerToolWindowServices(
-                    oleMenuCommandService: oleMenuCommandService,
-                    viewModelProvider: mefServices.ExplorerViewModelProvider,
+                    package                : this,
+                    oleMenuCommandService  : oleMenuCommandService,
+                    viewModelProvider      : mefServices.ExplorerViewModelProvider,
                     windowSearchHostFactory: windowSearchHostFactory,
-                    optionService: mefServices.OptionService,
-                    waitIndicator: mefServices.WaitIndicator
+                    optionService          : mefServices.OptionService,
+                    waitIndicator          : mefServices.WaitIndicator
                 );
             }
         }
@@ -164,6 +166,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             return (ProjectExplorerToolWindow) window;
 
         }
+
+        public static IServiceProvider ServiceProvider => GetGlobalService<IServiceProvider, IServiceProvider>();
 
         public static TService GetGlobalService<TService>() where TService : class {
             return GetGlobalService(typeof(TService)) as TService;

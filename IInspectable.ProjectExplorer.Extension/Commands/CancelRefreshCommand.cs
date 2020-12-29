@@ -13,11 +13,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public CancelRefreshCommand(ProjectExplorerViewModel viewModel)
             : base(PackageIds.CancelRefreshCommandId) {
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
         }
 
         public override void UpdateState() {

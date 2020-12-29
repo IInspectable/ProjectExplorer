@@ -7,14 +7,14 @@ using System.Diagnostics;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    sealed class OpenInFileExplorerCommand : ProjectSelectionCommand {
+    sealed class OpenInFileExplorerCommand: ProjectSelectionCommand {
 
         public OpenInFileExplorerCommand(ProjectExplorerViewModel viewModel):
             base(viewModel, PackageIds.OpenInFileExplorerCommandId) {
         }
 
         protected override bool EnableOverride(ProjectViewModel projectViewModel) {
-            return SelectedItems.Count<=5;
+            return SelectedItems.Count <= 5;
         }
 
         protected override bool VisibleOverride(ProjectViewModel projectViewModel) {
@@ -32,6 +32,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 };
                 Process.Start(info);
             }
-       }
+        }
+
     }
+
 }

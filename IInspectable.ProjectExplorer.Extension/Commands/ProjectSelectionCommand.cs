@@ -15,24 +15,14 @@ namespace IInspectable.ProjectExplorer.Extension {
         protected ProjectSelectionCommand(ProjectExplorerViewModel viewModel, int commandId, Guid? menuGroupOrDefault = null) : 
             base(commandId, menuGroupOrDefault) {
 
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            _viewModel = viewModel;        
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));        
         }
 
-        protected IReadOnlyList<ProjectViewModel> SelectedItems {
-            get { return _viewModel.SelectionService.SelectedItems; }
-        }
+        protected IReadOnlyList<ProjectViewModel> SelectedItems => _viewModel.SelectionService.SelectedItems;
 
-        public ProjectExplorerViewModel ViewModel {
-            get { return _viewModel; }
-        }
+        public ProjectExplorerViewModel ViewModel => _viewModel;
 
-        protected IWaitIndicator WaitIndicator {
-            get { return _viewModel.WaitIndicator; }
-        }
+        protected IWaitIndicator WaitIndicator => _viewModel.WaitIndicator;
 
         public sealed override void UpdateState() {
             Enabled = SelectedItems.Any() && SelectedItems.All(EnableOverride);
@@ -48,6 +38,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             ExecuteOverride(SelectedItems);
+
+            ViewModel.BringSelectionIntoView();
         }
 
         protected abstract bool EnableOverride(ProjectViewModel projectViewModel);
@@ -56,29 +48,29 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         protected void ForeachWithWaitIndicatorAndErrorReport(IReadOnlyList<ProjectViewModel> projects,
                                                               string verb, 
-                                                              Func<ProjectViewModel, int> action,
+                                                              Func<ProjectViewModel, HResult> action,
                                                               bool breakOnFirstError=true) {
             try {
 
                 bool allowCancel = projects.Count > 1;
 
-                using (var indicator = WaitIndicator.StartWait("Project Explorer", "", allowCancel)) {
-                    for (int i = 0; i < projects.Count; i++) {
-                        var project = projects[i];
+                using var indicator = WaitIndicator.StartWait("Project Explorer", "", allowCancel);
+                for (int i = 0; i < projects.Count; i++) {
+                    var project = projects[i];
 
-                        indicator.Message = $"{verb} project '{project.DisplayName}'.";
+                    indicator.Message = $"{verb} project '{project.DisplayName}'.";
 
-                        indicator.CancellationToken.ThrowIfCancellationRequested();
+                    indicator.CancellationToken.ThrowIfCancellationRequested();
 
-                        if (i == projects.Count - 1) {
-                            indicator.AllowCancel = false;
-                        }
+                    if (i == projects.Count - 1) {
+                        indicator.AllowCancel = false;
+                    }
 
-                        if (ShellUtil.ReportUserOnFailed(action(project)) && breakOnFirstError) {
-                            break;
-                        }
+                    if (ShellUtil.ReportUserOnFailed(action(project).Value) && breakOnFirstError) {
+                        break;
                     }
                 }
+
             } catch (OperationCanceledException) {
             }
         }

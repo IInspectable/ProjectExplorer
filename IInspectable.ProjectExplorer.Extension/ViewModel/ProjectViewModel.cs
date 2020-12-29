@@ -1,181 +1,133 @@
 #region Using Directives
 
 using System;
+
 using JetBrains.Annotations;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Imaging;
+
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectViewModel: ItemViewModel, IVsHierarchyEvents {
-
-        static readonly Logger Logger = Logger.Create<ProjectViewModel>();
+    class ProjectViewModel: ItemViewModel {
 
         [NotNull]
         readonly ProjectFile _projectFile;
 
         [CanBeNull]
-        Hierarchy _hierarchy;
-
-        [CanBeNull]
         ProjectExplorerViewModel _parent;
-        uint _eventCookie;
-        
+
+        ProjectStatus _status;
+        ImageMoniker?  _imageMoniker;
+        string        _displayName;
+
         public ProjectViewModel(ProjectFile projectFile) {
 
-            if (projectFile == null) {
-                throw new ArgumentNullException(nameof(projectFile));
-            }
-            
-            _projectFile = projectFile;
+            _status      = ProjectStatus.Closed;
+            _projectFile = projectFile ?? throw new ArgumentNullException(nameof(projectFile));
         }
 
         [CanBeNull]
-        public ProjectExplorerViewModel Parent {
-            get { return _parent; }
-        }
-
-        public override string DisplayName {
-            get { return _projectFile.Name; }
-        }
-
-        public override ImageMoniker ImageMoniker {
-            get {
-
-                switch (Status) {
-                    case ProjectStatus.Loaded:
-                    case ProjectStatus.Unloaded:
-                        // ReSharper disable once PossibleNullReferenceException _hierarchy ist nicht null, wenn Loaded
-                        return _hierarchy.GetImageMoniker();
-                }
-
-                return KnownMonikers.NewDocumentCollection;
-            }
-        }
+        public ProjectExplorerViewModel Parent => _parent;
 
         public override bool IsSelected {
-            get { return _parent?.SelectionService.IsSelected(this) ?? false; }
+            get => _parent?.SelectionService.IsSelected(this) ?? false;
             set {
+
+                if (value == IsSelected) {
+                    return;
+                }
+
                 if (value) {
                     _parent?.SelectionService.AddSelection(this);
                 } else {
                     _parent?.SelectionService.RemoveSelection(this);
                 }
+
+                NotifyPropertyChanged();
             }
         }
 
-        public string Directory {
-            get { return System.IO.Path.GetDirectoryName(_projectFile.Path); }
-        }
+        public          string        Directory    => System.IO.Path.GetDirectoryName(_projectFile.Path);
+        public          string        Path         => _projectFile.Path;
+        public          ProjectStatus Status       => _status;
+        public override ImageMoniker  ImageMoniker => _imageMoniker??_projectFile.ImageMoniker;
+        public override string        DisplayName  => _displayName.NullIfEmpty() ?? _projectFile.Name;
 
-        public string Path {
-            get { return _projectFile.Path; }
-        }
-        
-        public ProjectStatus Status {
-            get {
+        public bool SetState(ProjectStatus status, ImageMoniker? imageMoniker, string displayName) {
 
-                if(_hierarchy == null || _parent==null) {
-                    return ProjectStatus.Closed;
-                }
+            var stateChanged = false;
 
-                return _hierarchy.IsProjectUnloaded()?ProjectStatus.Unloaded:ProjectStatus.Loaded;                
+            if (!ImageMoniker.Equals(imageMoniker)) {
+                stateChanged  = true;
+                _imageMoniker = imageMoniker;
+                NotifyThisPropertyChanged(nameof(ImageMoniker));
             }
+
+            if (_status != status) {
+                stateChanged = true;
+                _status      = status;
+                NotifyThisPropertyChanged(nameof(Status));
+            }
+
+            if (_displayName != displayName.NullIfEmpty()) {
+                stateChanged = true;
+                _displayName = displayName.NullIfEmpty();
+
+                NotifyThisPropertyChanged(nameof(DisplayName));
+                NotifyThisPropertyChanged(nameof(DisplayContent));
+            }
+
+            if (stateChanged) {
+                NotifyAllPropertiesChanged();
+            }
+
+            return stateChanged;
         }
 
         public override void Filter(SearchContext context) {
             Visible = context.IsMatch(DisplayName);
 
-            if(IsSelected && !Visible) {
+            if (!Visible && IsSelected) {
                 IsSelected = false;
             }
+
+            NotifyThisPropertyChanged(nameof(DisplayContent));
         }
 
-        public int Open() {
-            return _parent?.SolutionService.OpenProject(_projectFile.Path) ?? VSConstants.E_FAIL;
+        public object DisplayContent {
+            get {
+
+                var searchContext = _parent?.SearchContext;
+
+                return _parent?.TextBlockBuilderService.ToTextBlock(
+                    part: DisplayName,
+                    searchPattern: searchContext?.Regex,
+                    hasMatch: out _) ?? (object) DisplayName;
+            }
         }
 
-        public int Close() {      
-            return _hierarchy?.CloseProject() ?? VSConstants.S_OK;
+        public HResult Open() {
+            return _parent?.ProjectService.OpenProject(this) ?? HResults.Failed;
         }
 
-        public int Reload() {
-            return _hierarchy?.ReloadProject() ?? VSConstants.E_FAIL;
+        public HResult Close() {
+            return _parent?.ProjectService.CloseProject(this) ?? HResults.Failed;
         }
 
-        public int Unload() {
-            return _hierarchy?.UnloadProject() ?? VSConstants.E_FAIL;
+        public HResult Reload() {
+            return _parent?.ProjectService.ReloadProject(this) ?? HResults.Failed;
         }
-        
-        public void BindToHierarchy([CanBeNull] Hierarchy hierarchy) {
 
-            UnadviseHierarchyEvents();
-
-            _hierarchy = hierarchy;
-
-            AdviseHierarchyEvents();
-
-            NotifyAllPropertiesChanged();
+        public HResult Unload() {
+            return _parent?.ProjectService.UnloadProject(this) ?? HResults.Failed;
         }
-       
+
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {
-            _parent = parent ?? throw new ArgumentNullException(nameof(parent)); 
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
         }
 
-        public void Dispose() {
-            IsSelected = false;
-            UnadviseHierarchyEvents();
-            _parent    = null;
-            _hierarchy = null;
-        }
-
-        #region IVsHierarchyEvents
-
-        void AdviseHierarchyEvents() {
-            if(_eventCookie != 0) {
-                Logger.Error($"{nameof(AdviseHierarchyEvents)}: event cookie not 0 ({_eventCookie})");
-            }
-            _eventCookie = _hierarchy?.AdviseHierarchyEvents(this) ?? 0;
-        }
-
-        void UnadviseHierarchyEvents() {
-            if(_eventCookie != 0) {
-                _hierarchy?.UnadviseHierarchyEvents(_eventCookie);
-                _eventCookie = 0;
-            }
-        }
-
-        int IVsHierarchyEvents.OnItemAdded(uint itemidParent, uint itemidSiblingPrev, uint itemidAdded) {
-            return VSConstants.S_OK;
-        }
-
-        int IVsHierarchyEvents.OnItemsAppended(uint itemidParent) {
-            return VSConstants.S_OK;
-        }
-
-        int IVsHierarchyEvents.OnItemDeleted(uint itemid) {
-            return VSConstants.S_OK;
-        }
-
-        int IVsHierarchyEvents.OnPropertyChanged(uint itemid, int propid, uint flags) {
-            if(propid ==(int)__VSHPROPID.VSHPROPID_IconHandle) {
-                NotifyThisPropertyChanged(nameof(ImageMoniker));
-            }
-            return VSConstants.S_OK; 
-        }
-
-        int IVsHierarchyEvents.OnInvalidateItems(uint itemidParent) {
-            return VSConstants.S_OK;
-        }
-
-        int IVsHierarchyEvents.OnInvalidateIcon(IntPtr hicon) {            
-            return VSConstants.S_OK;
-        }
-
-        #endregion
     }
+
 }
