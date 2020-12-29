@@ -1,6 +1,8 @@
 # Project Explorer for Visual Studio
-
-[![Build status](https://ci.appveyor.com/api/projects/status/k07x5d2o1fr3u071/branch/vs2019?svg=true)](https://ci.appveyor.com/project/IInspectable/iinspectable-projectexplorer/branch/vs2019)
+| Branch | Status |
+|--------|---------|
+|**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/master?svg=true)](https://ci.appveyor.com/project/IInspectable/iinspectable-projectexplorer/branch/master)|
+|**vs2019**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/vs2019?svg=true)](https://ci.appveyor.com/project/IInspectable/iinspectable-projectexplorer/branch/vs2019)|
 
 ## Overview
 Project Explorer is a small tool window for managing a large number of projects within a given search folder. 
