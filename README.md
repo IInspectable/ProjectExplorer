@@ -1,7 +1,7 @@
 # Project Explorer for Visual Studio
 | Branch | Status |
 |--------|---------|
-|**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer)|
+|**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/master?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer/branch/master)|
 |**vs2019**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/vs2019?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer/branch/vs2019)|
 
 ## Overview
