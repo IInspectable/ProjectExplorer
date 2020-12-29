@@ -15,19 +15,19 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         readonly OleMenuCommand _command;
 
-        protected Command(int commandId, Guid? menuGroupOrDefault=null) {
+        protected Command(int commandId, Guid? menuGroupOrDefault = null) {
 
             var menuGroup = menuGroupOrDefault ?? PackageGuids.ProjectExplorerWindowPackageCmdSetGuid;
 
             var menuCommandId = new CommandID(menuGroup, commandId);
             _command = new OleMenuCommand(OnExecute, menuCommandId);
 
-            _command.BeforeQueryStatus +=(o,e)=> UpdateState();
+            _command.BeforeQueryStatus += (_, _) => UpdateState();
             _command.CommandChanged    += OnCommandChanged;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler                CanExecuteChanged;
 
         public Guid MenuGroup => _command.CommandID.Guid;
 
@@ -42,7 +42,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             get => _command.Supported;
             set => _command.Supported = value;
         }
-        
+
         public bool Visible {
             get => _command.Visible;
             set => _command.Visible = value;
@@ -55,14 +55,15 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void Unregister(OleMenuCommandService commandService) {
             commandService.RemoveCommand(_command);
         }
-        
-        public bool CanExecute(object parameter=null) {
+
+        public bool CanExecute(object parameter = null) {
             return _command.Enabled && _command.Supported && _command.Visible;
         }
-        
-        public abstract void Execute(object parameter=null);
 
-        public virtual void UpdateState() { }
+        public abstract void Execute(object parameter = null);
+
+        public virtual void UpdateState() {
+        }
 
         void OnCommandChanged(object sender, EventArgs e) {
             CanExecuteChanged?.Invoke(this, e);
@@ -76,5 +77,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         void NotifyPropertiesChanged() {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
         }
+
     }
+
 }

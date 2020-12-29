@@ -12,6 +12,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+// ReSharper disable ConvertToAutoProperty
 
 #endregion
 

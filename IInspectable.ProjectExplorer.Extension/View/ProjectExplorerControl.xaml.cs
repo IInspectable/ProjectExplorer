@@ -42,19 +42,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
         }
 
-        void OnSettingsContextMenuOpening(object sender, ContextMenuEventArgs e) {
-            // TODO Tastaturfall berücksichtigen (-1, -1)
-            var source = e.OriginalSource as FrameworkElement;
-            if (source == null) {
-                return;
-            }
-
-            var ptScreen = source.PointToScreen(new Point(e.CursorLeft, e.CursorTop));
-            ViewModel.ShowSettingsButtonContextMenu((int) ptScreen.X, (int) ptScreen.Y);
-
-            e.Handled = true;
-        }
-
         void OnProjectItemContextMenuOpening(object sender, ContextMenuEventArgs e) {
 
             var source = FindAncestor(e.OriginalSource);
@@ -75,8 +62,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             e.Handled = true;
 
             FrameworkElement FindAncestor(object element) {
-                while (element is FrameworkContentElement) {
-                    element = ((FrameworkContentElement) element).Parent;
+                while (element is FrameworkContentElement frameworkContentElement) {
+                    element = frameworkContentElement.Parent;
                 }
 
                 return element as FrameworkElement;
@@ -177,7 +164,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public bool SearchEnabled => true;
 
-        public Guid Category { get; } = new Guid("65511566-dab1-4298-b5c9-a82c4532001e");
+        public Guid Category { get; } = new("65511566-dab1-4298-b5c9-a82c4532001e");
 
         public IVsEnumWindowSearchFilters SearchFiltersEnum => null;
 

@@ -54,7 +54,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public HierarchyId ParentItemId => GetProperty<int>(__VSHPROPID.VSHPROPID_Parent, HierarchyId.Nil);
 
-        public Hierarchy Parent => new Hierarchy(_solutionService, _vsHierarchy, ParentItemId);
+        public Hierarchy Parent => new(_solutionService, _vsHierarchy, ParentItemId);
 
         public HierarchyId ParentHierarchyItemId {
             get {

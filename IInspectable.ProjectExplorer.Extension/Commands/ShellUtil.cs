@@ -22,9 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return new ShellUtil(); 
         }
 
-        static IVsUIShell Shell {
-            get { return ProjectExplorerPackage.GetGlobalService<IVsUIShell, IVsUIShell>(); }
-        }
+        static IVsUIShell Shell => ProjectExplorerPackage.GetGlobalService<IVsUIShell, IVsUIShell>();
 
         public void Dispose() {
             ThreadHelper.ThrowIfNotOnUIThread();

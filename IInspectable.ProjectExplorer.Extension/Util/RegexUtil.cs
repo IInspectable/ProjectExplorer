@@ -38,7 +38,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         static Regex SafeGetRegex(string pattern, RegexOptions regexOptions) {
-            pattern = pattern ?? String.Empty;
+            pattern ??= String.Empty;
             try {
                 return new Regex(pattern, regexOptions);
             } catch (ArgumentException) {

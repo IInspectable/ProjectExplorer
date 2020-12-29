@@ -15,7 +15,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public bool Failed         => ErrorHandler.Failed(Value);
         public int  ThrowOnFailure => ErrorHandler.ThrowOnFailure(Value);
 
-        public static implicit operator HResult(int hr) => new HResult(hr);
+        public static implicit operator HResult(int hr) => new(hr);
         public static explicit operator int(HResult hr) => hr.Value;
 
     }

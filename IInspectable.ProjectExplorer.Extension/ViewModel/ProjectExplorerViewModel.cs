@@ -18,6 +18,9 @@ using Microsoft.VisualStudio.Shell;
 
 using System.ComponentModel;
 
+using IInspectable.ProjectExplorer.Extension.UI;
+// ReSharper disable ConvertToAutoProperty
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -183,13 +186,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public SearchContext SearchContext {
-            get {
-                if (_searchContext == null) {
-                    _searchContext = new SearchContext();
-                }
-
-                return _searchContext;
-            }
+            get => _searchContext ??= new SearchContext();
             private set => _searchContext = value;
         }
 

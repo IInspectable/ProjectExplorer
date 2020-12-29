@@ -36,7 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension {
     class ProjectExplorerToolWindow: ToolWindowPane, IErrorInfoService {
 
         public const  string GuidString = "f3e3f345-a607-4f4c-9742-bb6415f2b062";
-        public static Guid   Guid => new Guid(GuidString);
+        public static Guid   Guid => new(GuidString);
         public const  string Title = "Project Explorer";
 
         public ProjectExplorerToolWindow(ProjectExplorerToolWindowServices services): base(null) {
@@ -56,15 +56,13 @@ namespace IInspectable.ProjectExplorer.Extension {
             Caption            = Title;
             BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
 
-            ViewModel.RequestBringSelectionIntoView += (o, e) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
+            ViewModel.RequestBringSelectionIntoView += (_, _) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
             // ReSharper restore VirtualMemberCallInConstructor
         }
 
         ProjectExplorerViewModel ViewModel { get; }
 
-        ProjectExplorerControl ProjectExplorerControl {
-            get { return (ProjectExplorerControl) Content; }
-        }
+        ProjectExplorerControl ProjectExplorerControl => (ProjectExplorerControl) Content;
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -103,9 +101,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-        public bool CanActivateSearch {
-            get { return ProjectExplorerControl.CanActivateSearch; }
-        }
+        public bool CanActivateSearch => ProjectExplorerControl.CanActivateSearch;
 
         public void ActivateSearch() {
             ProjectExplorerControl.ActivateSearch();

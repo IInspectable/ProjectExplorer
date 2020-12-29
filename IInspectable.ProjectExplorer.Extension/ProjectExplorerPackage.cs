@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Task = System.Threading.Tasks.Task;
 
 using System.Threading.Tasks;
+// ReSharper disable ConvertToAutoProperty
 
 #endregion
 

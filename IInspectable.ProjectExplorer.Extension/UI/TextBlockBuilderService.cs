@@ -5,9 +5,9 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 using JetBrains.Annotations;
 
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension.UI {
 
     [Export]
     public sealed class TextBlockBuilderService {

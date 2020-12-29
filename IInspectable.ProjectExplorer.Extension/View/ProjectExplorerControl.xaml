@@ -27,6 +27,7 @@
             <Border BorderThickness="0" >
 
                 <Border.InputBindings>
+                    <!-- ReSharper disable once Xaml.PossibleNullReferenceException -->
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Parent.ExceuteDefaultCommand}" />
                 </Border.InputBindings>
 

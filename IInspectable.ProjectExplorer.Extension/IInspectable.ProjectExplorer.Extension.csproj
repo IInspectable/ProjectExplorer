@@ -65,7 +65,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -88,6 +88,7 @@
     <Compile Include="Commands\SettingsCommand.cs" />
     <Compile Include="Commands\ShellUtil.cs" />
     <Compile Include="Commands\UnloadProjectCommand.cs" />
+    <Compile Include="CompilerServices\CompilerServices.cs" />
     <Compile Include="Model\Hierarchy.cs" />
     <Compile Include="Model\HierarchyData.cs" />
     <Compile Include="Model\HierarchyId.cs" />
@@ -198,6 +199,7 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -14,9 +14,9 @@ namespace IInspectable.ProjectExplorer.Extension {
             _id = (uint) id;
         }
 
-        public static readonly HierarchyId Root = new HierarchyId(VSConstants.VSITEMID_ROOT);
-        public static readonly HierarchyId Nil = new HierarchyId(VSConstants.VSITEMID_NIL);
-        public static readonly HierarchyId Selection = new HierarchyId(VSConstants.VSITEMID_SELECTION);
+        public static readonly HierarchyId Root      = new(VSConstants.VSITEMID_ROOT);
+        public static readonly HierarchyId Nil       = new(VSConstants.VSITEMID_NIL);
+        public static readonly HierarchyId Selection = new(VSConstants.VSITEMID_SELECTION);
 
         public uint Id          => _id;
         public bool IsNil       => _id == Nil.Id;
@@ -32,11 +32,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public static implicit operator HierarchyId(int id) {
-            return new HierarchyId(id);
+            return new(id);
         }
 
         public static implicit operator HierarchyId(uint id) {
-            return new HierarchyId(id);
+            return new(id);
         }
 
         public override string ToString() {

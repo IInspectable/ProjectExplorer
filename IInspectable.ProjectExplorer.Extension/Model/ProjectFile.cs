@@ -1,30 +1,23 @@
 ﻿#region Using Directives
 
-using System.Xml;
-
 using Microsoft.VisualStudio.Imaging.Interop;
 
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    public class ProjectFile {
+    public sealed record ProjectFile {
 
-        ProjectFile(string name, string path, ImageMoniker imageMoniker) {
-            Name         = name;
-            Path         = path;
-            ImageMoniker = imageMoniker;
-        }
-
-        public string       Name         { get; }
-        public string       Path         { get; }
-        public ImageMoniker ImageMoniker { get; }
+        public string       Name         { get; init; }
+        public string       Path         { get; init; }
+        public ImageMoniker ImageMoniker { get; init; }
 
         public static ProjectFile FromFile(string fileName, ImageMoniker imageMoniker) {
-
-            return new ProjectFile(name: System.IO.Path.GetFileNameWithoutExtension(fileName),
-                                   path: fileName,
-                                   imageMoniker: imageMoniker);
+            return new() {
+                Name         = System.IO.Path.GetFileNameWithoutExtension(fileName),
+                Path         = fileName,
+                ImageMoniker = imageMoniker
+            };
         }
 
     }

@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.Shell;
 
 using System.ComponentModel.Composition;
 
+using IInspectable.ProjectExplorer.Extension.UI;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -20,21 +22,20 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [Import]
         readonly IWaitIndicator _waitIndicator;
-        
+
         [Import]
         readonly TextBlockBuilderService _textBlockBuilderService;
 
         #pragma warning restore
 
         public ProjectExplorerViewModel CreateViewModel(ProjectExplorerPackage package, IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
-
-            return new ProjectExplorerViewModel(
-                package: package,
-                errorInfoService: errorInfoService,
-                solutionService: _solutionService,
-                optionService: _optionService,
-                oleMenuCommandService: oleMenuCommandService,
-                waitIndicator: _waitIndicator,
+            return new(
+                package                : package,
+                errorInfoService       : errorInfoService,
+                solutionService        : _solutionService,
+                optionService          : _optionService,
+                oleMenuCommandService  : oleMenuCommandService,
+                waitIndicator          : _waitIndicator,
                 textBlockBuilderService: _textBlockBuilderService);
         }
 

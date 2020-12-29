@@ -54,23 +54,23 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 bool allowCancel = projects.Count > 1;
 
-                using (var indicator = WaitIndicator.StartWait("Project Explorer", "", allowCancel)) {
-                    for (int i = 0; i < projects.Count; i++) {
-                        var project = projects[i];
+                using var indicator = WaitIndicator.StartWait("Project Explorer", "", allowCancel);
+                for (int i = 0; i < projects.Count; i++) {
+                    var project = projects[i];
 
-                        indicator.Message = $"{verb} project '{project.DisplayName}'.";
+                    indicator.Message = $"{verb} project '{project.DisplayName}'.";
 
-                        indicator.CancellationToken.ThrowIfCancellationRequested();
+                    indicator.CancellationToken.ThrowIfCancellationRequested();
 
-                        if (i == projects.Count - 1) {
-                            indicator.AllowCancel = false;
-                        }
+                    if (i == projects.Count - 1) {
+                        indicator.AllowCancel = false;
+                    }
 
-                        if (ShellUtil.ReportUserOnFailed(action(project).Value) && breakOnFirstError) {
-                            break;
-                        }
+                    if (ShellUtil.ReportUserOnFailed(action(project).Value) && breakOnFirstError) {
+                        break;
                     }
                 }
+
             } catch (OperationCanceledException) {
             }
         }

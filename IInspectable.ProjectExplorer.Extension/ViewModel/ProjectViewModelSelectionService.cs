@@ -13,14 +13,15 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class ProjectViewModelSelectionService {
 
-        readonly ObservableCollection<ProjectViewModel> _projects;
-
         readonly HashSet<ProjectViewModel> _selectedItems;
 
         public ProjectViewModelSelectionService(ObservableCollection<ProjectViewModel> projects) {
-            _projects                   =  projects ?? throw new ArgumentNullException(nameof(projects));
-            _selectedItems              =  new HashSet<ProjectViewModel>();
-            _projects.CollectionChanged += OnProjectCollectionChanged;
+            if (projects == null) {
+                throw new ArgumentNullException(nameof(projects));
+            }
+
+            _selectedItems             =  new HashSet<ProjectViewModel>();
+            projects.CollectionChanged += OnProjectCollectionChanged;
         }
 
         public event EventHandler SelectionChanged;

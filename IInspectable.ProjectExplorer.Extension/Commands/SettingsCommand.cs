@@ -22,7 +22,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public bool Executing {
-            get { return _executing; }
+            get => _executing;
             set {
                 if (value == _executing) {
                     return;
