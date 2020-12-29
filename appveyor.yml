@@ -8,3 +8,4 @@ before_build:
   - nuget restore
 build:
   verbosity: normal
+  
