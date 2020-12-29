@@ -2,7 +2,7 @@
 | Branch | Status |
 |--------|---------|
 |**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer)|
-|**vs2019**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/vs2019?svg=true)](https://ci.appveyor.com/project/IInspectable/iinspectable-projectexplorer/branch/vs2019)|
+|**vs2019**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/vs2019?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer/branch/vs2019)|
 
 ## Overview
 Project Explorer is a small tool window for managing a large number of projects within a given search folder. 
