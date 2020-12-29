@@ -80,8 +80,7 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
         }
 
         public void BringSelectionIntoView() {
-            var listBoxItem = ItemContainerGenerator.ContainerFromItem(SelectedItem) as ListBoxItem;
-            listBoxItem?.BringIntoView();
+            ScrollIntoView(SelectedItem);
         }
 
     }
