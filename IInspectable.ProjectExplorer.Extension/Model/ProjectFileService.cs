@@ -64,8 +64,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         List<string> SearchProjectFiles(string path, CancellationToken cancellationToken) {
-            var supported = SupportedProjectExtensions();
-            var extensions = ProjectExtensionCandidates().Where(ext => supported.Contains(ext))
+
+            const string projSuffix = "proj";
+            var extensions = SupportedProjectExtensions().Where(ext=> ext.EndsWith(projSuffix))
                                                          .ToArray();
 
             var projectFiles = new List<string>();
@@ -76,7 +77,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
 
             // Kniff - alle candidaten enden mit "proj"...
-            foreach (var file in Directory.EnumerateFiles(path, "*.*proj", SearchOption.AllDirectories)) {
+            foreach (var file in Directory.EnumerateFiles(path, $"*.*{projSuffix}", SearchOption.AllDirectories)) {
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -90,26 +91,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             return projectFiles;
         }
 
-        ImmutableList<string> ProjectExtensionCandidates() {
-            return ImmutableList.Create(
-                "csproj",
-                "fsproj",
-                "rptproj",
-                "shproj",
-                "vcproj",
-                "vcxproj",
-                "wixproj");
-        }
-
         public ImmutableList<string> SupportedProjectExtensions() {
-            try {
 
-                return EnumeratePossibleProjectExtensions().Distinct().ToImmutableList();
-
-            } catch (Exception) {
-                // Ultimate Fallback
-                return Enumerable.Repeat("csproj", 1).ToImmutableList();
-            }
+            return EnumeratePossibleProjectExtensions().Distinct()
+                                                       .ToImmutableList();
 
             IEnumerable<string> EnumeratePossibleProjectExtensions() {
 
