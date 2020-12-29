@@ -159,16 +159,33 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string StatusText {
             get {
 
-                int projectCount = Projects.Count(p => p.Visible);
-                if (IsLoading || projectCount == 0) {
+                if (IsLoading) {
                     return String.Empty;
                 }
 
-                if (projectCount == 1) {
-                    return "1 Project";
+                var stats = GetProjectStats();
+                if (stats.Total == 0) {
+                    return String.Empty;
                 }
 
-                return $"{projectCount} Projects";
+                var totalProject = Pluralize("project", stats.Total);
+                var statusText   = $"{stats.Total} {totalProject}";
+
+                if (stats.Added != 0) {
+
+                    var addedProject = Pluralize("project", stats.Added);
+                    statusText += $" ({stats.Loaded} of {stats.Added} {addedProject} loaded)";
+                }
+
+                return statusText;
+
+                static string Pluralize(string name, int count) {
+                    if (count == 1) {
+                        return name;
+                    }
+
+                    return $"{name}s";
+                }
             }
         }
 
@@ -208,6 +225,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void OnProjectStateChanged(object sender, EventArgs e) {
             UpdateCommands();
+            NotifyThisPropertyChanged(nameof(StatusText));
         }
 
         #endregion
@@ -356,7 +374,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             foreach (var command in _commands) {
                 command.UpdateState();
             }
-
+            
             ShellUtil.UpdateCommandUI(immediateUpdate: false);
         }
 
@@ -364,6 +382,33 @@ namespace IInspectable.ProjectExplorer.Extension {
        
         public void BringSelectionIntoView() {
             RequestBringSelectionIntoView?.Invoke(this, EventArgs.Empty);
+        }
+
+        ProjectStats GetProjectStats(bool onlyVisible = true) {
+
+            var stats = new ProjectStats(Loaded: 0, Unloaded: 0, Closed: 0);
+            
+            foreach (var p in EnumerateProjects()) {
+                stats = p.Status switch {
+                    ProjectStatus.Loaded   => stats with {Loaded   = stats.Loaded   + 1},
+                    ProjectStatus.Unloaded => stats with {Unloaded = stats.Unloaded + 1},
+                    ProjectStatus.Closed   => stats with {Closed   = stats.Closed   + 1},
+                    _ => stats
+                };
+            }
+
+            return stats;
+
+            IEnumerable<ProjectViewModel> EnumerateProjects() {
+                return onlyVisible ? Projects.Where(p => p.Visible) : Projects;
+            }
+        }
+
+        sealed record ProjectStats(int Loaded, int Unloaded, int Closed) {
+
+            public int Total => Loaded + Unloaded + Closed;
+            public int Added => Loaded + Unloaded;
+
         }
 
         static class Capture {
