@@ -104,6 +104,7 @@
     <Compile Include="OptionService.cs" />
     <Compile Include="Model\ProjectEventArgs.cs" />
     <Compile Include="UI\TextBlockBuilderService.cs" />
+    <Compile Include="ViewModel\ProjectViewModelComparer.cs" />
     <Compile Include="ViewModel\SearchContext.cs" />
     <Compile Include="ViewModel\ItemViewModel.cs" />
     <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
