@@ -5,6 +5,7 @@ using System;
 using JetBrains.Annotations;
 
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Text.PatternMatching;
 
 #endregion
 
@@ -86,27 +87,25 @@ namespace IInspectable.ProjectExplorer.Extension {
             return stateChanged;
         }
 
+        private PatternMatch? _patternMatch;
+        public  PatternMatch? PatternMatch => _patternMatch;
+
         public override void Filter(SearchContext context) {
-            Visible = context.IsMatch(DisplayName);
+
+            Visible = context.IsMatch(DisplayName, out _patternMatch);
 
             if (!Visible && IsSelected) {
                 IsSelected = false;
             }
 
             NotifyThisPropertyChanged(nameof(DisplayContent));
+            NotifyThisPropertyChanged(nameof(PatternMatch));
         }
 
-        public object DisplayContent {
-            get {
-
-                var searchContext = _parent?.SearchContext;
-
-                return _parent?.TextBlockBuilderService.ToTextBlock(
-                    part: DisplayName,
-                    searchPattern: searchContext?.Regex,
-                    hasMatch: out _) ?? (object) DisplayName;
-            }
-        }
+        public object DisplayContent =>
+            _parent?.TextBlockBuilderService.ToTextBlock(
+                part: DisplayName,
+                patternMatch: _patternMatch) ?? (object) DisplayName;
 
         public HResult Open() {
             return _parent?.ProjectService.OpenProject(this) ?? HResults.Failed;

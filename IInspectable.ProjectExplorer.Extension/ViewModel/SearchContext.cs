@@ -1,9 +1,11 @@
 #region Using Directives
 
 using System;
-using System.Text.RegularExpressions;
+using System.Globalization;
 
 using JetBrains.Annotations;
+
+using Microsoft.VisualStudio.Text.PatternMatching;
 
 #endregion
 
@@ -11,34 +13,29 @@ namespace IInspectable.ProjectExplorer.Extension {
 
     sealed class SearchContext {
 
-        public SearchContext(): this(null) {
+        private readonly IPatternMatcher _patternMatcher;
 
-        }
-
-        public SearchContext(string searchString) {
+        public SearchContext(string searchString, IPatternMatcherFactory patternMatcherFactory) {
             SearchString = searchString ?? String.Empty;
 
-            if (!String.IsNullOrWhiteSpace(searchString)) {
+            if (SearchString.Length > 0) {
 
-                Regex = RegexUtil.BuildSearchPattern(
+                _patternMatcher = patternMatcherFactory.CreatePatternMatcher(
                     searchString,
-                    matchCase: false,
-                    useRegularExpressions: false);
+                    new PatternMatcherCreationOptions(
+                        cultureInfo: CultureInfo.CurrentCulture,
+                        flags: PatternMatcherCreationFlags.IncludeMatchedSpans));
+
             }
         }
 
         [NotNull]
         public string SearchString { get; }
 
-        [CanBeNull]
-        public Regex Regex { get; }
+        public bool IsMatch(string input, out PatternMatch? patternMatch) {
 
-        public bool IsMatch(string input) {
-            if (input == null) {
-                return false;
-            }
-
-            return Regex == null || Regex.IsMatch(input);
+            patternMatch = _patternMatcher?.TryMatch(input);
+            return _patternMatcher == null || patternMatch.HasValue;
         }
 
     }

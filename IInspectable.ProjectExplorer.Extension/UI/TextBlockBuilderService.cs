@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -14,6 +13,7 @@ using JetBrains.Annotations;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.PatternMatching;
 
 #endregion
 
@@ -31,26 +31,24 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
         public TextBlock ToTextBlock(IReadOnlyCollection<string> parts) {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            return ToTextBlock(parts, null, out _);
+            return ToTextBlock(parts, null);
         }
 
         [CanBeNull]
-        public TextBlock ToTextBlock(string part, [CanBeNull] Regex searchPattern, out bool hasMatch) {
-            return ToTextBlock(new[] {part}, searchPattern, out hasMatch);
+        public TextBlock ToTextBlock(string part, [CanBeNull] PatternMatch? patternMatch) {
+            return ToTextBlock(new[] {part}, patternMatch);
         }
 
         [CanBeNull]
-        public TextBlock ToTextBlock(IReadOnlyCollection<string> parts, [CanBeNull] Regex searchPattern, out bool hasMatch) {
+        public TextBlock ToTextBlock(IReadOnlyCollection<string> parts, [CanBeNull] PatternMatch? patternMatch) {
 
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            hasMatch = false;
 
             if (parts.Count == 0) {
                 return null;
             }
 
-            var runInfos = ToRunInfo(parts, searchPattern, out hasMatch);
+            var runInfos = ToRunInfo(parts, patternMatch, out var hasMatch);
             var textBlock = new TextBlock {
                 TextWrapping      = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
@@ -65,31 +63,32 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
             return textBlock;
         }
 
-        IList<RunInfo> ToRunInfo(IReadOnlyCollection<string> parts, [CanBeNull] Regex searchPattern, out bool hasMatches) {
+        IList<RunInfo> ToRunInfo(IReadOnlyCollection<string> parts, [CanBeNull] PatternMatch? patternMatch, out bool hasMatches) {
             hasMatches = false;
 
-            if (searchPattern == null) {
+            if (patternMatch == null) {
                 return parts.Select(part => new RunInfo(part, isMatch: false)).ToList();
             }
 
             var runInfos = new List<RunInfo>();
             foreach (var part in parts) {
 
-                var matches = searchPattern.Matches(part);
-                if (matches.Count > 0) {
+                var matchedSpans = patternMatch.Value.MatchedSpans;
+                if (matchedSpans.Length > 0) {
 
                     var currentIndex = 0;
-                    foreach (Match match in matches) {
+                    foreach (var match in matchedSpans) {
 
                         // Der Text vor dem Treffertext
-                        if (match.Index > currentIndex) {
-                            var text = part.Substring(currentIndex, length: match.Index - currentIndex);
+                        if (match.Start > currentIndex) {
+                            var text = part.Substring(currentIndex, length: match.Start - currentIndex);
                             runInfos.Add(new RunInfo(text, isMatch: false));
                         }
 
                         // Der Treffertext
-                        runInfos.Add(new RunInfo(match.Value, isMatch: true));
-                        currentIndex = match.Index + match.Length;
+                        var matchtext = part.Substring(match.Start, match.Length);
+                        runInfos.Add(new RunInfo(matchtext, isMatch: true));
+                        currentIndex = match.End;
 
                     }
 

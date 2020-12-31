@@ -26,6 +26,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         [Import]
         readonly TextBlockBuilderService _textBlockBuilderService;
 
+        [Import]
+        private readonly SearchContextFactory _searchContextFactory;
+
         #pragma warning restore
 
         public ProjectExplorerViewModel CreateViewModel(ProjectExplorerPackage package, IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
@@ -36,7 +39,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 optionService          : _optionService,
                 oleMenuCommandService  : oleMenuCommandService,
                 waitIndicator          : _waitIndicator,
-                textBlockBuilderService: _textBlockBuilderService);
+                textBlockBuilderService: _textBlockBuilderService,
+                searchContextFactory   : _searchContextFactory);
         }
 
     }

@@ -41,6 +41,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ProjectViewModelSelectionService       _selectionService;
         readonly ProjectService                         _projectService;
         readonly ProjectFileService                     _projectFileService;
+        readonly SearchContextFactory                   _searchContextFactory;
 
         [CanBeNull]
         CancellationTokenSource _loadingCancellationToken;
@@ -56,7 +57,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                                           OptionService optionService,
                                           OleMenuCommandService oleMenuCommandService,
                                           IWaitIndicator waitIndicator,
-                                          TextBlockBuilderService textBlockBuilderService) {
+                                          TextBlockBuilderService textBlockBuilderService,
+                                          SearchContextFactory searchContextFactory) {
 
             _errorInfoService        = errorInfoService;
             _solutionService         = solutionService;
@@ -64,6 +66,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _oleMenuCommandService   = oleMenuCommandService;
             _waitIndicator           = waitIndicator;
             _textBlockBuilderService = textBlockBuilderService;
+            _searchContextFactory    = searchContextFactory;
 
             _commands = new List<Command> {
                 {RefreshCommand            = new RefreshCommand(this)},
@@ -82,8 +85,8 @@ namespace IInspectable.ProjectExplorer.Extension {
             _projectsView = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
             // Sortierung
             _projectsView.IsLiveSorting = true;
-            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.Status),      ListSortDirection.Descending));
-            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.DisplayName), ListSortDirection.Ascending));
+            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.Status),       ListSortDirection.Descending));
+            _projectsView.SortDescriptions.Add(new SortDescription(nameof(ProjectViewModel.DisplayName),  ListSortDirection.Ascending));
             _projectsView.LiveSortingProperties.Add(nameof(ProjectViewModel.Status));
             // Filter
             _projectsView.IsLiveFiltering = true;
@@ -203,7 +206,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         public SearchContext SearchContext {
-            get => _searchContext ??= new SearchContext();
+            get => _searchContext ??= _searchContextFactory.Create(null);
             private set => _searchContext = value;
         }
 
@@ -249,7 +252,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void ApplySearch(string searchString) {
 
-            SearchContext = new SearchContext(searchString);
+            SearchContext = _searchContextFactory.Create(searchString);
 
             ApplySearch();
         }
