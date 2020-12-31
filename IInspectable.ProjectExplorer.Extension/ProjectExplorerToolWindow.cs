@@ -101,9 +101,15 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-        public bool CanActivateSearch => ProjectExplorerControl.CanActivateSearch;
+        public bool CanActivateSearch {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return ProjectExplorerControl.CanActivateSearch;
+            }
+        }
 
         public void ActivateSearch() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ProjectExplorerControl.ActivateSearch();
         }
 

@@ -21,6 +21,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public WaitIndicatorResult Wait(string title, string message, bool allowCancel, Action<IWaitContext> action) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+           
             using var waitContext = StartWait(title, message, allowCancel);
             try {
                 action(waitContext);
@@ -47,6 +49,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         IWaitContext IWaitIndicator.StartWait(string title, string message, bool allowCancel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return StartWait(title, message, allowCancel);
         }
 

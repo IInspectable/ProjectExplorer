@@ -39,6 +39,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public override void Execute(object parameter = null) {
 
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (!CanExecute(parameter)) {
                 return;
             }

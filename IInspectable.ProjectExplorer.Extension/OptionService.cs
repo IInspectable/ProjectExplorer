@@ -7,6 +7,8 @@ using System.Linq;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 
+using Microsoft.VisualStudio.Shell;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -31,6 +33,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public string ProjectsRoot {
             get {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (String.IsNullOrWhiteSpace(_projectsRoot)) {
 
                     var solutionDir = SolutionService.GetSolutionDirectory();
@@ -58,6 +61,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void LoadOptions(Stream stream) {
 
             try {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 var xDoc = XDocument.Load(stream);
 
                 _projectsRoot= FromSolutionRelativePath(xDoc.Root?.Descendants(nameof(ProjectsRoot)).FirstOrDefault()?.Value);
@@ -68,7 +72,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void SaveOptions(Stream stream) {
-            
+            ThreadHelper.ThrowIfNotOnUIThread();
             var xDoc = new XDocument(
                 new XElement(nameof(OptionService),
                     new XElement(nameof(ProjectsRoot), ToSolutionRelativePath(_projectsRoot))
@@ -83,6 +87,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         string FromSolutionRelativePath([CanBeNull] string savedPath) {
 
+            ThreadHelper.ThrowIfNotOnUIThread();
+            
             if (String.IsNullOrEmpty(savedPath)) {
                 Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is null or empty");
                 return null;
@@ -108,6 +114,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         string ToSolutionRelativePath(string projectsRoot) {
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             Logger.Info($"{nameof(ToSolutionRelativePath)}: {(projectsRoot ?? "<Null>")}");
 

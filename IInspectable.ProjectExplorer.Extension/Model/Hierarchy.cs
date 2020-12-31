@@ -48,7 +48,12 @@ namespace IInspectable.ProjectExplorer.Extension {
             }
         }
 
-        public Guid ProjectGuid => _solutionService.GetProjectGuid(_vsHierarchy);
+        public Guid ProjectGuid {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _solutionService.GetProjectGuid(_vsHierarchy);
+            }
+        }
 
         #region Structural Properties
 
@@ -104,6 +109,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public Hierarchy NextVisibleSibling => WithId(NextVisibleSiblingItemId);
 
         public IEnumerable<Hierarchy> Children() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             if (GetProperty<bool>(__VSHPROPID.VSHPROPID_HasEnumerationSideEffects)) {
                 yield break;
@@ -125,6 +131,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> VisibleChildren() {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             if (GetProperty<bool>(__VSHPROPID.VSHPROPID_HasEnumerationSideEffects)) {
                 yield break;
@@ -146,6 +153,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> DescendantsAndSelf() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             yield return GetNestedHierarchy() ?? this;
 
             foreach (var descendant in Descendants()) {
@@ -154,6 +163,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> Descendants() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             foreach (var child in Children()) {
                 foreach (var descendant in child.DescendantsAndSelf()) {
                     yield return descendant;
@@ -162,6 +173,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> VisibleDescendantsAndSelf() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             yield return GetNestedHierarchy() ?? this;
 
             foreach (var descendant in VisibleDescendants()) {
@@ -170,6 +183,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public IEnumerable<Hierarchy> VisibleDescendants() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             foreach (var child in VisibleChildren()) {
                 foreach (var descendant in child.DescendantsAndSelf()) {
                     yield return descendant;
@@ -193,6 +208,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public string FullPath {
             get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+
                 var fullPath = GetMkDocument() ?? GetCanonicalName();
 
                 if (!Path.IsPathRooted(fullPath)) {
@@ -247,20 +264,25 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public string DumpAll() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return DumpCore(h => h.Children());
         }
 
         public string DumpVisible() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return DumpCore(h => h.VisibleChildren());
         }
 
         string DumpCore(Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel = Int32.MaxValue) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sb = new StringBuilder();
             Dump(this, 0, sb, childSelector, maxLevel);
             return sb.ToString();
         }
 
         static void Dump(Hierarchy hier, int level, StringBuilder sb, Func<Hierarchy, IEnumerable<Hierarchy>> childSelector, int maxLevel = Int32.MaxValue) {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             if (level > maxLevel) {
                 return;
@@ -274,6 +296,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public ImageMoniker GetImageMoniker() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             return _solutionService.GetImageMonikerForHierarchyItem(_vsHierarchy);
         }
 
@@ -328,6 +352,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected T GetProperty<T>(__VSHPROPID propId, T defaultValue = default) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var value = GetPropertyCore((int) propId);
             if (value == null) {
                 return defaultValue;

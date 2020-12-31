@@ -25,6 +25,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                                        string title,
                                        string message,
                                        bool allowCancel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             _title                   = title;
             _message                 = message;
             _allowCancel             = allowCancel;
@@ -33,7 +35,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         IVsThreadedWaitDialog3 CreateDialog(IVsThreadedWaitDialogFactory dialogFactory) {
-
             ThreadHelper.ThrowIfNotOnUIThread();
 
             Marshal.ThrowExceptionForHR(dialogFactory.CreateInstance(out var dialog2));
@@ -63,6 +64,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public string Message {
             get => _message;
             set {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _message = value;
                 UpdateDialog();
             }
@@ -71,13 +73,13 @@ namespace IInspectable.ProjectExplorer.Extension {
         public bool AllowCancel {
             get => _allowCancel;
             set {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _allowCancel = value;
                 UpdateDialog();
             }
         }
 
         void UpdateDialog() {
-
             ThreadHelper.ThrowIfNotOnUIThread();
 
             _dialog.UpdateProgress(

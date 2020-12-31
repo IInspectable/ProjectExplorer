@@ -89,6 +89,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void ActivateIfIsKeyboardFocusWithin() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (SearchHost.IsEnabled &&
                 (IsKeyboardFocusWithin || Keyboard.FocusedElement == null)) {
                 ActivateSearch();
@@ -96,6 +97,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (string.IsNullOrEmpty(e.PropertyName) ||
                 e.PropertyName == nameof(ProjectExplorerViewModel.IsLoading)) {
                 UpdateSearchEnabled();

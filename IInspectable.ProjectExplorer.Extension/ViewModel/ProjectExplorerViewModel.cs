@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.Shell;
 using System.ComponentModel;
 
 using IInspectable.ProjectExplorer.Extension.UI;
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 // ReSharper disable ConvertToAutoProperty
 
 #endregion
@@ -59,6 +61,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                                           IWaitIndicator waitIndicator,
                                           TextBlockBuilderService textBlockBuilderService,
                                           SearchContextFactory searchContextFactory) {
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             _errorInfoService        = errorInfoService;
             _solutionService         = solutionService;
@@ -155,9 +159,26 @@ namespace IInspectable.ProjectExplorer.Extension {
         [NotNull]
         public ListCollectionView ProjectsView => _projectsView;
 
-        public string ProjectsRoot      => _optionService.ProjectsRoot;
-        public string ProjectsRootLabel => _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folder…";
-        public bool   IsSolutionOpen    => _solutionService.IsSolutionOpen();
+        public string ProjectsRoot {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _optionService.ProjectsRoot;
+            }
+        }
+
+        public string ProjectsRootLabel {
+            get { 
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folder…";
+            }
+        }
+
+        public bool IsSolutionOpen {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _solutionService.IsSolutionOpen();
+            }
+        }
 
         public string StatusText {
             get {
@@ -213,20 +234,24 @@ namespace IInspectable.ProjectExplorer.Extension {
         #region Event Handler
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             base.OnPropertyChanged(e);
             UpdateCommands();
         }
 
         void OnSelectionChanged(object sender, EventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             UpdateCommands();
         }
 
         void OnAfterOpenSolution(object sender, EventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");
             RefreshCommand.Execute();
         }
 
         void OnProjectStateChanged(object sender, EventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             UpdateCommands();
             NotifyThisPropertyChanged(nameof(StatusText));
         }
@@ -236,7 +261,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         public ProjectService ProjectService => _projectService;
 
         public int EnsureSolution() {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot übernommen werden
             using (Suspend.Reload(this))
             using (Capture.ProjectsRoot(this)) {
@@ -291,6 +316,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public async System.Threading.Tasks.Task ReloadProjectsAsync() {
+            
 
             if (IsLoading || _suspendReload) {
                 return;
@@ -302,6 +328,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                 ClearProjects(clearSearch: false);
 
                 _loadingCancellationToken = new CancellationTokenSource();
+
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var projectFiles = await _projectFileService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
 
                 foreach (var viewModel in projectFiles.Select(pf => new ProjectViewModel(pf))) {
@@ -374,6 +402,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void UpdateCommands() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             foreach (var command in _commands) {
                 command.UpdateState();
             }
@@ -417,6 +446,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         static class Capture {
 
             public static IDisposable ProjectsRoot(ProjectExplorerViewModel model) {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 return new StateSaver<string>(
                     value: model._optionService.ProjectsRoot,
                     getter: () => model._optionService.ProjectsRoot,

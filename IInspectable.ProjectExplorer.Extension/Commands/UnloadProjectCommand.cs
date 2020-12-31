@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 
+using Microsoft.VisualStudio.Shell;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -21,7 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void ExecuteOverride(IReadOnlyList<ProjectViewModel> projects) {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             ForeachWithWaitIndicatorAndErrorReport(projects, "Unloading", p => p.Unload());            
         }
     }

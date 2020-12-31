@@ -5,6 +5,7 @@ using System;
 using JetBrains.Annotations;
 
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.PatternMatching;
 
 #endregion
@@ -102,24 +103,32 @@ namespace IInspectable.ProjectExplorer.Extension {
             NotifyThisPropertyChanged(nameof(PatternMatch));
         }
 
-        public object DisplayContent =>
-            _parent?.TextBlockBuilderService.ToTextBlock(
-                part: DisplayName,
-                patternMatch: _patternMatch) ?? (object) DisplayName;
+        public object DisplayContent {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _parent?.TextBlockBuilderService.ToTextBlock(
+                    part: DisplayName,
+                    patternMatch: _patternMatch) ?? (object) DisplayName;
+            }
+        }
 
         public HResult Open() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _parent?.ProjectService.OpenProject(this) ?? HResults.Failed;
         }
 
         public HResult Close() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _parent?.ProjectService.CloseProject(this) ?? HResults.Failed;
         }
 
         public HResult Reload() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _parent?.ProjectService.ReloadProject(this) ?? HResults.Failed;
         }
 
         public HResult Unload() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _parent?.ProjectService.UnloadProject(this) ?? HResults.Failed;
         }
 

@@ -30,6 +30,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public static bool ReportUserOnFailed(int? hr) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ReportUserOnFailed(hr ?? VSConstants.S_OK);
         }
 

@@ -13,6 +13,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -38,7 +40,10 @@ namespace IInspectable.ProjectExplorer.Extension {
             Observable.Create<EventArgs>(SubscribeUpdateRequests)
                       .Throttle(TimeSpan.FromMilliseconds(100))
                       .ObserveOn(SynchronizationContext.Current)
-                      .Subscribe(_ => UpdateState());
+                      .Subscribe(_ => {
+                           ThreadHelper.ThrowIfNotOnUIThread();
+                           UpdateState();
+                       });
 
             Action SubscribeUpdateRequests(IObserver<EventArgs> observer) {
                 _updateRequestQueue = observer;
@@ -49,20 +54,24 @@ namespace IInspectable.ProjectExplorer.Extension {
         public event EventHandler<EventArgs> ProjectStateChanged;
 
         public HResult OpenProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _solutionService.OpenProject(viewModel.Path);
         }
 
         public HResult CloseProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var hierarchy = HierarchyFromViewModel(viewModel);
             return hierarchy?.CloseProject() ?? HResults.Failed;
         }
 
         public HResult ReloadProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var hierarchy = HierarchyFromViewModel(viewModel);
             return hierarchy?.ReloadProject() ?? HResults.Failed;
         }
 
         public HResult UnloadProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var hierarchy = HierarchyFromViewModel(viewModel);
             return hierarchy?.UnloadProject() ?? HResults.Failed;
         }
@@ -74,6 +83,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         [CanBeNull]
         Hierarchy HierarchyFromViewModel(ProjectViewModel model) {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             if (model == null) {
                 return null;
@@ -99,6 +109,8 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void UpdateState() {
 
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             _updateStateRequested = false;
 
             RebuildHierarchyData();
@@ -117,6 +129,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         static bool SyncProjectState(Hierarchy hierarchy, ProjectViewModel project) {
+            
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             var status       = ProjectStatus.Closed;
             var imageMoniker = (ImageMoniker?) null;
@@ -134,6 +148,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void RebuildHierarchyData() {
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             foreach (var hd in _projectHierarchyData.Values) {
                 hd.UnadviseHierarchyEvents();
@@ -186,22 +202,26 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         void OnBeforeRemoveProject(object sender, ProjectEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Logger.Info($"{nameof(OnBeforeRemoveProject)}: {e.RealHierarchie.FullPath}");
             InvalidateState();
 
         }
 
         void OnAfterOpenProject(object sender, ProjectEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Logger.Info($"{nameof(OnAfterOpenProject)}: {e.RealHierarchie.FullPath}");
             InvalidateState();
         }
 
         void OnBeforeUnloadProject(object sender, ProjectEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Logger.Info($"{nameof(OnBeforeUnloadProject)}: {e.StubHierarchie?.FullPath}");
             InvalidateState();
         }
 
         void OnAfterLoadProject(object sender, ProjectEventArgs e) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Logger.Info($"{nameof(OnAfterLoadProject)}: {e.RealHierarchie?.FullPath}");
             InvalidateState();
         }

@@ -36,6 +36,7 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
 
         [CanBeNull]
         public TextBlock ToTextBlock(string part, [CanBeNull] PatternMatch? patternMatch) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ToTextBlock(new[] {part}, patternMatch);
         }
 

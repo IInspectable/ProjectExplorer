@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
@@ -14,6 +15,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         private uint      _eventCookie;
 
         public void UnadviseHierarchyEvents() {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (_eventCookie != 0) {
                 Hierarchy.UnadviseHierarchyEvents(_eventCookie);
                 _eventCookie = 0;
@@ -21,6 +23,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public void AdviseHierarchyEvents(IVsHierarchyEvents hierarchyEvents) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (_eventCookie != 0) {
                 Logger.Error($"{nameof(AdviseHierarchyEvents)}: event cookie not 0 ({_eventCookie})");
             }

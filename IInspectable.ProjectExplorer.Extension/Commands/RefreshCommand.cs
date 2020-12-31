@@ -19,6 +19,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public override void UpdateState() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Enabled = !_viewModel.IsLoading && !String.IsNullOrEmpty(_viewModel.ProjectsRoot);
             Visible = !_viewModel.IsLoading;
         }

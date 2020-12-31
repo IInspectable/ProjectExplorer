@@ -18,6 +18,9 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Task = System.Threading.Tasks.Task;
 
 using System.Threading.Tasks;
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+
 // ReSharper disable ConvertToAutoProperty
 
 #endregion
@@ -63,7 +66,9 @@ namespace IInspectable.ProjectExplorer.Extension {
 
                 var oleMenuCommandService   = (OleMenuCommandService) await GetServiceAsync(typeof(IMenuCommandService)).ConfigureAwait(true);
                 var windowSearchHostFactory = (IVsWindowSearchHostFactory) await GetServiceAsync(typeof(SVsWindowSearchHostFactory)).ConfigureAwait(true);
+                #pragma warning disable VSSDK006 // Check services exist => Lass krachen...
                 var componentModel          = (IComponentModel) await GetServiceAsync(typeof(SComponentModel)).ConfigureAwait(true);
+                #pragma warning restore VSSDK006 // Check services exist
                 var mefServices             = componentModel.GetService<MefServices>();
 
                 return new ProjectExplorerToolWindowServices(
@@ -146,6 +151,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         public void ShowProjectExplorerWindowAndActivateSearch() {
 
             JoinableTaskFactory.RunAsync(async () => {
+
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 var toolwindow = await ShowProjectExplorerWindowAsync();
 
                 if (toolwindow.CanActivateSearch) {
@@ -178,6 +186,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void OnLoadOptions(string key, Stream stream) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             // TODO Wenn der Explorer geöffnet wurde, nachdem eine Solutuon geladen wurde, haben wir noch keinen OptionService...
             if (OptionService.OptionKey == key) {
                 _services.OptionService?.LoadOptions(stream);
@@ -187,6 +197,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         protected override void OnSaveOptions(string key, Stream stream) {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (OptionService.OptionKey == key) {
                 _services.OptionService?.SaveOptions(stream);
             }

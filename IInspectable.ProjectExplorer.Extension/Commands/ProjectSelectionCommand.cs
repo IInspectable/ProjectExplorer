@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using Microsoft.VisualStudio.Shell;
+
 #endregion
 
 namespace IInspectable.ProjectExplorer.Extension {
@@ -50,6 +52,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                                                               string verb, 
                                                               Func<ProjectViewModel, HResult> action,
                                                               bool breakOnFirstError=true) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try {
 
                 bool allowCancel = projects.Count > 1;
