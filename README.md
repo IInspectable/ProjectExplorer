@@ -12,7 +12,7 @@ Quickly search for projects and then load, unload or close them respectivley.
 ![](_art/pe.png)
 
 ## Filter projects by name
-![](_art/pe_filter.png)
+![](_art/PatternMatching.gif)
 
 ## Add, remove or unload projects
 ![](_art/pe_context_menu.png)
