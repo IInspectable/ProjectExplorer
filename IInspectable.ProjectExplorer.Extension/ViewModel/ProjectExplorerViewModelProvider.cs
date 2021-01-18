@@ -1,5 +1,7 @@
 #region Using Directives
 
+using System.Collections.ObjectModel;
+
 using Microsoft.VisualStudio.Shell;
 
 using System.ComponentModel.Composition;
@@ -31,11 +33,22 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #pragma warning restore
 
-        public ProjectExplorerViewModel CreateViewModel(ProjectExplorerPackage package, IErrorInfoService errorInfoService, OleMenuCommandService oleMenuCommandService) {
+        public ProjectExplorerViewModel CreateViewModel(
+            ProjectExplorerPackage package,
+            IErrorInfoService errorInfoService,
+            OleMenuCommandService oleMenuCommandService) {
+
+            var projects           = new ObservableCollection<ProjectViewModel>();
+            var selectionService   = new ProjectViewModelSelectionService(projects);
+            var projectService     = new ProjectService(_solutionService, projects);
+            var projectFileService = new ProjectFileService(package);
+
             return new(
-                package                : package,
+                projects               : projects,
+                selectionService       : selectionService,
+                projectService         : projectService,
+                projectFileService     : projectFileService,
                 errorInfoService       : errorInfoService,
-                solutionService        : _solutionService,
                 optionService          : _optionService,
                 oleMenuCommandService  : oleMenuCommandService,
                 waitIndicator          : _waitIndicator,

@@ -90,7 +90,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint) VSConstants.VSITEMID.Root, (int) __VSHIERARCHYIMAGEASPECT.HIA_Icon);
         }
 
-        public int EnsureSolution() {
+        public HResult EnsureSolution() {
             ThreadHelper.ThrowIfNotOnUIThread();
             if (IsSolutionOpen()) {
                 return VSConstants.S_OK;

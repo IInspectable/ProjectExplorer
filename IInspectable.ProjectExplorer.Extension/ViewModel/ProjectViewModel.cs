@@ -114,22 +114,22 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public HResult Open() {
             ThreadHelper.ThrowIfNotOnUIThread();
-            return _parent?.ProjectService.OpenProject(this) ?? HResults.Failed;
+            return _parent?.OpenProject(this) ?? HResults.Failed;
         }
 
         public HResult Close() {
             ThreadHelper.ThrowIfNotOnUIThread();
-            return _parent?.ProjectService.CloseProject(this) ?? HResults.Failed;
+            return _parent?.CloseProject(this) ?? HResults.Failed;
         }
 
         public HResult Reload() {
             ThreadHelper.ThrowIfNotOnUIThread();
-            return _parent?.ProjectService.ReloadProject(this) ?? HResults.Failed;
+            return _parent?.ReloadProject(this) ?? HResults.Failed;
         }
 
         public HResult Unload() {
             ThreadHelper.ThrowIfNotOnUIThread();
-            return _parent?.ProjectService.UnloadProject(this) ?? HResults.Failed;
+            return _parent?.UnloadProject(this) ?? HResults.Failed;
         }
 
         public void SetParent([NotNull] ProjectExplorerViewModel parent) {

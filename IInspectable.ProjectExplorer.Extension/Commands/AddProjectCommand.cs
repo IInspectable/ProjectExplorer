@@ -26,7 +26,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (ShellUtil.ReportUserOnFailed(ViewModel.EnsureSolution())) {
+            if (ShellUtil.ReportUserOnFailed(ViewModel.EnsureSolution().Value)) {
                 return;
             }
 

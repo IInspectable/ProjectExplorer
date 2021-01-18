@@ -24,8 +24,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             InitializeComponent();
 
-            ViewModel.PropertyChanged                    += OnViewModelPropertyChanged;
-            ViewModel.SolutionService.AfterCloseSolution += OnAfterCloseSolution;
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             SearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
             SearchHost.SetupSearch(this);
@@ -38,8 +37,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         ProjectExplorerViewModel ViewModel => DataContext as ProjectExplorerViewModel;
 
         public void Dispose() {
-            ViewModel.PropertyChanged                    -= OnViewModelPropertyChanged;
-            ViewModel.SolutionService.AfterCloseSolution -= OnAfterCloseSolution;
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         }
 
         void OnProjectItemContextMenuOpening(object sender, ContextMenuEventArgs e) {
@@ -61,7 +59,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             e.Handled = true;
 
-            FrameworkElement FindAncestor(object element) {
+            static FrameworkElement FindAncestor(object element) {
                 while (element is FrameworkContentElement frameworkContentElement) {
                     element = frameworkContentElement.Parent;
                 }
@@ -110,10 +108,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             SearchHost.IsEnabled = !ViewModel.IsLoading && ViewModel.Projects.Count > 0;
         }
 
-        void OnAfterCloseSolution(object sender, EventArgs e) {
-            // TODO Clear search text
-        }
-
         public IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
             if (pSearchQuery == null || pSearchCallback == null)
                 return null;
@@ -154,14 +148,11 @@ namespace IInspectable.ProjectExplorer.Extension {
                 return false;
             }
 
-            switch (navigationKey) {
-                case __VSSEARCHNAVIGATIONKEY.SNK_DOWN:
-                    return ProjectsControl.Navigate(up: false);
-                case __VSSEARCHNAVIGATIONKEY.SNK_UP:
-                    return ProjectsControl.Navigate(up: true);
-            }
-
-            return false;
+            return navigationKey switch {
+                __VSSEARCHNAVIGATIONKEY.SNK_DOWN => ProjectsControl.Navigate(up: false),
+                __VSSEARCHNAVIGATIONKEY.SNK_UP => ProjectsControl.Navigate(up: true),
+                _ => false,
+            };
         }
 
         public bool SearchEnabled => true;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 
 using JetBrains.Annotations;
@@ -19,36 +20,36 @@ using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace IInspectable.ProjectExplorer.Extension {
 
-    class ProjectService: IVsHierarchyEvents {
+    class ProjectService {
 
         static readonly Logger Logger = Logger.Create<ProjectService>();
 
         readonly SolutionService                        _solutionService;
         readonly ObservableCollection<ProjectViewModel> _projects;
         readonly Dictionary<string, HierarchyData>      _projectHierarchyData;
-
-        IObserver<EventArgs> _updateRequestQueue;
+        readonly IObserver<EventArgs>                   _updateRequestSource;
+        readonly IDisposable                            _updateRequestConnection;
+        readonly HierarchyEvents                        _hierarchyEvents;
 
         public ProjectService(SolutionService solutionService, ObservableCollection<ProjectViewModel> projects) {
 
             _projectHierarchyData = new Dictionary<string, HierarchyData>();
             _solutionService      = solutionService;
             _projects             = projects;
+            var subject = new Subject<EventArgs>();
+
+            _updateRequestSource = subject;
+            _updateRequestConnection = subject.AsObservable()
+                                              .Throttle(TimeSpan.FromMilliseconds(100))
+                                              .ObserveOn(SynchronizationContext.Current)
+                                              .Subscribe(_ => {
+                                                   ThreadHelper.ThrowIfNotOnUIThread();
+                                                   UpdateState();
+                                               });
+
+            _hierarchyEvents = new HierarchyEvents(this);
 
             WireEvents();
-
-            Observable.Create<EventArgs>(SubscribeUpdateRequests)
-                      .Throttle(TimeSpan.FromMilliseconds(100))
-                      .ObserveOn(SynchronizationContext.Current)
-                      .Subscribe(_ => {
-                           ThreadHelper.ThrowIfNotOnUIThread();
-                           UpdateState();
-                       });
-
-            Action SubscribeUpdateRequests(IObserver<EventArgs> observer) {
-                _updateRequestQueue = observer;
-                return () => _updateRequestQueue = null;
-            }
         }
 
         public event EventHandler<EventArgs> ProjectStateChanged;
@@ -78,7 +79,19 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         public void Dispose() {
             UnwireEvents();
-            _updateRequestQueue.OnCompleted();
+            _updateRequestSource.OnCompleted();
+            _updateRequestConnection.Dispose();
+        }
+
+        public HResult EnsureSolution() {
+            return _solutionService.EnsureSolution();
+        }
+
+        public bool IsSolutionOpen {
+            get {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return _solutionService.IsSolutionOpen();
+            }
         }
 
         [CanBeNull]
@@ -104,7 +117,7 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         void InvalidateState() {
             _updateStateRequested = true;
-            _updateRequestQueue?.OnNext(EventArgs.Empty);
+            _updateRequestSource.OnNext(EventArgs.Empty);
         }
 
         void UpdateState() {
@@ -164,7 +177,7 @@ namespace IInspectable.ProjectExplorer.Extension {
                     var hd = new HierarchyData(hierarchy);
                     _projectHierarchyData[fullPath.ToLower()] = hd;
 
-                    hd.AdviseHierarchyEvents(this);
+                    hd.AdviseHierarchyEvents(_hierarchyEvents);
                 }
             }
         }
@@ -230,32 +243,43 @@ namespace IInspectable.ProjectExplorer.Extension {
             InvalidateState();
         }
 
-        int IVsHierarchyEvents.OnItemAdded(uint itemidParent, uint itemidSiblingPrev, uint itemidAdded) {
-            return VSConstants.S_OK;
-        }
+        sealed class HierarchyEvents: IVsHierarchyEvents {
 
-        int IVsHierarchyEvents.OnItemsAppended(uint itemidParent) {
-            return VSConstants.S_OK;
-        }
+            private readonly ProjectService _projectService;
 
-        int IVsHierarchyEvents.OnItemDeleted(uint itemid) {
-            return VSConstants.S_OK;
-        }
-
-        int IVsHierarchyEvents.OnPropertyChanged(uint itemid, int propid, uint flags) {
-            if (propid == (int) __VSHPROPID.VSHPROPID_IconHandle) {
-                InvalidateState();
+            public HierarchyEvents(ProjectService projectService) {
+                _projectService = projectService;
             }
 
-            return VSConstants.S_OK;
-        }
+            int IVsHierarchyEvents.OnItemAdded(uint itemidParent, uint itemidSiblingPrev, uint itemidAdded) {
+                return VSConstants.S_OK;
+            }
 
-        int IVsHierarchyEvents.OnInvalidateItems(uint itemidParent) {
-            return VSConstants.S_OK;
-        }
+            int IVsHierarchyEvents.OnItemsAppended(uint itemidParent) {
+                return VSConstants.S_OK;
+            }
 
-        int IVsHierarchyEvents.OnInvalidateIcon(IntPtr hicon) {
-            return VSConstants.S_OK;
+            int IVsHierarchyEvents.OnItemDeleted(uint itemid) {
+                return VSConstants.S_OK;
+            }
+
+            int IVsHierarchyEvents.OnPropertyChanged(uint itemid, int propid, uint flags) {
+                if (propid == (int) __VSHPROPID.VSHPROPID_IconHandle) {
+                    _projectService.InvalidateState();
+                }
+
+                return VSConstants.S_OK;
+            }
+
+            int IVsHierarchyEvents.OnInvalidateItems(uint itemidParent) {
+                return VSConstants.S_OK;
+            }
+
+            int IVsHierarchyEvents.OnInvalidateIcon(IntPtr hicon) {
+                _projectService.InvalidateState();
+                return VSConstants.S_OK;
+            }
+
         }
 
         #endregion

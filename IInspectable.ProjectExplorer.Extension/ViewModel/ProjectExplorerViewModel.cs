@@ -13,7 +13,6 @@ using System.Collections.ObjectModel;
 
 using JetBrains.Annotations;
 
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 using System.ComponentModel;
@@ -32,9 +31,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         static readonly Logger Logger = Logger.Create<ProjectExplorerViewModel>();
 
         readonly IErrorInfoService                      _errorInfoService;
-        readonly SolutionService                        _solutionService;
         readonly OptionService                          _optionService;
-        readonly OleMenuCommandService                  _oleMenuCommandService;
+        
         readonly IWaitIndicator                         _waitIndicator;
         readonly TextBlockBuilderService                _textBlockBuilderService;
         readonly ObservableCollection<ProjectViewModel> _projects;
@@ -45,6 +43,9 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly ProjectFileService                     _projectFileService;
         readonly SearchContextFactory                   _searchContextFactory;
 
+        // TODO OleMenuCommandService durch Inerface ersetzen
+        readonly OleMenuCommandService _oleMenuCommandService;
+
         [CanBeNull]
         CancellationTokenSource _loadingCancellationToken;
 
@@ -53,9 +54,11 @@ namespace IInspectable.ProjectExplorer.Extension {
         bool          _isLoading;
         SearchContext _searchContext;
 
-        internal ProjectExplorerViewModel(ProjectExplorerPackage package, 
+        internal ProjectExplorerViewModel(ObservableCollection<ProjectViewModel> projects,
+                                          ProjectViewModelSelectionService selectionService,
+                                          ProjectService projectService,
+                                          ProjectFileService projectFileService,
                                           IErrorInfoService errorInfoService,
-                                          SolutionService solutionService,
                                           OptionService optionService,
                                           OleMenuCommandService oleMenuCommandService,
                                           IWaitIndicator waitIndicator,
@@ -64,8 +67,12 @@ namespace IInspectable.ProjectExplorer.Extension {
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
+            _projects           = projects           ?? throw new ArgumentNullException(nameof(projects));
+            _selectionService   = selectionService   ?? throw new ArgumentNullException(nameof(selectionService));
+            _projectService     = projectService     ?? throw new ArgumentNullException(nameof(projectService));
+            _projectFileService = projectFileService ?? throw new ArgumentNullException(nameof(projectFileService));
+
             _errorInfoService        = errorInfoService;
-            _solutionService         = solutionService;
             _optionService           = optionService;
             _oleMenuCommandService   = oleMenuCommandService;
             _waitIndicator           = waitIndicator;
@@ -85,7 +92,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             };
 
             // View
-            _projects     = new ObservableCollection<ProjectViewModel>();
             _projectsView = (ListCollectionView) CollectionViewSource.GetDefaultView(_projects);
             // Sortierung
             _projectsView.CustomSort    = new ProjectViewModelComparer();
@@ -97,28 +103,22 @@ namespace IInspectable.ProjectExplorer.Extension {
             _projectsView.LiveFilteringProperties.Add(nameof(ProjectViewModel.Visible));
             _projectsView.Filter = vm => (vm as ProjectViewModel)?.Visible == true;
 
-            _selectionService   = new ProjectViewModelSelectionService(_projects);
-            _projectService     = new ProjectService(_solutionService, _projects);
-            _projectFileService = new ProjectFileService(package);
-
             WireEvents();
             RegisterCommands();
             UpdateCommands();
 
-            if (IsSolutionOpen) {
+            if (_projectService.IsSolutionOpen) {
                 RefreshCommand.Execute();
             }
         }
 
         void WireEvents() {
-            _solutionService.AfterOpenSolution  += OnAfterOpenSolution;
             _selectionService.SelectionChanged  += OnSelectionChanged;
             _projectService.ProjectStateChanged += OnProjectStateChanged;
 
         }
 
         void UnwireEvents() {
-            _solutionService.AfterOpenSolution  -= OnAfterOpenSolution;
             _selectionService.SelectionChanged  -= OnSelectionChanged;
             _projectService.ProjectStateChanged -= OnProjectStateChanged;
 
@@ -140,9 +140,6 @@ namespace IInspectable.ProjectExplorer.Extension {
         public LoadProjectCommand        LoadProjectCommand        { get; }
         public SettingsCommand           SettingsCommand           { get; }
         public ExceuteDefaultCommand     ExceuteDefaultCommand     { get; }
-
-        [NotNull]
-        internal SolutionService SolutionService => _solutionService;
 
         [NotNull]
         internal TextBlockBuilderService TextBlockBuilderService => _textBlockBuilderService;
@@ -170,13 +167,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             get { 
                 ThreadHelper.ThrowIfNotOnUIThread();
                 return _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folder…";
-            }
-        }
-
-        public bool IsSolutionOpen {
-            get {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                return _solutionService.IsSolutionOpen();
             }
         }
 
@@ -244,12 +234,6 @@ namespace IInspectable.ProjectExplorer.Extension {
             UpdateCommands();
         }
 
-        void OnAfterOpenSolution(object sender, EventArgs e) {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            Logger.Info($"{nameof(OnAfterOpenSolution)}: {_solutionService.GetSolutionFile()}");
-            RefreshCommand.Execute();
-        }
-
         void OnProjectStateChanged(object sender, EventArgs e) {
             ThreadHelper.ThrowIfNotOnUIThread();
             UpdateCommands();
@@ -258,19 +242,33 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         #endregion
 
-        public ProjectService ProjectService => _projectService;
+        public HResult OpenProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _projectService.OpenProject(viewModel);
+        }
 
-        public int EnsureSolution() {
+        public HResult CloseProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _projectService.CloseProject(viewModel);
+        }
+
+        public HResult ReloadProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _projectService.ReloadProject(viewModel);
+        }
+
+        public HResult UnloadProject(ProjectViewModel viewModel) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _projectService.UnloadProject(viewModel);
+        }
+
+        public HResult EnsureSolution() {
             ThreadHelper.ThrowIfNotOnUIThread();
             // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot übernommen werden
             using (Suspend.Reload(this))
             using (Capture.ProjectsRoot(this)) {
 
-                var hr = _solutionService.EnsureSolution();
-                if (ErrorHandler.Failed(hr)) {
-                    return hr;
-                }
-
+                var hr = _projectService.EnsureSolution();
                 return hr;
             }
         }
@@ -316,11 +314,12 @@ namespace IInspectable.ProjectExplorer.Extension {
         }
 
         public async System.Threading.Tasks.Task ReloadProjectsAsync() {
-            
 
             if (IsLoading || _suspendReload) {
                 return;
             }
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             IsLoading = true;
             try {
@@ -328,9 +327,9 @@ namespace IInspectable.ProjectExplorer.Extension {
                 ClearProjects(clearSearch: false);
 
                 _loadingCancellationToken = new CancellationTokenSource();
-
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var projectFiles = await _projectFileService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token);
+                
+                var projectFiles = await _projectFileService.GetProjectFilesAsync(ProjectsRoot, _loadingCancellationToken.Token)
+                                                            .ConfigureAwait(continueOnCapturedContext: true);//<- Back to Main thread!
 
                 foreach (var viewModel in projectFiles.Select(pf => new ProjectViewModel(pf))) {
                     viewModel.SetParent(this);
