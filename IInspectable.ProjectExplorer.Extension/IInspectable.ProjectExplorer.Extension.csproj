@@ -77,69 +77,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\ExceuteDefaultCommand.cs" />
-    <Compile Include="Commands\LoadProjectCommand.cs" />
-    <Compile Include="Commands\OpenInFileExplorerCommand.cs" />
-    <Compile Include="Commands\AddProjectCommand.cs" />
-    <Compile Include="Commands\ProjectExplorerSearchCommand.cs" />
-    <Compile Include="Commands\CancelRefreshCommand.cs" />
-    <Compile Include="Commands\ProjectSelectionCommand.cs" />
-    <Compile Include="Commands\RemoveProjectCommand.cs" />
-    <Compile Include="Commands\SettingsCommand.cs" />
-    <Compile Include="Commands\ShellUtil.cs" />
-    <Compile Include="Commands\UnloadProjectCommand.cs" />
-    <Compile Include="CompilerServices\CompilerServices.cs" />
-    <Compile Include="Model\Hierarchy.cs" />
-    <Compile Include="Model\HierarchyData.cs" />
-    <Compile Include="Model\HierarchyId.cs" />
-    <Compile Include="IErrorInfoService.cs" />
-    <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\LoggerConfig.cs" />
-    <Compile Include="Model\HResult.cs" />
-    <Compile Include="Model\ProjectService.cs" />
-    <Compile Include="Model\ProjectFileService.cs" />
-    <Compile Include="Util\RegexUtil.cs" />
-    <Compile Include="Util\StringExtensions.cs" />
-    <Compile Include="OptionService.cs" />
-    <Compile Include="Model\ProjectEventArgs.cs" />
-    <Compile Include="UI\TextBlockBuilderService.cs" />
-    <Compile Include="ViewModel\ProjectViewModelComparer.cs" />
-    <Compile Include="ViewModel\SearchContext.cs" />
-    <Compile Include="ViewModel\ItemViewModel.cs" />
-    <Compile Include="ViewModel\ProjectExplorerViewModelProvider.cs" />
-    <Compile Include="ProjectSearchTask.cs" />
-    <Compile Include="ViewModel\ProjectViewModelSelectionService.cs" />
-    <Compile Include="Model\SolutionService.cs" />
-    <Compile Include="ProjectExplorerPackage1.cs">
+    <Compile Include="..\IInspectable.ProjectExplorer.SharedFiles\ProjectExplorerPackage.cs">
+      <Link>ProjectExplorerPackage.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
     </Compile>
-    <Compile Include="Commands\RefreshCommand.cs" />
-    <Compile Include="ViewModel\ProjectExplorerViewModel.cs" />
-    <Compile Include="Model\ProjectFile.cs" />
-    <Compile Include="ViewModel\ProjectStatus.cs" />
-    <Compile Include="ViewModel\ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProjectExplorerToolWindow.cs" />
-    <Compile Include="Commands\ProjectExplorerCommand.cs" />
-    <Compile Include="ViewModel\SearchContextFactory.cs" />
-    <Compile Include="ViewModel\StateSaver.cs" />
-    <Compile Include="View\ProjectExplorerControl.xaml.cs">
-      <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectExplorerPackage.cs" />
     <Compile Include="ThisAssembly.generated.cs" />
-    <Compile Include="UI\VsButton.cs" />
-    <Compile Include="UI\VsListBox.cs" />
-    <Compile Include="UI\VsListBoxItem.cs" />
-    <Compile Include="ViewModel\ViewModelBase.cs" />
-    <Compile Include="WaitIndicator\IWaitContext.cs" />
-    <Compile Include="WaitIndicator\IWaitIndicator.cs" />
-    <Compile Include="WaitIndicator\VisualStudioWaitContext.Callback.cs" />
-    <Compile Include="WaitIndicator\VisualStudioWaitContext.cs" />
-    <Compile Include="WaitIndicator\VisualStudioWaitIndicator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Additional.VsixItems.targets" />
@@ -147,28 +92,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="UpdateProductVersion.targets" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="View\ProjectExplorerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Styles\VsButton.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Styles\VsListBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Styles\VsListBoxItem.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -180,29 +103,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\Preview.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\ProjectExplorer32.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\ToolWindow1Package.ico" />
-    <VSCTCompile Include="ProjectExplorerPackage.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
-      <Generator>VsctGenerator</Generator>
-      <LastGenOutput>ProjectExplorerPackage1.cs</LastGenOutput>
-    </VSCTCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="VSPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IInspectable.Utilities\IInspectable.Utilities.csproj">
@@ -233,7 +133,7 @@
       <Version>16.0.206</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>16.8.3038</Version>
+      <Version>16.9.1050</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -250,7 +150,34 @@
       <Version>5.0.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\IInspectable.ProjectExplorer.SharedFiles\VSPackage.resx">
+      <Link>VSPackage.resx</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <VSCTCompile Include="..\IInspectable.ProjectExplorer.SharedFiles\ProjectExplorerPackage.vsct">
+      <Link>ProjectExplorerPackage.vsct</Link>
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>ProjectExplorerPackage.cs</LastGenOutput>
+    </VSCTCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\IInspectable.ProjectExplorer.SharedFiles\Resources\Preview.png">
+      <Link>Resources\Preview.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\IInspectable.ProjectExplorer.SharedFiles\Resources\ProjectExplorer32.png">
+      <Link>Resources\ProjectExplorer32.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\IInspectable.ProjectExplorer.SharedFiles\Resources\ToolWindow1Package.ico">
+      <Link>Resources\ToolWindow1Package.ico</Link>
+    </Content>
+  </ItemGroup>
   <ItemGroup />
+  <Import Project="..\IInspectable.ProjectExplorer.ExtensionShared\IInspectable.ProjectExplorer.ExtensionShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="UpdateProductVersion.targets" />

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c8f56b7f-9865-41f1-8c91-005b5567ed3a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>IInspectable.ProjectExplorer.ExtensionShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\AddProjectCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CancelRefreshCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ExceuteDefaultCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\LoadProjectCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\OpenInFileExplorerCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ProjectExplorerCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ProjectExplorerSearchCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ProjectSelectionCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\RefreshCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\RemoveProjectCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SettingsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ShellUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\UnloadProjectCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CompilerServices\CompilerServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IErrorInfoService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggerConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Hierarchy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\HierarchyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\HierarchyId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\HResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectFileService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SolutionService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectExplorerPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectExplorerToolWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectSearchTask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\TextBlockBuilderService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\VsButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\VsListBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\VsListBoxItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\RegexUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ItemViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectExplorerViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectExplorerViewModelProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectViewModelComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ProjectViewModelSelectionService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchContextFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\StateSaver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)View\ProjectExplorerControl.xaml.cs">
+      <DependentUpon>ProjectExplorerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)WaitIndicator\IWaitContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WaitIndicator\IWaitIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WaitIndicator\VisualStudioWaitContext.Callback.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WaitIndicator\VisualStudioWaitContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WaitIndicator\VisualStudioWaitIndicator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)UI\Styles\VsButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)UI\Styles\VsListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)UI\Styles\VsListBoxItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)View\ProjectExplorerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

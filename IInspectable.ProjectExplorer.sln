@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IInspectable.ProjectExplorer.Extension", "IInspectable.ProjectExplorer.Extension\IInspectable.ProjectExplorer.Extension.csproj", "{3FF6BA3D-17A0-46BE-9058-095EBD295424}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IInspectable.Utilities", "IInspectable.Utilities\IInspectable.Utilities.csproj", "{AA0629B3-AF39-4049-9723-7989EC93B0A4}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IInspectable.ProjectExplorer.ExtensionShared", "IInspectable.ProjectExplorer.ExtensionShared\IInspectable.ProjectExplorer.ExtensionShared.shproj", "{C8F56B7F-9865-41F1-8C91-005B5567ED3A}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		IInspectable.ProjectExplorer.ExtensionShared\IInspectable.ProjectExplorer.ExtensionShared.projitems*{3ff6ba3d-17a0-46be-9058-095ebd295424}*SharedItemsImports = 4
+		IInspectable.ProjectExplorer.ExtensionShared\IInspectable.ProjectExplorer.ExtensionShared.projitems*{c8f56b7f-9865-41f1-8c91-005b5567ed3a}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

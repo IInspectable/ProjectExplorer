@@ -21,5 +21,6 @@
     <ErrorReportUrlHistory />
     <FallbackCulture>en-US</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <ExtensibilityEssentialsInstalled>true</ExtensibilityEssentialsInstalled>
   </PropertyGroup>
 </Project>
