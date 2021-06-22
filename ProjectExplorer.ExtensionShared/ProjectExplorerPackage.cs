@@ -175,20 +175,15 @@ namespace IInspectable.ProjectExplorer.Extension {
 
         }
 
-        public static IServiceProvider ServiceProvider => GetGlobalService<IServiceProvider, IServiceProvider>();
-
-        public static TService GetGlobalService<TService>() where TService : class {
-            return GetGlobalService(typeof(TService)) as TService;
-        }
-
         public static TInterface GetGlobalService<TService, TInterface>() where TInterface : class {
-            return GetGlobalService(typeof(TService)) as TInterface;
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return ServiceProvider.GlobalProvider.GetService<TService, TInterface>();
         }
 
         protected override void OnLoadOptions(string key, Stream stream) {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            // TODO Wenn der Explorer geöffnet wurde, nachdem eine Solutuon geladen wurde, haben wir noch keinen OptionService...
+            // TODO Wenn der Explorer geöffnet wurde, nachdem eine Solution geladen wurde, haben wir noch keinen OptionService...
             if (OptionService.OptionKey == key) {
                 _services.OptionService?.LoadOptions(stream);
             }

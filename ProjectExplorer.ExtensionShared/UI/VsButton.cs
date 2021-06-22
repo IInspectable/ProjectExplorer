@@ -6,7 +6,11 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
     public class VsButton: Button {
 
         static VsButton() {
+            #if VS2022
+            // Styles funktionieren (noch?) nicht in VS 2022
+            #else
             DefaultStyleKeyProperty.OverrideMetadata(typeof(VsButton), new FrameworkPropertyMetadata(typeof(VsButton)));
+            #endif
         }
 
         #region DependencyProperty Glyph

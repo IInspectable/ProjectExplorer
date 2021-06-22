@@ -123,7 +123,7 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var uiShell5 = ProjectExplorerPackage.ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
+            var uiShell5 = ProjectExplorerPackage.GetGlobalService<SVsUIShell, IVsUIShell5>();
             var color    = uiShell5?.GetThemedWPFColor(TreeViewColors.HighlightedSpanColorKey) ?? Colors.Orange;
 
             return new SolidColorBrush(color);
