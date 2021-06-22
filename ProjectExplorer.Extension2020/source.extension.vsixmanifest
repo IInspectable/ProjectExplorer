@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-    <Metadata>
-        <Identity Id="IInspectable.ProjectExplorer.bc19cac8-0088-402c-9421-cdfd75e6a557" Version="2.1.1" Language="en-US" Publisher="Maximilian Hänel" />
-        <DisplayName>Project Explorer</DisplayName>
-        <Description xml:space="preserve">Project Explorer is a small tool window for managing a large number of projects within a given search folder. Quickly search for projects and then load, unload or close them respectivley.</Description>
-        <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>
-        <Icon>Resources\ProjectExplorer32.png</Icon>
-        <PreviewImage>Resources\Preview.png</PreviewImage>
-    </Metadata>
-    <Installation>
-        <InstallationTarget Version="[17.0.0,18.0)" Id="Microsoft.VisualStudio.Community" />
-    </Installation>
-    <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.1,)" />
-    </Dependencies>
-    <Assets>
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-    </Assets>
-    <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
-    </Prerequisites>
+  <Metadata>
+    <Identity Id="IInspectable.ProjectExplorer.bc19cac8-0088-402c-9421-cdfd75e6a557" Version="2.1.1" Language="en-US" Publisher="Maximilian Hänel" />
+    <DisplayName>Project Explorer</DisplayName>
+    <Description xml:space="preserve">Project Explorer is a small tool window for managing a large number of projects within a given search folder. Quickly search for projects and then load, unload or close them respectivley.</Description>
+    <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>
+    <Icon>Resources\ProjectExplorer32.png</Icon>
+    <PreviewImage>Resources\Preview.png</PreviewImage>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[17.0.0,18.0)" Id="Microsoft.VisualStudio.Community" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.1,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+  </Assets>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
 </PackageManifest>
