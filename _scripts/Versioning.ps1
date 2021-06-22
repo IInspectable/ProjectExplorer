@@ -1,7 +1,7 @@
 ﻿
 $targetFiles=
     "$PSScriptRoot'\..\ProjectExplorer.Extension2019\UpdateProductVersion.targets",
-	"$PSScriptRoot'\..\ProjectExplorer.Extension2020\UpdateProductVersion.targets",
+	"$PSScriptRoot'\..\ProjectExplorer.Extension2022\UpdateProductVersion.targets",
     "$PSScriptRoot'\..\Utilities\UpdateProductVersion.targets"
 
 function IncreaseMajor(){

@@ -11,11 +11,7 @@ namespace IInspectable.ProjectExplorer.Extension.UI {
     public class VsListBox: ListBox {
 
         static VsListBox() {
-            #if VS2022
-            // Styles funktionieren (noch?) nicht in VS 2022
-            #else
             DefaultStyleKeyProperty.OverrideMetadata(typeof(VsListBox), new FrameworkPropertyMetadata(typeof(VsListBox)));
-            #endif
         }
 
         protected override DependencyObject GetContainerForItemOverride() {
