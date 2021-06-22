@@ -45,6 +45,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <VSCTCompile Include="..\ProjectExplorer.SharedFiles\ProjectExplorerPackage.vsct">
+      <Link>ProjectExplorerPackage.vsct</Link>
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>ProjectExplorerPackage.cs</LastGenOutput>
+    </VSCTCompile>
     <Compile Include="..\ProjectExplorer.SharedFiles\ProjectExplorerPackage.cs">
       <Link>ProjectExplorerPackage.cs</Link>
       <AutoGen>True</AutoGen>
@@ -112,9 +118,11 @@
     </Content>
     <Content Include="..\ProjectExplorer.SharedFiles\Resources\Preview.png">
       <Link>Resources\Preview.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="..\ProjectExplorer.SharedFiles\Resources\ProjectExplorer32.png">
       <Link>Resources\ProjectExplorer32.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <Import Project="..\ProjectExplorer.ExtensionShared\IInspectable.ProjectExplorer.ExtensionShared.projitems" Label="Shared" />
