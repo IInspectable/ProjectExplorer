@@ -13,11 +13,11 @@
       <XPath>/a:PackageManifest/a:Metadata/a:Identity/@Version</XPath>
       <NewValue>$(ProductVersion)</NewValue>
     </XmlConfigUpdates>
-    <XmlConfigUpdates Include="$(VsixmanifestFile)">
+    <!--<XmlConfigUpdates Include="$(VsixmanifestFile)">
       <Namespaces>"&lt;Namespace Prefix='a' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;"</Namespaces>
       <XPath>/a:PackageManifest/a:Metadata/a:DisplayName</XPath>
       <NewValue>$(ProductName)</NewValue>
-    </XmlConfigUpdates>
+    </XmlConfigUpdates>-->
   </ItemGroup>
   <ItemGroup>
     <AssemblyInfoLine Include="// Warning: This is generated code! Don't touch as it will be overwritten by the code generator." />
