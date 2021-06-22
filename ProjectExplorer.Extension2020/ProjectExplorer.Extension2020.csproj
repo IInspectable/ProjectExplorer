@@ -111,11 +111,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\ProjectExplorer.SharedFiles\ProjectExplorerPackage.vsct">
-      <Link>ProjectExplorerPackage.vsct</Link>
-      <Generator>VsctGenerator</Generator>
-      <LastGenOutput>ProjectExplorerPackage.cs</LastGenOutput>
-    </Content>
     <Content Include="..\ProjectExplorer.SharedFiles\Resources\Preview.png">
       <Link>Resources\Preview.png</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
