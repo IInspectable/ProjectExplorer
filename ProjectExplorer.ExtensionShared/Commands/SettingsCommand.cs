@@ -67,8 +67,8 @@ namespace IInspectable.ProjectExplorer.Extension {
                     result = dlg.ShowDialog();
                 }
 
-                if (result == CommonFileDialogResult.Ok) {
-
+                if (result == CommonFileDialogResult.Cancel) {
+                    return;
                 }
 
                 ThreadHelper.JoinableTaskFactory.RunAsync(async () => await _viewModel.SetProjectsRootAsync(dlg.FileName));
