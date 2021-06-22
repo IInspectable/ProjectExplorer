@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <Target Name="IncludeNuGetPackageReferences" 
+          AfterTargets="GetVsixSourceItems"
+          Condition="'$(IncludeCopyLocalReferencesInVSIXContainer)'=='true'">
+  
+    <ItemGroup>
+      
+      <AdditionalNugetItem />
+
+      <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'NLog'" />    
+      <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.WindowsAPICodePack.Core'" />    
+      <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.WindowsAPICodePack.Shell'" />    
+      <AdditionalNugetItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'System.Reactive'" />    
+
+
+      <VSIXSourceItem Include="@(AdditionalNugetItem)" />
+
+    </ItemGroup>
+
+    <Message Text='"%(AdditionalNugetItem.FileName)%(AdditionalNugetItem.Extension)" included in VSIX.'/>
+
+  </Target>
+
+</Project>
