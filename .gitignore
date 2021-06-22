@@ -2,9 +2,12 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/ProjectExplorer.Extension/obj
-/ProjectExplorer.Extension/.vs
-/ProjectExplorer.Extension/bin
+/ProjectExplorer.Extension2019/obj
+/ProjectExplorer.Extension2019/.vs
+/ProjectExplorer.Extension2019/bin
+/ProjectExplorer.Extension2020/obj
+/ProjectExplorer.Extension2020/.vs
+/ProjectExplorer.Extension2020/bin
 /Utilities/obj
 /Utilities/.vs
 /Utilities/bin

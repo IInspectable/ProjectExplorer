@@ -77,8 +77,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\ProjectExplorer.SharedFiles\ProjectExplorerPackage1.cs">
-      <Link>ProjectExplorerPackage1.cs</Link>
+    <Compile Include="..\ProjectExplorer.SharedFiles\ProjectExplorerPackage.cs">
+      <Link>ProjectExplorerPackage.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectExplorerPackage.vsct</DependentUpon>
@@ -160,7 +160,7 @@
       <Link>ProjectExplorerPackage.vsct</Link>
       <ResourceName>Menus.ctmenu</ResourceName>
       <Generator>VsctGenerator</Generator>
-      <LastGenOutput>ProjectExplorerPackage1.cs</LastGenOutput>
+      <LastGenOutput>ProjectExplorerPackage.cs</LastGenOutput>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
