@@ -32,6 +32,7 @@ namespace IInspectable.ProjectExplorer.Extension {
         readonly        IVsSolution      _vsSolution1;
         readonly        IVsSolution2     _vsSolution2;
         readonly        IVsSolution4     _vsSolution4;
+        readonly        IVsSolution6     _vsSolution6;
         readonly        IVsImageService2 _vsImageService2;
         static readonly Logger           Logger = Logger.Create<SolutionService>();
 
@@ -46,6 +47,7 @@ namespace IInspectable.ProjectExplorer.Extension {
             _vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
             _vsSolution2 = serviceProvider.GetService<SVsSolution, IVsSolution2>();
             _vsSolution4 = serviceProvider.GetService<SVsSolution, IVsSolution4>();
+            _vsSolution6 = serviceProvider.GetService<SVsSolution, IVsSolution6>();
 
             _vsImageService2 = serviceProvider.GetService<SVsImageService, IVsImageService2>();
 
@@ -105,18 +107,8 @@ namespace IInspectable.ProjectExplorer.Extension {
         public int OpenProject(string path) {
 
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            Guid empty  = Guid.Empty;
-            Guid projId = Guid.Empty;
-
-            return LogFailed(_vsSolution1.CreateProject(
-                                 rguidProjectType: ref empty,
-                                 lpszMoniker: path,
-                                 lpszLocation: null,
-                                 lpszName: null,
-                                 grfCreateFlags: (uint) __VSCREATEPROJFLAGS.CPF_OPENFILE,
-                                 iidProject: ref projId,
-                                 ppProject: out IntPtr _));
+            
+            return LogFailed(_vsSolution6.AddExistingProject(path, null, out var _));
         }
 
         public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
