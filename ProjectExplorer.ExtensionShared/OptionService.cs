@@ -11,131 +11,130 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension; 
 
-    [Export]
-    sealed class OptionService {
+[Export]
+sealed class OptionService {
 
-        static readonly Logger Logger = Logger.Create<OptionService>();
+    static readonly Logger Logger = Logger.Create<OptionService>();
 
-        string _projectsRoot;
+    string _projectsRoot;
 
-        [ImportingConstructor]
-        public OptionService(SolutionService solutionService) {
-            SolutionService = solutionService;
+    [ImportingConstructor]
+    public OptionService(SolutionService solutionService) {
+        SolutionService = solutionService;
 
-            SolutionService.AfterCloseSolution += OnAfterCloseSolution;
-        }
+        SolutionService.AfterCloseSolution += OnAfterCloseSolution;
+    }
         
-        public const string OptionKey = "ProjectExplorerExtension";
+    public const string OptionKey = "ProjectExplorerExtension";
 
-        public SolutionService SolutionService { get; }
+    public SolutionService SolutionService { get; }
 
-        public string ProjectsRoot {
-            get {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                if (String.IsNullOrWhiteSpace(_projectsRoot)) {
+    public string ProjectsRoot {
+        get {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (String.IsNullOrWhiteSpace(_projectsRoot)) {
 
-                    var solutionDir = SolutionService.GetSolutionDirectory();
-                    if (String.IsNullOrEmpty(solutionDir)) {
-                        return solutionDir;
-                    }
-
-                    // Wenn die Solution bereits gespeichert wurde, dann ist sie per se unsere Wurzel
-                    // Andernfalls gehen wir zum übergeordneten Verzeichnis.
-                    var solutionFile = SolutionService.GetSolutionFile();
-                    if (File.Exists(solutionFile) || !Directory.Exists(solutionDir)) {
-                        return solutionDir;
-                    }
-
-                    var dirInfo = new DirectoryInfo(solutionDir);
-                    return dirInfo.Parent?.FullName;
+                var solutionDir = SolutionService.GetSolutionDirectory();
+                if (String.IsNullOrEmpty(solutionDir)) {
+                    return solutionDir;
                 }
 
-                return _projectsRoot;
+                // Wenn die Solution bereits gespeichert wurde, dann ist sie per se unsere Wurzel
+                // Andernfalls gehen wir zum übergeordneten Verzeichnis.
+                var solutionFile = SolutionService.GetSolutionFile();
+                if (File.Exists(solutionFile) || !Directory.Exists(solutionDir)) {
+                    return solutionDir;
+                }
 
+                var dirInfo = new DirectoryInfo(solutionDir);
+                return dirInfo.Parent?.FullName;
             }
-            set => _projectsRoot = value;
+
+            return _projectsRoot;
+
         }
+        set => _projectsRoot = value;
+    }
 
-        public void LoadOptions(Stream stream) {
+    public void LoadOptions(Stream stream) {
 
-            try {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                var xDoc = XDocument.Load(stream);
-
-                _projectsRoot= FromSolutionRelativePath(xDoc.Root?.Descendants(nameof(ProjectsRoot)).FirstOrDefault()?.Value);
-
-            } catch (Exception ex) {
-                Logger.Error(ex, "Fehler beim Laden der Optionen");
-            }
-        }
-
-        public void SaveOptions(Stream stream) {
+        try {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var xDoc = new XDocument(
-                new XElement(nameof(OptionService),
-                    new XElement(nameof(ProjectsRoot), ToSolutionRelativePath(_projectsRoot))
+            var xDoc = XDocument.Load(stream);
+
+            _projectsRoot = FromSolutionRelativePath(xDoc.Root?.Descendants(nameof(ProjectsRoot)).FirstOrDefault()?.Value);
+
+        } catch (Exception ex) {
+            Logger.Error(ex, "Fehler beim Laden der Optionen");
+        }
+    }
+
+    public void SaveOptions(Stream stream) {
+        ThreadHelper.ThrowIfNotOnUIThread();
+        var xDoc = new XDocument(
+            new XElement(nameof(OptionService),
+                         new XElement(nameof(ProjectsRoot), ToSolutionRelativePath(_projectsRoot))
             ));
 
-            xDoc.Save(stream);
-        }
+        xDoc.Save(stream);
+    }
 
-        void OnAfterCloseSolution(object sender, EventArgs e) {
-            _projectsRoot = null;
-        }
+    void OnAfterCloseSolution(object sender, EventArgs e) {
+        _projectsRoot = null;
+    }
 
-        string FromSolutionRelativePath([CanBeNull] string savedPath) {
+    string FromSolutionRelativePath([CanBeNull] string savedPath) {
 
-            ThreadHelper.ThrowIfNotOnUIThread();
+        ThreadHelper.ThrowIfNotOnUIThread();
             
-            if (String.IsNullOrEmpty(savedPath)) {
-                Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is null or empty");
-                return null;
-            }
-
-            // Für den Fall, dass doch mal ein nicht relativer Pfad gespeichert wurde
-            if (Path.IsPathRooted(savedPath)) {
-                Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is rooted {savedPath}");
-                return savedPath;
-            }
-
-            var solutionDirectory = SolutionService.GetSolutionDirectory();
-            if (solutionDirectory == null) {
-                Logger.Warn($"{nameof(FromSolutionRelativePath)}: No solution directory!");
-                return null;
-            }
-
-            var absolutePath = new FileInfo(Path.Combine(solutionDirectory, savedPath)).FullName;
-
-            Logger.Info($"{nameof(FromSolutionRelativePath)}: Absolute path: {absolutePath}");
-
-            return absolutePath;
+        if (String.IsNullOrEmpty(savedPath)) {
+            Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is null or empty");
+            return null;
         }
 
-        string ToSolutionRelativePath(string projectsRoot) {
-
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            Logger.Info($"{nameof(ToSolutionRelativePath)}: {(projectsRoot ?? "<Null>")}");
-
-            if(String.IsNullOrEmpty(projectsRoot)) {
-                Logger.Info($"{nameof(ToSolutionRelativePath)}: Path is null or empty");
-                return null;
-            }
-
-            var solutionDirectory = SolutionService.GetSolutionDirectory();
-            if (solutionDirectory == null) {
-                Logger.Warn($"{nameof(ToSolutionRelativePath)}: No solution directory!");
-
-                return projectsRoot;
-            }
-
-            var relPath = Utilities.IO.PathHelper.GetRelativePath(solutionDirectory, projectsRoot);
-
-            Logger.Info($"{nameof(ToSolutionRelativePath)}: Relative path is {relPath}");
-
-            return relPath;
+        // Für den Fall, dass doch mal ein nicht relativer Pfad gespeichert wurde
+        if (Path.IsPathRooted(savedPath)) {
+            Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is rooted {savedPath}");
+            return savedPath;
         }
+
+        var solutionDirectory = SolutionService.GetSolutionDirectory();
+        if (solutionDirectory == null) {
+            Logger.Warn($"{nameof(FromSolutionRelativePath)}: No solution directory!");
+            return null;
+        }
+
+        var absolutePath = new FileInfo(Path.Combine(solutionDirectory, savedPath)).FullName;
+
+        Logger.Info($"{nameof(FromSolutionRelativePath)}: Absolute path: {absolutePath}");
+
+        return absolutePath;
+    }
+
+    string ToSolutionRelativePath(string projectsRoot) {
+
+        ThreadHelper.ThrowIfNotOnUIThread();
+
+        Logger.Info($"{nameof(ToSolutionRelativePath)}: {(projectsRoot ?? "<Null>")}");
+
+        if(String.IsNullOrEmpty(projectsRoot)) {
+            Logger.Info($"{nameof(ToSolutionRelativePath)}: Path is null or empty");
+            return null;
+        }
+
+        var solutionDirectory = SolutionService.GetSolutionDirectory();
+        if (solutionDirectory == null) {
+            Logger.Warn($"{nameof(ToSolutionRelativePath)}: No solution directory!");
+
+            return projectsRoot;
+        }
+
+        var relPath = Utilities.IO.PathHelper.GetRelativePath(solutionDirectory, projectsRoot);
+
+        Logger.Info($"{nameof(ToSolutionRelativePath)}: Relative path is {relPath}");
+
+        return relPath;
     }
 }

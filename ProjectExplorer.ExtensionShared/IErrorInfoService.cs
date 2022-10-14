@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension; 
 
-    interface IErrorInfoService {
+interface IErrorInfoService {
 
-        void ShowErrorInfoBar(Exception ex);
-        void RemoveErrorInfoBar();
-    }
+    void ShowErrorInfoBar(Exception ex);
+    void RemoveErrorInfoBar();
 }

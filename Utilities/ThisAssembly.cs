@@ -1,5 +1,5 @@
-﻿namespace IInspectable.Utilities {
-    static partial class ThisAssembly {
+﻿namespace IInspectable.Utilities; 
 
-    }
+static partial class ThisAssembly {
+
 }

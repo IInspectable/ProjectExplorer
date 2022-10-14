@@ -5,12 +5,11 @@ using System.Windows.Controls;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension.UI {
+namespace IInspectable.ProjectExplorer.Extension.UI; 
 
-    public class VsListBoxItem : ListBoxItem {
+public class VsListBoxItem : ListBoxItem {
 
-        static VsListBoxItem() {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(VsListBoxItem), new FrameworkPropertyMetadata(typeof(VsListBoxItem)));
-        }
+    static VsListBoxItem() {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(VsListBoxItem), new FrameworkPropertyMetadata(typeof(VsListBoxItem)));
     }
 }

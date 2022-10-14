@@ -2,23 +2,21 @@
 
 using JetBrains.Annotations;
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension; 
 
-    static class StringExtensions {
+static class StringExtensions {
 
-        public static string NullIfEmpty([CanBeNull] this string value) {
-            if (value.IsNullOrEmpty()) {
-                return null;
-            }
-
-            return value;
+    public static string NullIfEmpty([CanBeNull] this string value) {
+        if (value.IsNullOrEmpty()) {
+            return null;
         }
 
-        [ContractAnnotation("null=>true")]
-        public static bool IsNullOrEmpty([CanBeNull] this string value) {
-            return String.IsNullOrEmpty(value);
-        }
+        return value;
+    }
 
+    [ContractAnnotation("null=>true")]
+    public static bool IsNullOrEmpty([CanBeNull] this string value) {
+        return String.IsNullOrEmpty(value);
     }
 
 }

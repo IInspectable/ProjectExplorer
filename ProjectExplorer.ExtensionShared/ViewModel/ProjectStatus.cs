@@ -1,11 +1,9 @@
-﻿namespace IInspectable.ProjectExplorer.Extension {
+﻿namespace IInspectable.ProjectExplorer.Extension; 
 
-    public enum ProjectStatus {
+public enum ProjectStatus {
 
-        Closed,
-        Unloaded,
-        Loaded,
-
-    }
+    Closed,
+    Unloaded,
+    Loaded,
 
 }

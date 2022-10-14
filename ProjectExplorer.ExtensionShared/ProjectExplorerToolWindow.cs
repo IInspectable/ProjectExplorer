@@ -10,109 +10,107 @@ using Microsoft.VisualStudio.Imaging;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension; 
 
-    class ProjectExplorerToolWindowServices {
+class ProjectExplorerToolWindowServices {
 
-        public ProjectExplorerToolWindowServices(ProjectExplorerPackage package, OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
-            Package                 = package;
-            OleMenuCommandService   = oleMenuCommandService;
-            ViewModelProvider       = viewModelProvider;
-            WindowSearchHostFactory = windowSearchHostFactory;
-            OptionService           = optionService;
-            WaitIndicator           = waitIndicator;
-        }
-
-        public ProjectExplorerPackage           Package                 { get; }
-        public OleMenuCommandService            OleMenuCommandService   { get; }
-        public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
-        public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
-        public OptionService                    OptionService           { get; }
-        public IWaitIndicator                   WaitIndicator           { get; }
-
+    public ProjectExplorerToolWindowServices(ProjectExplorerPackage package, OleMenuCommandService oleMenuCommandService, ProjectExplorerViewModelProvider viewModelProvider, IVsWindowSearchHostFactory windowSearchHostFactory, OptionService optionService, IWaitIndicator waitIndicator) {
+        Package                 = package;
+        OleMenuCommandService   = oleMenuCommandService;
+        ViewModelProvider       = viewModelProvider;
+        WindowSearchHostFactory = windowSearchHostFactory;
+        OptionService           = optionService;
+        WaitIndicator           = waitIndicator;
     }
 
-    [Guid(GuidString)]
-    class ProjectExplorerToolWindow: ToolWindowPane, IErrorInfoService {
+    public ProjectExplorerPackage           Package                 { get; }
+    public OleMenuCommandService            OleMenuCommandService   { get; }
+    public ProjectExplorerViewModelProvider ViewModelProvider       { get; }
+    public IVsWindowSearchHostFactory       WindowSearchHostFactory { get; }
+    public OptionService                    OptionService           { get; }
+    public IWaitIndicator                   WaitIndicator           { get; }
 
-        public const  string GuidString = "f3e3f345-a607-4f4c-9742-bb6415f2b062";
-        public static Guid   Guid => new(GuidString);
-        public const  string Title = "Project Explorer";
+}
 
-        public ProjectExplorerToolWindow(ProjectExplorerToolWindowServices services): base(null) {
-            // ReSharper disable VirtualMemberCallInConstructor
+[Guid(GuidString)]
+class ProjectExplorerToolWindow: ToolWindowPane, IErrorInfoService {
 
-            var menuCommandService      = services.OleMenuCommandService;
-            var viewModelProvider       = services.ViewModelProvider;
-            var windowSearchHostFactory = services.WindowSearchHostFactory;
+    public const  string GuidString = "f3e3f345-a607-4f4c-9742-bb6415f2b062";
+    public static Guid   Guid => new(GuidString);
+    public const  string Title = "Project Explorer";
 
-            ViewModel = viewModelProvider.CreateViewModel(services.Package, this, menuCommandService);
+    public ProjectExplorerToolWindow(ProjectExplorerToolWindowServices services): base(null) {
+        // ReSharper disable VirtualMemberCallInConstructor
 
-            // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
-            // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
-            // the object returned by the Content property.
-            Content            = new ProjectExplorerControl(windowSearchHostFactory, ViewModel);
-            ToolBar            = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
-            Caption            = Title;
-            BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
+        var menuCommandService      = services.OleMenuCommandService;
+        var viewModelProvider       = services.ViewModelProvider;
+        var windowSearchHostFactory = services.WindowSearchHostFactory;
 
-            ViewModel.RequestBringSelectionIntoView += (_, _) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
-            // ReSharper restore VirtualMemberCallInConstructor
+        ViewModel = viewModelProvider.CreateViewModel(services.Package, this, menuCommandService);
+
+        // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
+        // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
+        // the object returned by the Content property.
+        Content            = new ProjectExplorerControl(windowSearchHostFactory, ViewModel);
+        ToolBar            = new CommandID(PackageGuids.ProjectExplorerWindowPackageCmdSetGuid, PackageIds.ProjectExplorerToolbar);
+        Caption            = Title;
+        BitmapImageMoniker = KnownMonikers.SearchFolderOpened;
+
+        ViewModel.RequestBringSelectionIntoView += (_, _) => ProjectExplorerControl.ProjectsControl.BringSelectionIntoView();
+        // ReSharper restore VirtualMemberCallInConstructor
+    }
+
+    ProjectExplorerViewModel ViewModel { get; }
+
+    ProjectExplorerControl ProjectExplorerControl => (ProjectExplorerControl) Content;
+
+    protected override void Dispose(bool disposing) {
+        if (disposing) {
+            ProjectExplorerControl.Dispose();
+            ViewModel.Dispose();
         }
 
-        ProjectExplorerViewModel ViewModel { get; }
+        base.Dispose(disposing);
+    }
 
-        ProjectExplorerControl ProjectExplorerControl => (ProjectExplorerControl) Content;
+    #region IErrorInfoService
 
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                ProjectExplorerControl.Dispose();
-                ViewModel.Dispose();
-            }
+    InfoBarModel _errorInfoBar;
 
-            base.Dispose(disposing);
+    protected override void OnInfoBarClosed(IVsInfoBarUIElement infoBarUI, IVsInfoBar infoBar) {
+        if (infoBar == _errorInfoBar) {
+            _errorInfoBar = null;
         }
 
-        #region IErrorInfoService
+        base.OnInfoBarClosed(infoBarUI, infoBar);
+    }
 
-        InfoBarModel _errorInfoBar;
+    void IErrorInfoService.ShowErrorInfoBar(Exception ex) {
+        ((IErrorInfoService) this).RemoveErrorInfoBar();
 
-        protected override void OnInfoBarClosed(IVsInfoBarUIElement infoBarUI, IVsInfoBar infoBar) {
-            if (infoBar == _errorInfoBar) {
-                _errorInfoBar = null;
-            }
+        _errorInfoBar = new InfoBarModel(ex.Message, KnownMonikers.StatusError);
+        AddInfoBar(_errorInfoBar);
+    }
 
-            base.OnInfoBarClosed(infoBarUI, infoBar);
+    void IErrorInfoService.RemoveErrorInfoBar() {
+        if (_errorInfoBar != null) {
+            RemoveInfoBar(_errorInfoBar);
+            _errorInfoBar = null;
         }
+    }
 
-        void IErrorInfoService.ShowErrorInfoBar(Exception ex) {
-            ((IErrorInfoService) this).RemoveErrorInfoBar();
+    #endregion
 
-            _errorInfoBar = new InfoBarModel(ex.Message, KnownMonikers.StatusError);
-            AddInfoBar(_errorInfoBar);
-        }
-
-        void IErrorInfoService.RemoveErrorInfoBar() {
-            if (_errorInfoBar != null) {
-                RemoveInfoBar(_errorInfoBar);
-                _errorInfoBar = null;
-            }
-        }
-
-        #endregion
-
-        public bool CanActivateSearch {
-            get {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                return ProjectExplorerControl.CanActivateSearch;
-            }
-        }
-
-        public void ActivateSearch() {
+    public bool CanActivateSearch {
+        get {
             ThreadHelper.ThrowIfNotOnUIThread();
-            ProjectExplorerControl.ActivateSearch();
+            return ProjectExplorerControl.CanActivateSearch;
         }
+    }
 
+    public void ActivateSearch() {
+        ThreadHelper.ThrowIfNotOnUIThread();
+        ProjectExplorerControl.ActivateSearch();
     }
 
 }

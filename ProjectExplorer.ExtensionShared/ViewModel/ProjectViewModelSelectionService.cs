@@ -9,89 +9,87 @@ using System.Linq;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension {
+namespace IInspectable.ProjectExplorer.Extension; 
 
-    sealed class ProjectViewModelSelectionService {
+sealed class ProjectViewModelSelectionService {
 
-        readonly HashSet<ProjectViewModel> _selectedItems;
+    readonly HashSet<ProjectViewModel> _selectedItems;
 
-        public ProjectViewModelSelectionService(ObservableCollection<ProjectViewModel> projects) {
-            if (projects == null) {
-                throw new ArgumentNullException(nameof(projects));
-            }
-
-            _selectedItems             =  new HashSet<ProjectViewModel>();
-            projects.CollectionChanged += OnProjectCollectionChanged;
+    public ProjectViewModelSelectionService(ObservableCollection<ProjectViewModel> projects) {
+        if (projects == null) {
+            throw new ArgumentNullException(nameof(projects));
         }
 
-        public event EventHandler SelectionChanged;
+        _selectedItems             =  new HashSet<ProjectViewModel>();
+        projects.CollectionChanged += OnProjectCollectionChanged;
+    }
 
-        public ImmutableList<ProjectViewModel> SelectedItems => _selectedItems.ToImmutableList();
+    public event EventHandler SelectionChanged;
 
-        public void AddSelection(ProjectViewModel projectViewModel) {
-            if (projectViewModel == null) {
-                return;
-            }
+    public ImmutableList<ProjectViewModel> SelectedItems => _selectedItems.ToImmutableList();
 
-            if (_selectedItems.Add(projectViewModel)) {
-                projectViewModel.NotifyIsSelectedChanged();
-                NotifySelectionChanged();
-            }
-
+    public void AddSelection(ProjectViewModel projectViewModel) {
+        if (projectViewModel == null) {
+            return;
         }
 
-        public void RemoveSelection(ProjectViewModel projectViewModel) {
-            if (_selectedItems.Remove(projectViewModel)) {
-                projectViewModel.NotifyIsSelectedChanged();
-                NotifySelectionChanged();
-            }
-        }
-
-        public void RemoveSelection(IEnumerable<ProjectViewModel> projectViewModels) {
-
-            foreach (var projectViewModel in projectViewModels) {
-                RemoveSelection(projectViewModel);
-            }
-
-        }
-
-        public void ClearSelection() {
-
-            var projectViewModels = _selectedItems.ToList();
-
-            _selectedItems.Clear();
-
-            foreach (var projectViewModel in projectViewModels) {
-                projectViewModel.NotifyIsSelectedChanged();
-            }
-
+        if (_selectedItems.Add(projectViewModel)) {
+            projectViewModel.NotifyIsSelectedChanged();
             NotifySelectionChanged();
         }
 
-        internal bool IsSelected(ProjectViewModel viewmodel) {
-            return _selectedItems.Contains(viewmodel);
+    }
+
+    public void RemoveSelection(ProjectViewModel projectViewModel) {
+        if (_selectedItems.Remove(projectViewModel)) {
+            projectViewModel.NotifyIsSelectedChanged();
+            NotifySelectionChanged();
+        }
+    }
+
+    public void RemoveSelection(IEnumerable<ProjectViewModel> projectViewModels) {
+
+        foreach (var projectViewModel in projectViewModels) {
+            RemoveSelection(projectViewModel);
         }
 
-        void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            switch (e.Action) {
-                case NotifyCollectionChangedAction.Add:
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Move:
-                    RemoveSelection(e.OldItems.OfType<ProjectViewModel>());
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    ClearSelection();
-                    break;
-            }
+    }
 
+    public void ClearSelection() {
+
+        var projectViewModels = _selectedItems.ToList();
+
+        _selectedItems.Clear();
+
+        foreach (var projectViewModel in projectViewModels) {
+            projectViewModel.NotifyIsSelectedChanged();
         }
 
-        void NotifySelectionChanged() {
-            SelectionChanged?.Invoke(this, EventArgs.Empty);
+        NotifySelectionChanged();
+    }
+
+    internal bool IsSelected(ProjectViewModel viewmodel) {
+        return _selectedItems.Contains(viewmodel);
+    }
+
+    void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        switch (e.Action) {
+            case NotifyCollectionChangedAction.Add:
+                break;
+            case NotifyCollectionChangedAction.Replace:
+            case NotifyCollectionChangedAction.Remove:
+            case NotifyCollectionChangedAction.Move:
+                RemoveSelection(e.OldItems.OfType<ProjectViewModel>());
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                ClearSelection();
+                break;
         }
 
+    }
+
+    void NotifySelectionChanged() {
+        SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 
 }
