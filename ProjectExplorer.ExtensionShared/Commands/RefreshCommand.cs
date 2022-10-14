@@ -27,7 +27,8 @@ sealed class RefreshCommand: Command {
 
     public override void Execute(object parameter = null) {
 
-        ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await _viewModel.ReloadProjectsAsync(); });
+        ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await _viewModel.ReloadProjectsAsync(); })
+                    .FileAndForget("ProjectExplorer/RefreshCommand.Execute");
     }
 
 }

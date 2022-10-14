@@ -84,6 +84,7 @@ class ProjectService {
     }
 
     public HResult EnsureSolution() {
+        ThreadHelper.ThrowIfNotOnUIThread();
         return _solutionService.EnsureSolution();
     }
 

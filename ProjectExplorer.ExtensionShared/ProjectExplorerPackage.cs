@@ -142,7 +142,8 @@ sealed class ProjectExplorerPackage: AsyncPackage {
 
     public void ShowProjectExplorerWindow() {
 
-        JoinableTaskFactory.RunAsync(async () => { await ShowProjectExplorerWindowAsync(); });
+        JoinableTaskFactory.RunAsync(async () => { await ShowProjectExplorerWindowAsync(); })
+                           .FileAndForget("ProjectExplorer/ShowProjectExplorerWindow");
 
     }
 
@@ -157,8 +158,8 @@ sealed class ProjectExplorerPackage: AsyncPackage {
             if (toolwindow.CanActivateSearch) {
                 toolwindow.ActivateSearch();
             }
-        });
-
+        }).FileAndForget("ProjectExplorer/ShowProjectExplorerWindowAndActivateSearch");
+        
     }
 
     async Task<ProjectExplorerToolWindow> ShowProjectExplorerWindowAsync() {

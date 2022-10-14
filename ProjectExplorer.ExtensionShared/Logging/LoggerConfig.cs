@@ -27,9 +27,10 @@ static class LoggerConfig {
     static readonly LogFactory LogFactory = CreateLogFactory();
        
     static LogFactory CreateLogFactory() {
-            
-        LoggingConfiguration loggingConfiguration = new LoggingConfiguration();
-            
+
+        var logFactory           = new LogFactory();
+        var loggingConfiguration = new LoggingConfiguration(logFactory);
+
         var fileTarget = new FileTarget {
             FileName         = Path.Combine(LogFolder, $"{LogName}.log.xml"),
             ArchiveFileName  = Path.Combine(LogFolder, $"{LogName}.log.xml.{{#####}}"),
@@ -42,8 +43,6 @@ static class LoggerConfig {
         loggingConfiguration.AddTarget("file", fileTarget);
         loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, fileTarget));
 
-        var logFactory = new LogFactory(loggingConfiguration);
-
-        return logFactory;
+        return loggingConfiguration.LogFactory;
     }
 }
