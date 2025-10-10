@@ -10,11 +10,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{75E5A9C3-DCB8-4ABC-BC43-CA1E3C8533C3}</ProjectGuid>
+    <ProjectGuid>{374E8225-9563-4A2C-9868-5C4EF4BB97F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IInspectable.ProjectExplorer.Extension</RootNamespace>
-    <AssemblyName>ProjectExplorer.Extension2022</AssemblyName>
+    <AssemblyName>ProjectExplorer.Extension2026</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <UseCodebase>true</UseCodebase>
@@ -73,7 +73,7 @@
       <Version>17.3.32804.24</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
-	    <PrivateAssets>all</PrivateAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="JetBrains.Annotations">
       <Version>2022.1.0</Version>

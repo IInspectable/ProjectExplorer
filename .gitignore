@@ -13,3 +13,5 @@
 /Utilities/bin
 /.vs
 /**/*.generated.cs
+/ProjectExplorer.Extension2026/bin/Debug
+/ProjectExplorer.Extension2026/obj

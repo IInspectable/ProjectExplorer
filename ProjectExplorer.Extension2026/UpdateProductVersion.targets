@@ -1,0 +1,35 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProductName>Project Explorer</ProductName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VsixmanifestFile>$(MSBuildProjectDirectory)\source.extension.vsixmanifest</VsixmanifestFile>
+    <AssemblyInfoFile>$(MSBuildProjectDirectory)\ThisAssembly.generated.cs</AssemblyInfoFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <XmlConfigUpdates Include="$(VsixmanifestFile)">
+      <Namespaces>"&lt;Namespace Prefix='a' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;"</Namespaces>
+      <XPath>/a:PackageManifest/a:Metadata/a:Identity/@Version</XPath>
+      <NewValue>$(ProductVersion)</NewValue>
+    </XmlConfigUpdates>
+    <!--<XmlConfigUpdates Include="$(VsixmanifestFile)">
+      <Namespaces>"&lt;Namespace Prefix='a' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;"</Namespaces>
+      <XPath>/a:PackageManifest/a:Metadata/a:DisplayName</XPath>
+      <NewValue>$(ProductName)</NewValue>
+    </XmlConfigUpdates>-->
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyInfoLine Include="// Warning: This is generated code! Don't touch as it will be overwritten by the code generator." />
+    <AssemblyInfoLine Include="namespace IInspectable.ProjectExplorer.Extension {" />
+    <AssemblyInfoLine Include="%20%20%20%20static partial class ThisAssembly {" />
+    <AssemblyInfoLine Include="%20%20%20%20%20%20%20%20public const string ProductVersion = &quot;$(ProductVersion)&quot;%3b" />
+    <AssemblyInfoLine Include="%20%20%20%20%20%20%20%20public const string ProductName = &quot;$(ProductName)&quot;%3b" />
+    <AssemblyInfoLine Include="%20%20%20%20}" />
+    <AssemblyInfoLine Include="}" />
+  </ItemGroup>
+  <Target Name="UpdateProductVersion" BeforeTargets="PrepareForBuild">
+    <Message Text="Updating XML $(VsixVersionNumber) files %(XmlConfigUpdates.FullPath)" Importance="high" />
+    <XmlPoke Namespaces="%(XmlConfigUpdates.Namespaces)" XmlInputPath="%(XmlConfigUpdates.FullPath)" Query="%(XmlConfigUpdates.XPath)" Value="%(XmlConfigUpdates.NewValue)" />
+    <WriteLinesToFile File="$(AssemblyInfoFile)" Overwrite="true" Lines="@(AssemblyInfoLine)" />
+  </Target>
+</Project>
