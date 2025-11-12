@@ -99,9 +99,9 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
         }
 
         return LogFailed(_vsSolution1.CreateSolution(
-                             lpszLocation: null,
-                             lpszName: null,
-                             grfCreateFlags: (uint) __VSCREATESOLUTIONFLAGS.CSF_TEMPORARY));
+            lpszLocation: null,
+            lpszName: null,
+            grfCreateFlags: (uint)(__VSCREATESOLUTIONFLAGS.CSF_TEMPORARY | __VSCREATESOLUTIONFLAGS.CSF_SILENT)));
     }
 
     public int OpenProject(string path) {

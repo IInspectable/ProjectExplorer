@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="IInspectable.ProjectExplorer.2026.bc19cac8-0088-402c-9421-cdfd75e6a558" Version="2.4.1" Language="en-US" Publisher="Maximilian Hänel" />
+    <Identity Id="IInspectable.ProjectExplorer.2026.bc19cac8-0088-402c-9421-cdfd75e6a558" Version="2.5.0" Language="en-US" Publisher="Maximilian Hänel" />
     <DisplayName>Project Explorer 2026</DisplayName>
     <Description xml:space="preserve">Project Explorer is a small tool window for managing a large number of projects within a given search folder. Quickly search for projects and then load, unload or close them respectivley.</Description>
     <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>
