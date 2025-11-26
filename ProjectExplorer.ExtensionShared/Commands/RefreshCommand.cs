@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension; 
+namespace IInspectable.ProjectExplorer.Extension;
 
 sealed class RefreshCommand: Command {
 
@@ -27,8 +27,10 @@ sealed class RefreshCommand: Command {
 
     public override void Execute(object parameter = null) {
 
-        ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await _viewModel.ReloadProjectsAsync(); })
-                    .FileAndForget("ProjectExplorer/RefreshCommand.Execute");
+        ThreadHelper.JoinableTaskFactory.RunAsync(async () => {
+                         await _viewModel.ReloadProjectsAsync();
+                     })
+                    .Join();
     }
 
 }

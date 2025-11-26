@@ -23,7 +23,7 @@ sealed class ProjectSearchTask: VsSearchTask {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             _viewModel.ApplySearch(SearchQuery.SearchString);
 
-        }).FileAndForget("ProjectExplorer/OnStartSearch");
+        }).Join();
 
         base.OnStartSearch();
     }

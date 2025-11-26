@@ -72,7 +72,7 @@ sealed class SettingsCommand: Command {
             }
 
             ThreadHelper.JoinableTaskFactory.RunAsync(async () => await _viewModel.SetProjectsRootAsync(dlg.FileName))
-                        .FileAndForget("ProjectExplorer/SettingsCommand.Execute");
+                        .Join();
 
         } finally {
             Executing = false;
