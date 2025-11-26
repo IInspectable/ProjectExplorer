@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using IInspectable.ProjectExplorer.Extension;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -19,18 +20,9 @@ using System.Windows;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: AssemblyVersion(ThisAssembly.ProductVersion)]
+[assembly: AssemblyFileVersion(ThisAssembly.ProductVersion)]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
