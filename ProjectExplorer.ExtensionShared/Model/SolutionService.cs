@@ -31,12 +31,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
     private readonly IServiceProvider _serviceProvider;
 
-    readonly        IVsSolution      _vsSolution1;
-    readonly        IVsSolution2     _vsSolution2;
-    readonly        IVsSolution4     _vsSolution4;
-    readonly        IVsSolution6     _vsSolution6;
-    readonly        IVsImageService2 _vsImageService2;
-    static readonly Logger           Logger = Logger.Create<SolutionService>();
+    static readonly Logger Logger = Logger.Create<SolutionService>();
 
     uint _solutionEvents1Cookie;
     uint _solutionEvents4Cookie;
@@ -47,15 +42,10 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
         ThreadHelper.ThrowIfNotOnUIThread();
 
-        _vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
-        _vsSolution2 = serviceProvider.GetService<SVsSolution, IVsSolution2>();
-        _vsSolution4 = serviceProvider.GetService<SVsSolution, IVsSolution4>();
-        _vsSolution6 = serviceProvider.GetService<SVsSolution, IVsSolution6>();
+        var vsSolution1 = serviceProvider.GetService<SVsSolution, IVsSolution>();
 
-        _vsImageService2 = serviceProvider.GetService<SVsImageService, IVsImageService2>();
-
-        _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
-        _vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);
+        vsSolution1.AdviseSolutionEvents(this, out _solutionEvents1Cookie);
+        vsSolution1.AdviseSolutionEvents(this, out _solutionEvents4Cookie);
     }
 
     public void Dispose() {
@@ -63,36 +53,38 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
         ThreadHelper.ThrowIfNotOnUIThread();
 
         if (_solutionEvents1Cookie != 0) {
-            _vsSolution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
+            VsSolution1.UnadviseSolutionEvents(_solutionEvents1Cookie);
             _solutionEvents1Cookie = 0;
         }
 
         if (_solutionEvents4Cookie != 0) {
-            _vsSolution1.UnadviseSolutionEvents(_solutionEvents4Cookie);
+            VsSolution1.UnadviseSolutionEvents(_solutionEvents4Cookie);
             _solutionEvents4Cookie = 0;
         }
     }
 
-    public IVsSolution  VsSolution1 => _vsSolution1;
-    public IVsSolution2 VsSolution2 => _vsSolution2;
-    public IVsSolution4 VsSolution4 => _vsSolution4;
+    public IVsImageService2 VsImageService2 => _serviceProvider.GetService<SVsImageService, IVsImageService2>();
+    public IVsSolution      VsSolution1     => _serviceProvider.GetService<SVsSolution, IVsSolution>();
+    public IVsSolution2     VsSolution2     => _serviceProvider.GetService<SVsSolution, IVsSolution2>();
+    public IVsSolution4     VsSolution4     => _serviceProvider.GetService<SVsSolution, IVsSolution4>();
+    public IVsSolution6     VsSolution6     => _serviceProvider.GetService<SVsSolution, IVsSolution6>();
 
     public Hierarchy GetRoot() {
         ThreadHelper.ThrowIfNotOnUIThread();
         // ReSharper disable once SuspiciousTypeConversion.Global
-        var hierarchy = _vsSolution1 as IVsHierarchy;
+        var hierarchy = VsSolution1 as IVsHierarchy;
         var root      = new Hierarchy(this, hierarchy, HierarchyId.Root);
         return root;
     }
 
     public ImageMoniker GetImageMonikerForFile(string filename) {
         ThreadHelper.ThrowIfNotOnUIThread();
-        return _vsImageService2.GetImageMonikerForFile(filename);
+        return VsImageService2.GetImageMonikerForFile(filename);
     }
 
     public ImageMoniker GetImageMonikerForHierarchyItem(IVsHierarchy hierarchy) {
         ThreadHelper.ThrowIfNotOnUIThread();
-        return _vsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint) VSConstants.VSITEMID.Root, (int) __VSHIERARCHYIMAGEASPECT.HIA_Icon);
+        return VsImageService2.GetImageMonikerForHierarchyItem(hierarchy, (uint) VSConstants.VSITEMID.Root, (int) __VSHIERARCHYIMAGEASPECT.HIA_Icon);
     }
 
     public HResult EnsureSolution() {
@@ -101,7 +93,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
             return VSConstants.S_OK;
         }
 
-        return LogFailed(_vsSolution1.CreateSolution(
+        return LogFailed(VsSolution1.CreateSolution(
             lpszLocation: null,
             lpszName: null,
             grfCreateFlags: (uint)(__VSCREATESOLUTIONFLAGS.CSF_TEMPORARY | __VSCREATESOLUTIONFLAGS.CSF_SILENT)));
@@ -123,14 +115,14 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
             return Guid.Empty;
         }
 
-        LogFailed(_vsSolution1.GetGuidOfProject(pHierarchy, out var projGuid));
+        LogFailed(VsSolution1.GetGuidOfProject(pHierarchy, out var projGuid));
         return projGuid;
     }
 
     public bool IsSolutionOpen() {
         ThreadHelper.ThrowIfNotOnUIThread();
 
-        LogFailed(_vsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out var value));
+        LogFailed(VsSolution1.GetProperty((int) __VSPROPID.VSPROPID_IsSolutionOpen, out var value));
         return (bool) value;
     }
 
@@ -138,7 +130,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
     public string GetSolutionDirectory() {
         ThreadHelper.ThrowIfNotOnUIThread();
 
-        _vsSolution1.GetSolutionInfo(out string solutionDirectory, out string _, out string _);
+        VsSolution1.GetSolutionInfo(out string solutionDirectory, out string _, out string _);
 
         return solutionDirectory;
     }
@@ -147,7 +139,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
     public string GetSolutionFile() {
         ThreadHelper.ThrowIfNotOnUIThread();
 
-        _vsSolution1.GetSolutionInfo(out string _, out string solutionFile, out string _);
+        VsSolution1.GetSolutionInfo(out string _, out string solutionFile, out string _);
 
         return solutionFile;
     }
@@ -155,7 +147,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
     public Hierarchy GetHierarchyByUniqueNameOfProject(string uniqueName) {
         ThreadHelper.ThrowIfNotOnUIThread();
 
-        if (Failed(_vsSolution1.GetProjectOfUniqueName(uniqueName, out var result), except: VSConstants.E_FAIL) || result == null) {
+        if (Failed(VsSolution1.GetProjectOfUniqueName(uniqueName, out var result), except: VSConstants.E_FAIL) || result == null) {
             return null;
         }
 
@@ -167,7 +159,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
         Guid ignored = Guid.Empty;
         var  flags   =  __VSENUMPROJFLAGS.EPF_ALLPROJECTS;
-        if (Failed(_vsSolution1.GetProjectEnum((uint) flags, ref ignored, out var hierEnum))) {
+        if (Failed(VsSolution1.GetProjectEnum((uint) flags, ref ignored, out var hierEnum))) {
             yield break;
         }
 
