@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+
 using NLog;
 using NLog.Config;
 using NLog.Layouts;
@@ -9,7 +10,7 @@ using NLog.Targets;
 
 #endregion
 
-namespace IInspectable.ProjectExplorer.Extension; 
+namespace IInspectable.ProjectExplorer.Extension;
 
 static class LoggerConfig {
 
@@ -25,11 +26,10 @@ static class LoggerConfig {
     }
 
     static readonly LogFactory LogFactory = CreateLogFactory();
-       
-    static LogFactory CreateLogFactory() {
 
-        var logFactory           = new LogFactory();
-        var loggingConfiguration = new LoggingConfiguration(logFactory);
+    static LogFactory CreateLogFactory() {
+        var logFactory = new LogFactory();
+        var config     = new LoggingConfiguration(logFactory);
 
         var fileTarget = new FileTarget {
             FileName         = Path.Combine(LogFolder, $"{LogName}.log.xml"),
@@ -40,9 +40,13 @@ static class LoggerConfig {
             Layout           = new Log4JXmlEventLayout()
         };
 
-        loggingConfiguration.AddTarget("file", fileTarget);
-        loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, fileTarget));
+        config.AddTarget("file", fileTarget);
+        config.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, fileTarget));
 
-        return loggingConfiguration.LogFactory;
+        // **WICHTIG: Konfiguration aktivieren**
+        logFactory.Configuration = config;
+
+        return logFactory;
     }
+
 }

@@ -29,6 +29,8 @@ static class ServiceProviderExtensions {
 [Export]
 class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
+    private readonly IServiceProvider _serviceProvider;
+
     readonly        IVsSolution      _vsSolution1;
     readonly        IVsSolution2     _vsSolution2;
     readonly        IVsSolution4     _vsSolution4;
@@ -41,6 +43,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
 
     [ImportingConstructor]
     public SolutionService([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) {
+        _serviceProvider = serviceProvider;
 
         ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -107,8 +110,10 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
     public int OpenProject(string path) {
 
         ThreadHelper.ThrowIfNotOnUIThread();
-            
-        return LogFailed(_vsSolution6.AddExistingProject(path, null, out var _));
+
+        var vs6 = _serviceProvider.GetService<SVsSolution, IVsSolution6>();
+
+        return LogFailed(vs6.AddExistingProject(path, null, out var _));
     }
 
     public Guid GetProjectGuid(IVsHierarchy pHierarchy) {
