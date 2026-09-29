@@ -86,7 +86,7 @@
       <Version>5.0.4</Version>
     </PackageReference>
     <PackageReference Include="System.Reactive">
-      <Version>5.0.0</Version>
+      <Version>6.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
