@@ -1,7 +1,4 @@
-﻿# Project Explorer for Visual Studio
-| Branch | Status |
-|--------|---------|
-|**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/master?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer/branch/master)|
+﻿# Project Explorer 2026
 
 Project Explorer is a tool window that lists **every project below a search folder**, whether or not
 it is part of the current solution. Find a project in seconds, then add it to the solution, unload
@@ -22,7 +19,7 @@ Supports Visual Studio 2022 and Visual Studio 2026.
 Project Explorer recognizes every project type installed in your Visual Studio. The scan runs in the
 background, can be cancelled at any time and is repeated with **Refresh**.
 
-![Project Explorer tool window](_art/pe.png)
+![Project Explorer tool window](https://raw.githubusercontent.com/IInspectable/ProjectExplorer/master/_art/pe.png)
 
 ## Find projects fast
 
@@ -32,7 +29,7 @@ a name or camel-case abbreviations are enough.
 Tip: under *Tools › Options › Environment › Keyboard*, search for **ActivateProjectExplorerSearch**
 and assign a shortcut to jump straight into the search box.
 
-![Filter projects by name](_art/PatternMatching.gif)
+![Filter projects by name](https://raw.githubusercontent.com/IInspectable/ProjectExplorer/master/_art/PatternMatching.gif)
 
 ## Add, remove, unload and reload projects
 
@@ -47,41 +44,17 @@ A **double-click** or **Enter** performs the obvious action:
 | Unloaded       | Reload project      |
 | Loaded         | Unload project      |
 
-![Context menu for a closed project](_art/pe_context_menu.png)
-![Context menu for a loaded project](_art/pe_context_menu_loaded.png)
+![Context menu for a closed project](https://raw.githubusercontent.com/IInspectable/ProjectExplorer/master/_art/pe_context_menu.png)
+![Context menu for a loaded project](https://raw.githubusercontent.com/IInspectable/ProjectExplorer/master/_art/pe_context_menu_loaded.png)
 
 ## See the status of every project
 
 Loaded, unloaded and closed projects are clearly distinguished, so you always know what is part of
 your solution.
 
-![Project status](_art/pe_project_status.png)
+![Project status](https://raw.githubusercontent.com/IInspectable/ProjectExplorer/master/_art/pe_project_status.png)
 
-## Development
+## Feedback
 
-Building, packaging and versioning run through a set of PowerShell commands (alias `pe`) in
-[`Tools/Commands`](Tools/Commands/README.md). Requirements: Visual Studio 2026 with the
-"Visual Studio extension development" workload and PowerShell 7.
-
-Load the commands once per session, or permanently via your `$PROFILE`:
-
-```powershell
-. "<repo>\Tools\Commands\Import-PeCommands.ps1"
-```
-
-Common tasks:
-
-```powershell
-pe build      # restore + debug build
-pe vsix       # clean release build, VSIX in deploy\
-pe install    # install the VSIX from deploy\
-pe incbuild   # bump the version (also incminor/incmajor) and rebuild the VSIX
-pe            # interactive menu of all commands
-```
-
-The version lives in `Version.props`. See [`Tools/Commands/README.md`](Tools/Commands/README.md)
-for all commands and details (German).
-
-The Visual Studio Marketplace description is maintained in
-[`ProjectExplorer.Extension2026/overview.md`](ProjectExplorer.Extension2026/overview.md)
-(absolute image URLs, ready to paste). Keep it in sync with the sections above.
+Found a bug or have an idea? Source code and issues are on
+[GitHub](https://github.com/IInspectable/ProjectExplorer).

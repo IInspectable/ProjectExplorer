@@ -3,7 +3,7 @@
   <Metadata>
     <Identity Id="IInspectable.ProjectExplorer.bc19cac8-0088-402c-9421-cdfd75e6a558" Version="2.7.5" Language="en-US" Publisher="Maximilian Hänel" />
     <DisplayName>Project Explorer 2026</DisplayName>
-    <Description xml:space="preserve">Project Explorer is a small tool window for managing a large number of projects within a given search folder. Quickly search for projects and then load, unload or close them respectivley.</Description>
+    <Description xml:space="preserve">Lists every project below a search folder, whether or not it is part of the current solution. Quickly find projects and add, remove, unload or reload them.</Description>
     <MoreInfo>https://github.com/IInspectable/ProjectExplorer</MoreInfo>
     <Icon>Resources\ProjectExplorer32.png</Icon>
     <PreviewImage>Resources\Preview.png</PreviewImage>
