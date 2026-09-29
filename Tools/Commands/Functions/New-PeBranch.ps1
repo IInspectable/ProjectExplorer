@@ -149,7 +149,11 @@ function New-PeBranch {
         & git -C $root worktree add $dir $branch
     }
     else {
-        & git -C $root worktree add --track -b $branch $dir "origin/$branch"
+        # ls-remote fragt den Server; die lokale Ref origin/<branch> kann noch fehlen.
+        & git -C $root fetch origin $branch
+        if ($LASTEXITCODE -eq 0) {
+            & git -C $root worktree add --track -b $branch $dir "origin/$branch"
+        }
     }
 
     if ($LASTEXITCODE -ne 0) {

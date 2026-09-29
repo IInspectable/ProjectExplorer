@@ -4,8 +4,8 @@
 
 .DESCRIPTION
     Setzt den Worktree komplett zurück: `git checkout -- .` (getrackte Änderungen verwerfen),
-    `git clean -fd` (untracked Dateien/Ordner) und `git clean -fX` (ignorierte Dateien wie
-    bin/obj). Vor der Ausführung wird nachgefragt (außer mit -Force). Der Repo-/Worktree-Root
+    `git clean -fd` (untracked Dateien/Ordner) und `git clean -fdX` (ignorierte Dateien und
+    Ordner wie bin/obj). Vor der Ausführung wird nachgefragt (außer mit -Force). Der Repo-/Worktree-Root
     wird zur Aufruf-Zeit aufgelöst (Resolve-PeRoot).
 
     ACHTUNG: Destruktiv — nicht committete Arbeit geht unwiderruflich verloren.
@@ -30,7 +30,7 @@ function Invoke-PeUndo {
         Write-Host "  Alle lokalen Änderungen in '$root' werden verworfen:" -ForegroundColor Red
         Write-Host "    git checkout -- .   (getrackte Änderungen)" -ForegroundColor DarkGray
         Write-Host "    git clean -fd       (untracked Dateien/Ordner)" -ForegroundColor DarkGray
-        Write-Host "    git clean -fX       (ignorierte Dateien, z. B. bin/obj)" -ForegroundColor DarkGray
+        Write-Host "    git clean -fdX      (ignorierte Dateien/Ordner, z. B. bin/obj)" -ForegroundColor DarkGray
         Write-Host ""
         $answer = Read-Host "  Wirklich fortfahren? [j/N]"
         if ($answer -notmatch '^(j|ja|y|yes)$') {
@@ -41,7 +41,7 @@ function Invoke-PeUndo {
 
     git -C $root checkout -- .
     git -C $root clean -fd
-    git -C $root clean -fX
+    git -C $root clean -fdX
 
     Write-Host ""
     Write-Host "Arbeitsverzeichnis bereinigt." -ForegroundColor Green

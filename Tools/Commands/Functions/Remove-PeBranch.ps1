@@ -16,8 +16,8 @@
       - Worktree ist nicht sauber (dirty/untracked) → erst commit/stash/clean.
 
     Ist der Branch nicht in `master` gemergt, bricht der Befehl ohne -Force ab (Hinweis:
-    nur mit -Force löschbar). Mit -Force wird er via `git branch -D` gelöscht — dann jedoch
-    erst nach roter Warnung und Rückfrage (die Rückfrage bleibt in diesem Fall bestehen).
+    nur mit -Force löschbar). Mit -Force wird er dennoch gelöscht — dann jedoch erst nach
+    roter Warnung und Rückfrage (die Rückfrage bleibt in diesem Fall bestehen).
 
     Vor dem Löschen wird eine Zusammenfassung gezeigt und nachgefragt; -Force überspringt
     diese Rückfrage nur bei sicheren (gemergten) Löschungen. Der Repo-/Worktree-Root
@@ -149,8 +149,10 @@ function Remove-PeBranch {
         }
     }
 
-    # Ausführen. Reihenfolge: Worktree → lokaler Branch → Remote. Lokaler Branch via -d
-    # (gemergt) bzw. -D (nicht gemergt, nur mit -Force erreichbar).
+    # Ausführen. Reihenfolge: Worktree → lokaler Branch → Remote. Lokaler Branch immer via -D:
+    # Die Merge-Prüfung gegen master ist oben bereits erfolgt (bzw. per -Force übersteuert).
+    # `git branch -d` prüft dagegen gegen Upstream/HEAD und würde z. B. aus einem anderen
+    # Feature-Worktree heraus scheitern — nachdem der Worktree schon entfernt wurde.
     if ($wtPath) {
         git -C $root worktree remove $wtPath
         if ($LASTEXITCODE -ne 0) {
@@ -159,17 +161,18 @@ function Remove-PeBranch {
         }
     }
 
-    $deleteFlag = if ($merged) { '-d' } else { '-D' }
-    git -C $root branch $deleteFlag $Branch
+    git -C $root branch -D $Branch
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Lokaler Branch konnte nicht gelöscht werden — Abbruch." -ForegroundColor Red
         return
     }
 
+    $remoteDeleted = $false
     if ($remoteExists) {
         try {
             git -C $root push origin --delete $Branch
             if ($LASTEXITCODE -ne 0) { throw "Exit $LASTEXITCODE" }
+            $remoteDeleted = $true
         }
         catch {
             Write-Host "Remote-Branch 'origin/$Branch' konnte nicht gelöscht werden ($_)." -ForegroundColor Yellow
@@ -182,6 +185,6 @@ function Remove-PeBranch {
     Write-Host "  Gelöscht:" -ForegroundColor Green
     Write-Host "    Branch (lokal)  $Branch"
     if ($wtPath)       { Write-Host "    Worktree        $wtPath" }
-    if ($remoteExists) { Write-Host "    Remote-Branch   origin/$Branch" }
+    if ($remoteDeleted) { Write-Host "    Remote-Branch   origin/$Branch" }
     Write-Host ""
 }

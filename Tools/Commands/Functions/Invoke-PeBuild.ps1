@@ -18,16 +18,22 @@
     Vor dem Build alle Build-Artefakte löschen (siehe `pe clean`).
 
 .PARAMETER RemainingArgs
-    Zusätzliche, unverändert an den Build-Aufruf durchgereichte MSBuild-Argumente.
+    Zusätzliche, unverändert an den Build-Aufruf durchgereichte MSBuild-Argumente. Schalter in
+    der `/`-Form angeben (`/p:Foo=Bar`, `/v:diag`): `-p:`/`-v:` hält PowerShell für seine
+    eigenen Common Parameters (-PipelineVariable, -Verbose …).
 
 .EXAMPLE
     pe build -Configuration Release -Clean
+
+.EXAMPLE
+    pe build /p:Foo=Bar /bl
 
 .FUNCTIONALITY
     build
 #>
 function Invoke-PeBuild {
-    [CmdletBinding()]
+    # Ohne Positional Binding landen MSBuild-Argumente in $RemainingArgs statt in -Configuration.
+    [CmdletBinding(PositionalBinding = $false)]
     param(
         [ValidateSet('Debug', 'Release')]
         [string] $Configuration = 'Debug',
@@ -38,11 +44,13 @@ function Invoke-PeBuild {
 
     $ErrorActionPreference = 'Stop'
 
+    # Throw statt return: Aufrufer (z. B. Invoke-PePublish) dürfen nach einem nicht
+    # gestarteten Build nicht mit einem alten VSIX weiterarbeiten.
     $root = Resolve-PeRoot
-    if (-not $root) { return }
+    if (-not $root) { throw "Build abgebrochen: Repo-Root nicht gefunden." }
 
     $msbuild = Resolve-PeMsBuild
-    if (-not $msbuild) { return }
+    if (-not $msbuild) { throw "Build abgebrochen: MSBuild nicht gefunden." }
 
     if ($Clean) { Clear-PeBuildOutput }
 

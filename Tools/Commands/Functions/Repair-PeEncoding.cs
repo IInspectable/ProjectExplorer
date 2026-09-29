@@ -2,8 +2,9 @@
 //
 // Konvertiert Quelltextdateien auf die Repo-Standardkodierung UTF-8 mit BOM.
 // Dateien, die bereits valides UTF-8 mit BOM sind, bleiben unangetastet (idempotent, minimale
-// Diffs). Dateien ohne BOM bekommen den BOM ergänzt; Dateien, die kein valides UTF-8 sind,
-// werden als Windows-1252 gelesen und nach UTF-8 umkodiert. Die strikte Dekodierung ist
+// Diffs). Dateien ohne BOM bekommen den BOM ergänzt; UTF-16/UTF-32-Dateien (am BOM erkannt,
+// z. B. Out-File aus Windows PowerShell 5) werden entsprechend gelesen; alle übrigen Dateien,
+// die kein valides UTF-8 sind, werden als Windows-1252 gelesen und nach UTF-8 umkodiert. Die strikte Dekodierung ist
 // entscheidend: ein lossy UTF-8-Read würde Windows-1252-Umlaute unwiederbringlich zu U+FFFD
 // (�) zerstören.
 
@@ -64,6 +65,7 @@ var files = Directory.EnumerateFiles(rootPath, "*", SearchOption.AllDirectories)
 
 var bomAdded  = 0;
 var reEncoded = 0;
+var fromUtf16 = 0;
 var skipped   = 0;
 var failed    = 0;
 
@@ -75,19 +77,27 @@ foreach (var file in files) {
 
         string text;
         string action;
-        try {
-            text = utf8Strict.GetString(payload);
-            if (hasBom) {
-                // Bereits valides UTF-8 mit BOM → nichts zu tun.
-                skipped++;
-                continue;
+        var unicode = DetectUnicodeBom(bytes);
+        if (unicode != null) {
+            // UTF-16/32 ist nie valides UTF-8 — ohne diese Prüfung würde es als 1252 zerstört.
+            text   = unicode.GetString(bytes, unicode.Preamble.Length, bytes.Length - unicode.Preamble.Length);
+            action = $"{unicode.WebName} → UTF-8+BOM";
+            fromUtf16++;
+        } else {
+            try {
+                text = utf8Strict.GetString(payload);
+                if (hasBom) {
+                    // Bereits valides UTF-8 mit BOM → nichts zu tun.
+                    skipped++;
+                    continue;
+                }
+                action = "BOM ergänzt";
+                bomAdded++;
+            } catch (DecoderFallbackException) {
+                text   = windows1252.GetString(payload);
+                action = "Windows-1252 → UTF-8+BOM";
+                reEncoded++;
             }
-            action = "BOM ergänzt";
-            bomAdded++;
-        } catch (DecoderFallbackException) {
-            text   = windows1252.GetString(payload);
-            action = "Windows-1252 → UTF-8+BOM";
-            reEncoded++;
         }
 
         File.WriteAllText(file, text, utf8Bom);
@@ -100,6 +110,17 @@ foreach (var file in files) {
 }
 
 Console.WriteLine();
-Console.WriteLine($"Fertig. BOM ergänzt: {bomAdded}, umkodiert (Windows-1252): {reEncoded}, bereits OK: {skipped}, fehlgeschlagen: {failed}");
+Console.WriteLine($"Fertig. BOM ergänzt: {bomAdded}, umkodiert (Windows-1252): {reEncoded}, umkodiert (UTF-16/32): {fromUtf16}, bereits OK: {skipped}, fehlgeschlagen: {failed}");
 
 return failed == 0 ? 0 : 3;
+
+// UTF-32 vor UTF-16 prüfen: der UTF-32-LE-BOM (FF FE 00 00) beginnt mit dem UTF-16-LE-BOM.
+static Encoding? DetectUnicodeBom(byte[] bytes) {
+    var candidates = new Encoding[] {
+        new UTF32Encoding(bigEndian: false, byteOrderMark: true),
+        new UTF32Encoding(bigEndian: true,  byteOrderMark: true),
+        new UnicodeEncoding(bigEndian: false, byteOrderMark: true),
+        new UnicodeEncoding(bigEndian: true,  byteOrderMark: true),
+    };
+    return candidates.FirstOrDefault(e => bytes.AsSpan().StartsWith(e.Preamble));
+}

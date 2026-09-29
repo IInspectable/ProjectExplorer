@@ -3,7 +3,9 @@
   <Import Project="Version.props" />
   <PropertyGroup>
     <!-- Die Fast-Up-To-Date-Check von Visual Studio kennt Version.props nicht als Eingabe und
-         überspringt nach einer Versionserhöhung sonst den Build. Dann landet die alte Version im VSIX. -->
+         überspringt nach einer Versionserhöhung sonst den Build. Dann landet die alte Version im VSIX.
+         UpToDateCheckInput hilft hier nicht: Die Projekte sind nicht SDK-basiert, das alte
+         Projektsystem wertet dieses Item nicht aus. -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 </Project>

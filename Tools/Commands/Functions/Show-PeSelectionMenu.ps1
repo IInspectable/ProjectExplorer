@@ -33,6 +33,14 @@ function Show-PeSelectionMenu {
     if ([Console]::IsInputRedirected) { return $null }
 
     $labels = @($Items | ForEach-Object $Label)
+    $width = [Math]::Max(20, [Console]::WindowWidth - 1)
+
+    # Zeile auf Fensterbreite kürzen und auffüllen: Umbrüche würden das Neuzeichnen
+    # (Cursor um $Items.Count Zeilen zurück) verschieben.
+    function Format-MenuLine([string] $text) {
+        if ($text.Length -gt $width) { $text = $text.Substring(0, $width - 1) + '…' }
+        $text.PadRight($width)
+    }
 
     # Type-ahead: erster Prefix-Treffer, sonst erster Teilstring-Treffer (case-insensitiv);
     # -1, wenn nichts passt.
@@ -50,7 +58,6 @@ function Show-PeSelectionMenu {
     $search = ''
     $lastInput = [DateTime]::UtcNow
     $searchTimeoutMs = 1000
-    $width = [Math]::Max(20, [Console]::WindowWidth - 1)
     Write-Host $Header -ForegroundColor DarkGray
     [Console]::CursorVisible = $false
     $result = $null
@@ -63,10 +70,10 @@ function Show-PeSelectionMenu {
             $firstDraw = $false
             for ($i = 0; $i -lt $Items.Count; $i++) {
                 if ($i -eq $selected) {
-                    Write-Host (('> ' + $labels[$i]).PadRight($width)) -ForegroundColor Black -BackgroundColor Cyan
+                    Write-Host (Format-MenuLine ('> ' + $labels[$i])) -ForegroundColor Black -BackgroundColor Cyan
                 }
                 else {
-                    Write-Host (('  ' + $labels[$i]).PadRight($width))
+                    Write-Host (Format-MenuLine ('  ' + $labels[$i]))
                 }
             }
             $key = [Console]::ReadKey($true)
