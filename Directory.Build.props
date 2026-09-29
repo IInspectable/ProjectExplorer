@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Project="Version.props" />
+  <PropertyGroup>
+    <!-- Die Fast-Up-To-Date-Check von Visual Studio kennt Version.props nicht als Eingabe und
+         überspringt nach einer Versionserhöhung sonst den Build. Dann landet die alte Version im VSIX. -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
 </Project>

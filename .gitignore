@@ -1,17 +1,9 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/ProjectExplorer.Extension2019/obj
-/ProjectExplorer.Extension2019/.vs
-/ProjectExplorer.Extension2019/bin
-/ProjectExplorer.Extension2022/obj
-/ProjectExplorer.Extension2022/.vs
-/ProjectExplorer.Extension2022/bin
-/Utilities/obj
-/Utilities/.vs
-/Utilities/bin
-/.vs
+﻿# Build-Artefakte
+[Bb]in/
+[Oo]bj/
+/deploy/
 /**/*.generated.cs
-/ProjectExplorer.Extension2026/bin/Debug
-/ProjectExplorer.Extension2026/obj
+
+# Visual Studio / Rider
+/.vs
+*.user
