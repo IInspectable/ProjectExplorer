@@ -7,11 +7,42 @@ automatisch zu `pe <token>`, inklusive Tab-Completion, Auswahlmenü und Übersic
 
 ## Setup (einmalig)
 
-Im PowerShell-Profil (`$PROFILE`) dot-sourcen:
+Voraussetzungen: Visual Studio 2026 mit dem Workload „Visual Studio-Extensionentwicklung“
+(MSBuild und VSIXInstaller werden per vswhere gefunden) und PowerShell 7. Für `pe fixenc`
+zusätzlich das .NET 10 SDK.
+
+Der Loader muss per Dot-Sourcing geladen werden, damit die Funktionen und der Alias `pe` in der
+Session bleiben. Für eine einzelne Session reicht:
 
 ```powershell
 . "C:\ws\git\ProjectExplorer\Tools\Commands\Import-PeCommands.ps1"
 ```
+
+### Dauerhaft über das Profil
+
+Die Repos `ProjectExplorer`, `Nav.Language.Extensions` und `Mfv-Peissenberg.Website` folgen
+derselben Konvention: `<Repo>\Tools\Commands\Import-*Commands.ps1`. Statt jedes Repo einzeln
+einzutragen, lädt ein generischer Loader in `$PROFILE` alle Toolsets unter `C:\ws\git`, auch
+künftige:
+
+```powershell
+# Toolsets aller Repos laden (Konvention: <Repo>\Tools\Commands\Import-*Commands.ps1),
+# z. B. w (Website), nav (Nav.Language.Extensions), pe (ProjectExplorer).
+# Nur Haupt-Repos (.git ist ein Ordner), keine Worktrees (.git ist dort eine Datei):
+# die Commands kommen damit immer aus der master-Kopie, nicht aus einem Feature-Branch.
+# foreach statt ForEach-Object, damit das Dot-Sourcing im globalen Scope landet.
+foreach ($repo in Get-ChildItem C:\ws\git -Directory) {
+    if (-not (Test-Path (Join-Path $repo.FullName '.git') -PathType Container)) { continue }
+    foreach ($loader in Get-ChildItem (Join-Path $repo.FullName 'Tools\Commands\Import-*Commands.ps1') -ErrorAction SilentlyContinue) {
+        . $loader.FullName
+    }
+}
+Remove-Variable repo, loader -ErrorAction SilentlyContinue
+```
+
+Die Commands stammen aus dem Branch, der im Haupt-Repo gerade ausgecheckt ist. Neue oder
+geänderte Commands auf einem Feature-Branch wirken also erst nach dem Merge, außer man lädt sie
+im Worktree per Hand nach.
 
 Die Commands lösen ihren Repo-/Worktree-Root zur Aufruf-Zeit auf (`git rev-parse --show-toplevel`).
 Sie funktionieren aus jedem Unterordner und treffen bei mehreren Worktrees den, in dem man steht.
