@@ -1,4 +1,4 @@
-# Project Explorer for Visual Studio
+﻿# Project Explorer for Visual Studio
 | Branch | Status |
 |--------|---------|
 |**master**|[![Build status](https://ci.appveyor.com/api/projects/status/05g0g9psl00an3nq/branch/master?svg=true)](https://ci.appveyor.com/project/IInspectable/projectexplorer/branch/master)|

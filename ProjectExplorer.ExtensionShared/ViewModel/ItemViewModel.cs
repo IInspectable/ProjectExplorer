@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.Imaging.Interop;
+﻿using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace IInspectable.ProjectExplorer.Extension; 
 

@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio;
+﻿using Microsoft.VisualStudio;
 
 namespace IInspectable.ProjectExplorer.Extension; 
 

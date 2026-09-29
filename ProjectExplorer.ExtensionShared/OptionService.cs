@@ -1,4 +1,4 @@
-#region Using Directives
+ï»¿#region Using Directives
 
 using System;
 using System.ComponentModel.Composition;
@@ -42,7 +42,7 @@ sealed class OptionService {
                 }
 
                 // Wenn die Solution bereits gespeichert wurde, dann ist sie per se unsere Wurzel
-                // Andernfalls gehen wir zum übergeordneten Verzeichnis.
+                // Andernfalls gehen wir zum Ã¼bergeordneten Verzeichnis.
                 var solutionFile = SolutionService.GetSolutionFile();
                 if (File.Exists(solutionFile) || !Directory.Exists(solutionDir)) {
                     return solutionDir;
@@ -94,7 +94,7 @@ sealed class OptionService {
             return null;
         }
 
-        // Für den Fall, dass doch mal ein nicht relativer Pfad gespeichert wurde
+        // FÃ¼r den Fall, dass doch mal ein nicht relativer Pfad gespeichert wurde
         if (Path.IsPathRooted(savedPath)) {
             Logger.Info($"{nameof(FromSolutionRelativePath)}: Path is rooted {savedPath}");
             return savedPath;

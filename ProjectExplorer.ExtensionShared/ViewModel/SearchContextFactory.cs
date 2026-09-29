@@ -1,4 +1,4 @@
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Globalization;
 
 using Microsoft.VisualStudio.Text.PatternMatching;

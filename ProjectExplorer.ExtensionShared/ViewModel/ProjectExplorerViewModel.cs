@@ -1,4 +1,4 @@
-#region Using Directives
+ï»¿#region Using Directives
 
 using System;
 using System.IO;
@@ -166,7 +166,7 @@ class ProjectExplorerViewModel: ViewModelBase {
     public string ProjectsRootLabel {
         get { 
             ThreadHelper.ThrowIfNotOnUIThread();
-            return _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folder…";
+            return _optionService.ProjectsRoot.NullIfEmpty() ?? "Choose Search Folderâ€¦";
         }
     }
 
@@ -264,7 +264,7 @@ class ProjectExplorerViewModel: ViewModelBase {
 
     public HResult EnsureSolution() {
         ThreadHelper.ThrowIfNotOnUIThread();
-        // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot übernommen werden
+        // Falls eine neue Solution erstellt wird, soll die jetzige ProjectsRoot Ã¼bernommen werden
         using (Suspend.Reload(this))
         using (Capture.ProjectsRoot(this)) {
 

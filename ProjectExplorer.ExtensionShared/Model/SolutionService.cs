@@ -1,4 +1,4 @@
-#region Using Directives
+﻿#region Using Directives
 
 using System;
 using System.Collections.Generic;
@@ -269,7 +269,7 @@ class SolutionService: IVsSolutionEvents, IVsSolutionEvents4, IDisposable {
     #endregion
 
     bool Failed(int hr, int except = VSConstants.S_OK, [CallerMemberName] string callerMemberName = null) {
-        // ReSharper disable once ExplicitCallerInfoArgument Ist hier gew�nscht
+        // ReSharper disable once ExplicitCallerInfoArgument Ist hier gewünscht
         return ErrorHandler.Failed(LogFailed(hr, except, callerMemberName));
     }
 
